@@ -6,9 +6,13 @@ import { ConfigModule } from '@nestjs/config';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './apis/users/users.module';
+import { JwtAccessStrategy } from './commons/auth/jwt-access-strategy';
+import { JwtRefreshStrategy } from './commons/auth/jwt-refresh.strategy';
+import { AuthModule } from './apis/auth/auth.module';
 
 @Module({
   imports: [
+    AuthModule,
     UsersModule, //
     ConfigModule.forRoot(),
     GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -29,7 +33,13 @@ import { UsersModule } from './apis/users/users.module';
       // retryAttempts: 30,
     }),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService, //
+    JwtAccessStrategy,
+    JwtRefreshStrategy,
+  ],
+  controllers: [
+    AppController, //
+  ],
 })
 export class AppModule {}
