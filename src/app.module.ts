@@ -6,6 +6,9 @@ import { ConfigModule } from '@nestjs/config';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './apis/users/users.module';
+import { JwtAccessStrategy } from './commons/auth/jwt-access-strategy';
+import { JwtRefreshStrategy } from './commons/auth/jwt-refresh.strategy';
+import { AuthModule } from './apis/auth/auth.module';
 import { FilesModule } from './apis/files/file.module';
 import { AdminModule } from './admin/admin.module';
 import { AdminModule } from './apis/admin/admin.module';
@@ -13,7 +16,6 @@ import { AdminModule } from './apis/admin/admin.module';
 
 @Module({
   imports: [
-    UsersModule, //
     ConfigModule.forRoot(),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
@@ -34,8 +36,16 @@ import { AdminModule } from './apis/admin/admin.module';
     }),
     FilesModule,
     AdminModule,
+    AuthModule,
+    UsersModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService, //
+    JwtAccessStrategy,
+    JwtRefreshStrategy,
+  ],
+  controllers: [
+    AppController, //
+  ],
 })
 export class AppModule {}
