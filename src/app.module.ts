@@ -9,11 +9,13 @@ import { UsersModule } from './apis/users/users.module';
 import { JwtAccessStrategy } from './commons/auth/jwt-access-strategy';
 import { JwtRefreshStrategy } from './commons/auth/jwt-refresh.strategy';
 import { AuthModule } from './apis/auth/auth.module';
+import { FilesModule } from './apis/files/file.module';
+import { AdminModule } from './admin/admin.module';
+import { AdminModule } from './apis/admin/admin.module';
+
 
 @Module({
   imports: [
-    AuthModule,
-    UsersModule, //
     ConfigModule.forRoot(),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
@@ -32,6 +34,10 @@ import { AuthModule } from './apis/auth/auth.module';
       logging: true,
       // retryAttempts: 30,
     }),
+    FilesModule,
+    AdminModule,
+    AuthModule,
+    UsersModule,
   ],
   providers: [
     AppService, //
