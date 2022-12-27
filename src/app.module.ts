@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './apis/users/users.module';
+import { FilesModule } from './apis/files/file.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { UsersModule } from './apis/users/users.module';
       logging: true,
       // retryAttempts: 30,
     }),
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
