@@ -6,6 +6,8 @@ import { ConfigModule } from '@nestjs/config';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './apis/users/users.module';
+import { AdminModule } from './admin/admin.module';
+import { AdminModule } from './apis/admin/admin.module';
 
 @Module({
   imports: [
@@ -28,6 +30,7 @@ import { UsersModule } from './apis/users/users.module';
       logging: true,
       // retryAttempts: 30,
     }),
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],
