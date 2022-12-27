@@ -12,7 +12,6 @@ export class Admin {
   @Field(() => String)
   email: string;
 
-  @Column()
   @Field(() => String)
   password: string;
 
