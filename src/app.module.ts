@@ -7,6 +7,9 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './apis/users/users.module';
 import { FilesModule } from './apis/files/file.module';
+import { AdminModule } from './admin/admin.module';
+import { AdminModule } from './apis/admin/admin.module';
+
 
 @Module({
   imports: [
@@ -30,6 +33,7 @@ import { FilesModule } from './apis/files/file.module';
       // retryAttempts: 30,
     }),
     FilesModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],
