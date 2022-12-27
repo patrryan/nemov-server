@@ -17,9 +17,12 @@ type Query {
 }
 
 type Mutation {
+  login(email: String!, password: String!): String!
+  restoreAccessToken: String!
   createUser(email: String!, password: String!, name: String!, address: String!, phoneNumber: String!, veganLevel: String!): User!
-  updateUser(email: String!, password: String!, name: String!, address: String!, phoneNumber: String!, veganLevel: String!): User!
   deleteUser(email: String!): Boolean!
-  deleteLoginUser: Boolean!
   restoreUser(email: String!): Boolean!
+  updateUser(name: String!, address: String!, phoneNumber: String!, veganLevel: String!): User!
+  updateUserPwd(password: String!): User!
+  deleteLoginUser: Boolean!
 }

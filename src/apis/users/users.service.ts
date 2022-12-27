@@ -56,4 +56,39 @@ export class UsersService {
     });
     return result.affected ? true : false;
   }
+
+  // 유저정보 업데이트
+  async update({ name, address, phoneNumber, veganLevel }) {
+    const newUsers = {
+      name,
+      address,
+      phoneNumber,
+      veganLevel,
+    };
+    return await this.usersRepository.save(newUsers);
+  }
+
+  // 로그인한 유저 한사람 조회
+  findLoginOne({ context }): Promise<User> {
+    return this.usersRepository.findOne({
+      where: { email: context.req.user.email },
+    });
+  }
+
+  // 로그인한 유저 비밀번호 변경
+  async updatePwd({ hashedPassword: password, user }) {
+    const newPassword = {
+      ...user,
+      password,
+    };
+    return await this.usersRepository.save(newPassword);
+  }
+
+  // 로그인한 유저 삭제
+  async loginDelete({ context }) {
+    const result = await this.usersRepository.softDelete({
+      email: context.req.user.email,
+    });
+    return result.affected ? true : false;
+  }
 }
