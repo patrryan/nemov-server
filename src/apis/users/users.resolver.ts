@@ -46,15 +46,6 @@ export class UsersResolver {
     return this.usersService.findOne({ email });
   }
 
-  // 유저정보 삭제
-  @UseGuards(GqlAuthAccessGuard)
-  @Mutation(() => Boolean)
-  async deleteUser(
-    @Args('email') email: string, //
-  ): Promise<boolean> {
-    return this.usersService.delete({ email });
-  }
-
   // 유저정보 복구
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
