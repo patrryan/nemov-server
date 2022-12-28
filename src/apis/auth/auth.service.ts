@@ -31,7 +31,7 @@ export class AuthService {
   }
 
   async getTokenForAdmin({ email, password, res }) {
-    const admin = await this.adminService.findOne({ email });
+    const admin = await this.adminService.findOneByEmail({ email });
     if (!admin)
       throw new UnprocessableEntityException('이메일/비밀번호가 틀렸습니다.');
 

@@ -10,9 +10,8 @@ import { JwtAccessStrategy } from './commons/auth/jwt-access-strategy';
 import { JwtRefreshStrategy } from './commons/auth/jwt-refresh.strategy';
 import { AuthModule } from './apis/auth/auth.module';
 import { FilesModule } from './apis/files/file.module';
-import { AdminModule } from './admin/admin.module';
 import { AdminModule } from './apis/admin/admin.module';
-
+import { JwtAdminAccessStrategy } from './commons/auth/jwt-admin-access-strategy';
 
 @Module({
   imports: [
@@ -43,6 +42,7 @@ import { AdminModule } from './apis/admin/admin.module';
     AppService, //
     JwtAccessStrategy,
     JwtRefreshStrategy,
+    JwtAdminAccessStrategy,
   ],
   controllers: [
     AppController, //

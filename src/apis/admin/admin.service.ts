@@ -21,7 +21,11 @@ export class AdminService {
     });
   }
 
-  async findOne({ email }): Promise<Admin> {
+  async findOneById({ id }): Promise<Admin> {
+    return await this.adminRepository.findOne({ where: { id } });
+  }
+
+  async findOneByEmail({ email }): Promise<Admin> {
     return await this.adminRepository.findOne({ where: { email } });
   }
 
