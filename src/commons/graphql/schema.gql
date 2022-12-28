@@ -11,18 +11,38 @@ type User {
   veganLevel: String!
 }
 
+type Admin {
+  id: ID!
+  email: String!
+  nickname: String!
+}
+
 type Query {
+  fetchAdminLoggedIn: Admin!
   fetchUser(email: String!): User!
   fetchLoginUser: User!
 }
 
 type Mutation {
+  uploadFile(file: Upload!): String!
+  createAdmin(createAdminInput: CreateAdminInput!): Admin!
+  deleteAdmin: Boolean!
   login(email: String!, password: String!): String!
   restoreAccessToken: String!
+  loginAdmin(email: String!, password: String!): String!
   createUser(email: String!, password: String!, name: String!, address: String!, phoneNumber: String!, veganLevel: String!): User!
   deleteUser(email: String!): Boolean!
   restoreUser(email: String!): Boolean!
   updateUser(name: String!, address: String!, phoneNumber: String!, veganLevel: String!): User!
   updateUserPwd(password: String!): User!
   deleteLoginUser: Boolean!
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+input CreateAdminInput {
+  email: String!
+  password: String!
+  nickname: String!
 }
