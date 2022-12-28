@@ -20,4 +20,20 @@ export class AdminService {
       password: hashedPassword,
     });
   }
+
+  async findOneById({ id }): Promise<Admin> {
+    return await this.adminRepository.findOne({ where: { id } });
+  }
+
+  async findOneByEmail({ email }): Promise<Admin> {
+    return await this.adminRepository.findOne({ where: { email } });
+  }
+
+  async delete({ context }): Promise<boolean> {
+    const result = await this.adminRepository.delete({
+      id: context.req.user.id,
+    });
+
+    return result.affected ? true : false;
+  }
 }
