@@ -43,12 +43,6 @@ export class UsersService {
     });
   }
 
-  // 유저정보 삭제
-  async delete({ email }) {
-    const result = await this.usersRepository.softDelete({ email });
-    return result.affected ? true : false;
-  }
-
   // 유저정보 복구
   async restore({ email }) {
     const result = await this.usersRepository.restore({
