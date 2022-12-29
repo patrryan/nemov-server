@@ -63,6 +63,8 @@ type Mutation {
   createProduct(createProductInput: CreateProductInput!): Product!
   updateProduct(productId: String!, updateProductInput: UpdateProductInput!): Product!
   deleteProduct(productId: String!): Boolean!
+  getToken(phoneNumber: String!): String!
+  checkValidToken(phoneNumber: String!, token: String!): String!
 }
 
 """The `Upload` scalar type represents a file upload."""
