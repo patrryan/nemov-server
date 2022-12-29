@@ -13,6 +13,7 @@ import { FilesModule } from './apis/files/file.module';
 import { AdminModule } from './apis/admin/admin.module';
 import { JwtAdminAccessStrategy } from './commons/auth/jwt-admin-access-strategy';
 import { ProductsModule } from './apis/products/products.module';
+import { customTypes } from './commons/graphql/customTypes/customTypes';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { ProductsModule } from './apis/products/products.module';
       driver: ApolloDriver,
       autoSchemaFile: 'src/commons/graphql/schema.gql',
       context: ({ req, res }) => ({ req, res }),
+      resolvers: [...customTypes],
     }),
     TypeOrmModule.forRoot({
       type: process.env.DATABASE_TYPE as 'mysql',
@@ -32,7 +34,6 @@ import { ProductsModule } from './apis/products/products.module';
       entities: [__dirname + '/apis/**/*.entity.*'],
       synchronize: true,
       logging: true,
-      // retryAttempts: 30,
     }),
     FilesModule,
     AdminModule,
@@ -41,7 +42,7 @@ import { ProductsModule } from './apis/products/products.module';
     ProductsModule,
   ],
   providers: [
-    AppService, //
+    AppService,
     JwtAccessStrategy,
     JwtRefreshStrategy,
     JwtAdminAccessStrategy,

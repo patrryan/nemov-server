@@ -10,6 +10,13 @@ export enum PRODUCT_CATEGORY_TYPE { //
 
 registerEnumType(PRODUCT_CATEGORY_TYPE, {
   name: 'PRODUCT_CATEGORY_TYPE',
+  description: '물품 카테고리에 대한 타입',
+  valuesMap: {
+    FOOD: { description: '식품 카테고리' },
+    DRINK: { description: '음료 카테고리' },
+    BEAUTY: { description: '화장품 카테고리' },
+    LIFE: { description: '생활용품 카테고리' },
+  },
 });
 
 @ObjectType()

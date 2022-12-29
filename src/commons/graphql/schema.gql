@@ -3,16 +3,49 @@
 # ------------------------------------------------------
 
 type User {
-  id: String!
+  id: ID!
   name: String!
-  email: String!
-  phoneNumber: String!
-  veganLevel: String!
+  email: Email!
+  phone: Phone!
+  veganLevel: VEGAN_LEVEL_TYPE!
+  zipCode: ZipCode!
   address: String!
   addressDetail: String!
-  zipCode: String!
   point: Int!
 }
+
+"""이메일 형식: @가 포함되어있어야함."""
+scalar Email
+
+"""일반적인 핸드폰 번호 형식을 적용. 번호 사이에 -가 들어감"""
+scalar Phone
+
+"""비건 레벨(0~6단계)에 대한 타입"""
+enum VEGAN_LEVEL_TYPE {
+  """0단계 비건 - 플렉시테리언"""
+  FLEX
+
+  """1단계 비건 - 폴로"""
+  POLO
+
+  """2단계 비건 - 페스코"""
+  PESCO
+
+  """3단계 비건 - 락토오보"""
+  LACTOOVO
+
+  """4단계 비건 - 오보"""
+  OVO
+
+  """5단계 비건 - 락토"""
+  LACTO
+
+  """6단계 비건 - 비건"""
+  VEGAN
+}
+
+"""우편번호"""
+scalar ZipCode
 
 type Admin {
   id: ID!
@@ -33,10 +66,18 @@ type Product {
   isOutOfStock: Boolean!
 }
 
+"""물품 카테고리에 대한 타입"""
 enum PRODUCT_CATEGORY_TYPE {
+  """식품 카테고리"""
   FOOD
+
+  """음료 카테고리"""
   DRINK
+
+  """화장품 카테고리"""
   BEAUTY
+
+  """생활용품 카테고리"""
   LIFE
 }
 
@@ -75,25 +116,28 @@ input CreateAdminInput {
 }
 
 input CreateUserInput {
-  email: String!
   name: String!
-  password: String!
+  email: Email!
+  password: Password!
+  phone: Phone!
+  veganLevel: VEGAN_LEVEL_TYPE!
+  zipCode: ZipCode!
   address: String!
-  phoneNumber: String!
-  veganLevel: String!
   addressDetail: String!
-  zipCode: String!
 }
 
+"""비밀번호 형식: 알파벳 대,소문자, 숫자, 특수기호(!@#$%^&*?) 각 1개씩 포함, (최소: 8글자, 최대 16글자)"""
+scalar Password
+
 input UpdateUserInput {
-  email: String
   name: String
-  password: String
+  email: Email
+  password: Password
+  phone: Phone
+  veganLevel: VEGAN_LEVEL_TYPE
+  zipCode: ZipCode
   address: String
-  phoneNumber: String
-  veganLevel: String
   addressDetail: String
-  zipCode: String
 }
 
 input CreateProductInput {
