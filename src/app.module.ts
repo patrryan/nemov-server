@@ -10,8 +10,6 @@ import { JwtAccessStrategy } from './commons/auth/jwt-access-strategy';
 import { JwtRefreshStrategy } from './commons/auth/jwt-refresh.strategy';
 import { AuthModule } from './apis/auth/auth.module';
 import { FilesModule } from './apis/files/file.module';
-import { AdminModule } from './apis/admin/admin.module';
-import { JwtAdminAccessStrategy } from './commons/auth/jwt-admin-access-strategy';
 import { ProductsModule } from './apis/products/products.module';
 import { customTypes } from './commons/graphql/customTypes/customTypes';
 import { PhoneModule } from './apis/phone/phone.module';
@@ -44,17 +42,15 @@ import * as redisStore from 'cache-manager-redis-store';
       isGlobal: true,
     }),
     FilesModule,
-    AdminModule,
     AuthModule,
     UsersModule,
     ProductsModule,
     PhoneModule,
   ],
   providers: [
-    AppService,
+    AppService, //
     JwtAccessStrategy,
     JwtRefreshStrategy,
-    JwtAdminAccessStrategy,
   ],
   controllers: [
     AppController, //

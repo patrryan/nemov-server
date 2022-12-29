@@ -39,17 +39,4 @@ export class AuthResolver {
   ): string {
     return this.authService.getAccessToken({ id: context.req.user.id });
   }
-
-  @Mutation(() => String)
-  loginAdmin(
-    @Args('email') email: string, //
-    @Args('password') password: string,
-    @Context() context: IContext,
-  ): Promise<string> {
-    return this.authService.getTokenForAdmin({
-      email,
-      password,
-      res: context.res,
-    });
-  }
 }
