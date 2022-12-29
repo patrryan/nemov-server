@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { VEGAN_LEVEL_TYPE } from 'src/apis/users/entities/user.entity';
 
 export enum PRODUCT_CATEGORY_TYPE { //
   FOOD = 'FOOD',
@@ -43,7 +44,7 @@ export class Product {
   image: string;
 
   @Column()
-  @Field(() => String)
+  @Field(() => VEGAN_LEVEL_TYPE)
   veganLevel: string;
 
   @Column()
