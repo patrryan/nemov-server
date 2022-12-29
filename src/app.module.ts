@@ -12,6 +12,7 @@ import { AuthModule } from './apis/auth/auth.module';
 import { FilesModule } from './apis/files/file.module';
 import { AdminModule } from './apis/admin/admin.module';
 import { JwtAdminAccessStrategy } from './commons/auth/jwt-admin-access-strategy';
+import { ProductsModule } from './apis/products/products.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { JwtAdminAccessStrategy } from './commons/auth/jwt-admin-access-strategy
     AdminModule,
     AuthModule,
     UsersModule,
+    ProductsModule,
   ],
   providers: [
     AppService, //
