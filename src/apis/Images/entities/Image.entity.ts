@@ -1,10 +1,9 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Product } from 'src/apis/products/entities/product.entity';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { Field, ObjectType } from '@nestjs/graphql';
 
 @Entity()
 @ObjectType()
-export class ProductImage {
+export class Image {
   @PrimaryGeneratedColumn('uuid')
   @Field(() => String)
   id: string;

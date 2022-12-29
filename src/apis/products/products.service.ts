@@ -1,24 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Image } from '../Images/entities/Image.entity';
 import { Product } from './entities/product.entity';
-
-// import { Payment} from '../payment/entities/payment.entity'
 import {
   IProductsServiceCreate,
   IProductsServiceDelete,
   IProductsServiceFindOne,
   IProductsServiceUpdate,
 } from './interfaces/products-service.interface';
-// import { ProductAllergy } from '../productsAllergy/productAllergy.entity';
-// import { ProductCategory } from '../productsCategory/entities/productCategory.entity';
-// import { ProductImage } from '../productsImage/entities/productImage.entity';
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectRepository(Product)
-    private readonly productsRepository: Repository<Product>, // // @InjectRepository(Payment) // private readonly paymentRepository: Repository<Payment>, // // @InjectRepository(ProductAllergy) // private readonly ProductAllergyRepository: Repository<ProductAllergy>, //  ???? // @InjectRepository(ProductCategory) // private readonly ProductCategoryRepository: Repository<ProductCategory>, // @InjectRepository(ProductImage) // private readonly ProductImageRepository: Repository<ProductImage>,
+    private readonly productsRepository: Repository<Product>,
+    @InjectRepository(Image)
+    private readonly imagesRepository: Repository<Image>,
   ) {}
 
   ///-----------------------------///
@@ -32,17 +30,21 @@ export class ProductsService {
   findOne({ productId }: IProductsServiceFindOne): Promise<Product> {
     return this.productsRepository.findOne({
       where: { id: productId },
-      // relations: ['productCategory', 'productAllergy'],
+      relations: ['image'],
     });
   }
 
   async create({
     createProductInput,
   }: IProductsServiceCreate): Promise<Product> {
-    const result3 = await this.productsRepository.save({
-      ...createProductInput,
+    const { image, ...rest } = createProductInput;
+
+    const result = await this.imagesRepository.save({ url: image });
+
+    return await this.productsRepository.save({
+      ...rest,
+      image: { ...result },
     });
-    return result3;
   }
 
   ///-----------------------------///
@@ -51,12 +53,22 @@ export class ProductsService {
     product,
     updateProductInput,
   }: IProductsServiceUpdate): Promise<Product> {
-    const result = this.productsRepository.save({
-      ...product,
-      ...updateProductInput,
-    });
+    const { image, ...rest } = updateProductInput;
 
-    return result;
+    let newImage = {};
+
+    if (image) {
+      newImage = await this.imagesRepository.save({
+        ...product.image,
+        url: image,
+      });
+    }
+
+    return await this.productsRepository.save({
+      ...product,
+      ...rest,
+      image: { ...product.image, ...newImage },
+    });
   }
 
   async delete({ productId }: IProductsServiceDelete): Promise<boolean> {

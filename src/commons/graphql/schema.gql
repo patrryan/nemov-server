@@ -53,17 +53,22 @@ type Admin {
   nickname: String!
 }
 
+type Image {
+  id: String!
+  url: String!
+}
+
 type Product {
   id: String!
   name: String!
   category: PRODUCT_CATEGORY_TYPE!
   description: String!
-  image: String!
-  veganLevel: String!
+  veganLevel: VEGAN_LEVEL_TYPE!
   deliveryFee: Int!
   price: Int!
   discount: Int!
   isOutOfStock: Boolean!
+  image: Image!
 }
 
 """물품 카테고리에 대한 타입"""
@@ -146,20 +151,20 @@ input CreateProductInput {
   name: String!
   category: PRODUCT_CATEGORY_TYPE!
   description: String!
-  image: String!
-  veganLevel: String!
+  veganLevel: VEGAN_LEVEL_TYPE!
   deliveryFee: Int!
   price: Int!
   discount: Int!
+  image: String!
 }
 
 input UpdateProductInput {
   name: String
   category: PRODUCT_CATEGORY_TYPE
   description: String
-  image: String
-  veganLevel: String
+  veganLevel: VEGAN_LEVEL_TYPE
   deliveryFee: Int
   price: Int
   discount: Int
+  image: String
 }
