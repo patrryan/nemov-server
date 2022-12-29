@@ -20,10 +20,32 @@ type Admin {
   nickname: String!
 }
 
+type Product {
+  id: String!
+  name: String!
+  category: PRODUCT_CATEGORY_TYPE!
+  description: String!
+  image: String!
+  veganLevel: String!
+  deliveryFee: Int!
+  price: Int!
+  discount: Int!
+  isOutOfStock: Boolean!
+}
+
+enum PRODUCT_CATEGORY_TYPE {
+  FOOD
+  DRINK
+  BEAUTY
+  LIFE
+}
+
 type Query {
   fetchAdminLoggedIn: Admin!
   fetchUser(email: String!): User!
   fetchLoginUser: User!
+  fetchProducts: [Product!]!
+  fetchProduct(productId: String!): Product!
 }
 
 type Mutation {
@@ -38,6 +60,9 @@ type Mutation {
   updateUser(updateUserInput: UpdateUserInput!): User!
   updateUserPwd(password: String!): User!
   deleteLoginUser: Boolean!
+  createProduct(createProductInput: CreateProductInput!): Product!
+  updateProduct(productId: String!, updateProductInput: UpdateProductInput!): Product!
+  deleteProduct(productId: String!): Boolean!
 }
 
 """The `Upload` scalar type represents a file upload."""
@@ -69,4 +94,26 @@ input UpdateUserInput {
   veganLevel: String
   addressDetail: String
   zipCode: String
+}
+
+input CreateProductInput {
+  name: String!
+  category: PRODUCT_CATEGORY_TYPE!
+  description: String!
+  image: String!
+  veganLevel: String!
+  deliveryFee: Int!
+  price: Int!
+  discount: Int!
+}
+
+input UpdateProductInput {
+  name: String
+  category: PRODUCT_CATEGORY_TYPE
+  description: String
+  image: String
+  veganLevel: String
+  deliveryFee: Int
+  price: Int
+  discount: Int
 }
