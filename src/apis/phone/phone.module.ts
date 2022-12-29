@@ -8,10 +8,7 @@ import { PhoneService } from './phone.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]), //
-    CacheModule.register({
-      ttl: 300,
-      max: 100,
-    }),
+    CacheModule.register({}),
   ],
   providers: [
     PhoneResolver, //

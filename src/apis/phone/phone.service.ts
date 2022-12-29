@@ -26,7 +26,7 @@ export class PhoneService {
     const isValid = this.checkPhoneLength({ phone });
     if (isValid) {
       const digit = await this.usersRepository.findOne({
-        where: { phoneNumber: phone },
+        where: { phone },
       });
       if (digit) {
         throw new ConflictException('이미 등록된 번호입니다.');
