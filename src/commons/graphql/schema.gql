@@ -6,9 +6,12 @@ type User {
   id: String!
   name: String!
   email: String!
-  address: String!
   phoneNumber: String!
   veganLevel: String!
+  address: String!
+  addressDetail: String!
+  zipCode: String!
+  point: Int!
 }
 
 type Admin {
@@ -30,10 +33,9 @@ type Mutation {
   login(email: String!, password: String!): String!
   restoreAccessToken: String!
   loginAdmin(email: String!, password: String!): String!
-  createUser(email: String!, password: String!, name: String!, address: String!, phoneNumber: String!, veganLevel: String!): User!
-  deleteUser(email: String!): Boolean!
+  createUser(createUserInput: CreateUserInput!): User!
   restoreUser(email: String!): Boolean!
-  updateUser(name: String!, address: String!, phoneNumber: String!, veganLevel: String!): User!
+  updateUser(updateUserInput: UpdateUserInput!): User!
   updateUserPwd(password: String!): User!
   deleteLoginUser: Boolean!
 }
@@ -45,4 +47,26 @@ input CreateAdminInput {
   email: String!
   password: String!
   nickname: String!
+}
+
+input CreateUserInput {
+  email: String!
+  name: String!
+  password: String!
+  address: String!
+  phoneNumber: String!
+  veganLevel: String!
+  addressDetail: String!
+  zipCode: String!
+}
+
+input UpdateUserInput {
+  email: String
+  name: String
+  password: String
+  address: String
+  phoneNumber: String
+  veganLevel: String
+  addressDetail: String
+  zipCode: String
 }

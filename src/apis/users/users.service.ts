@@ -16,22 +16,16 @@ export class UsersService {
 
   // 유저 생성
   async create({
-    email,
     hashedPassword: password,
-    name,
-    address,
-    phoneNumber,
-    veganLevel,
+    createUserInput,
   }: IUsersServiceCreate): Promise<User> {
-    const user = await this.usersRepository.findOne({ where: { email } });
+    const user = await this.usersRepository.findOne({
+      where: { email: createUserInput.email },
+    });
     if (user) throw new ConflictException('이미 등록된 이메일 입니다.');
     return this.usersRepository.save({
-      email,
       password,
-      name,
-      address,
-      phoneNumber,
-      veganLevel,
+      ...createUserInput,
     });
   }
 
@@ -52,14 +46,16 @@ export class UsersService {
   }
 
   // 유저정보 업데이트
-  async update({ name, address, phoneNumber, veganLevel }) {
-    const newUsers = {
-      name,
-      address,
-      phoneNumber,
-      veganLevel,
-    };
-    return await this.usersRepository.save(newUsers);
+  async update({ context, updateUserInput }) {
+    const prevUser = await this.usersRepository.findOne({
+      where: { email: context.req.user.email },
+    });
+    const result = await this.usersRepository.save({
+      ...prevUser,
+      email: context.req.user.email,
+      ...updateUserInput,
+    });
+    return result;
   }
 
   // 로그인한 유저 한사람 조회

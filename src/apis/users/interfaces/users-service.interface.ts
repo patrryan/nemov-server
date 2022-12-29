@@ -1,10 +1,8 @@
+import { CreateUserInput } from '../dto/create-user.input';
+
 export interface IUsersServiceCreate {
-  email: string;
   hashedPassword: string;
-  name: string;
-  address: string;
-  phoneNumber: string;
-  veganLevel: string;
+  createUserInput: CreateUserInput;
 }
 
 export interface IUsersServiceFindOne {
