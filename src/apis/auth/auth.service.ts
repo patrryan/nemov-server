@@ -15,34 +15,34 @@ export class AuthService {
     private readonly adminService: AdminService,
   ) {}
 
-  setRefreshToken({ user, res }: IAuthServiceSetRefreshToken): void {
-    const refreshToken = this.jwtService.sign(
-      { email: user.email, sub: user.id },
-      { secret: process.env.JWT_REFRESH_KEY, expiresIn: '1w' },
-    );
-    res.setHeader('Set-Cookie', `refreshToken=${refreshToken}`);
-  }
-
-  getAccessToken({ user }: IAuthServiceGetAccessToken): string {
-    return this.jwtService.sign(
-      { email: user.email, sub: user.id },
-      { secret: process.env.JWT_ACCESS_KEY, expiresIn: '1w' },
-    );
-  }
-  // setRefreshToken({ id, res }): void {
+  // setRefreshToken({ user, res }: IAuthServiceSetRefreshToken): void {
   //   const refreshToken = this.jwtService.sign(
-  //     { id },
+  //     { email: user.email, sub: user.id },
   //     { secret: process.env.JWT_REFRESH_KEY, expiresIn: '1w' },
   //   );
   //   res.setHeader('Set-Cookie', `refreshToken=${refreshToken}`);
   // }
 
-  // getAccessToken({ id }): string {
+  // getAccessToken({ user }: IAuthServiceGetAccessToken): string {
   //   return this.jwtService.sign(
-  //     { id },
+  //     { email: user.email, sub: user.id },
   //     { secret: process.env.JWT_ACCESS_KEY, expiresIn: '1w' },
   //   );
   // }
+  setRefreshToken({ id, res }): void {
+    const refreshToken = this.jwtService.sign(
+      { id },
+      { secret: process.env.JWT_REFRESH_KEY, expiresIn: '1w' },
+    );
+    res.setHeader('Set-Cookie', `refreshToken=${refreshToken}`);
+  }
+
+  getAccessToken({ id }): string {
+    return this.jwtService.sign(
+      { id },
+      { secret: process.env.JWT_ACCESS_KEY, expiresIn: '1w' },
+    );
+  }
 
   async getTokenForAdmin({ email, password, res }) {
     const admin = await this.adminService.findOneByEmail({ email });

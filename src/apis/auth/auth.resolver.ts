@@ -28,8 +28,8 @@ export class AuthResolver {
     if (!isAuth)
       throw new UnprocessableEntityException('비밀번호가 틀렸습니다.');
 
-    this.authService.setRefreshToken({ user, res: context.res });
-    return this.authService.getAccessToken({ user });
+    this.authService.setRefreshToken({ id: user.id, res: context.res });
+    return this.authService.getAccessToken({ id: user.id });
   }
 
   @UseGuards(GqlAuthRefreshGuard)
@@ -37,7 +37,7 @@ export class AuthResolver {
   restoreAccessToken(
     @Context() context: IContext, //
   ): string {
-    return this.authService.getAccessToken({ user: context.req.user });
+    return this.authService.getAccessToken({ id: context.req.user.id });
   }
 
   @Mutation(() => String)
