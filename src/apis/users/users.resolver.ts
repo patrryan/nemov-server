@@ -5,19 +5,13 @@ import { UsersService } from './users.service';
 import { IContext } from 'src/commons/types/context';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth-guard';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { UpdateUserInput } from './dto/update-user.input';
 import { CreateUserInput } from './dto/create-user.input';
+import { CurrentUser } from 'src/commons/decorators/current-user.decorator';
 
 @Resolver()
 export class UsersResolver {
-  constructor(
-    private readonly usersService: UsersService,
-
-    @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   // 유저정보 생성
   @Mutation(() => User)
@@ -76,10 +70,8 @@ export class UsersResolver {
   // 로그인한 유저 한 사람 조회
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => User)
-  async fetchLoginUser(
-    @Context() context, //
-  ) {
-    return this.usersService.findLoginOne({ context });
+  async fetchLoginUser(@CurrentUser() id: string) {
+    return this.usersService.findOneById({ id });
   }
 
   // 로그인한 유저 삭제

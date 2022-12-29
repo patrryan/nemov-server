@@ -24,8 +24,8 @@ export class UsersService {
     });
     if (user) throw new ConflictException('이미 등록된 이메일 입니다.');
     return this.usersRepository.save({
-      password,
       ...createUserInput,
+      password,
     });
   }
 
@@ -80,5 +80,9 @@ export class UsersService {
       email: context.req.user.email,
     });
     return result.affected ? true : false;
+  }
+
+  async findOneById({ id }) {
+    return await this.usersRepository.findOne({ where: { id } });
   }
 }

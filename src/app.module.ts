@@ -13,6 +13,7 @@ import { FilesModule } from './apis/files/file.module';
 import { AdminModule } from './apis/admin/admin.module';
 import { JwtAdminAccessStrategy } from './commons/auth/jwt-admin-access-strategy';
 import { ProductsModule } from './apis/products/products.module';
+import { customTypes } from './commons/graphql/customTypes/customTypes';
 import { PhoneModule } from './apis/phone/phone.module';
 import { RedisClientOptions } from 'redis';
 import * as redisStore from 'cache-manager-redis-store';
@@ -24,6 +25,7 @@ import * as redisStore from 'cache-manager-redis-store';
       driver: ApolloDriver,
       autoSchemaFile: 'src/commons/graphql/schema.gql',
       context: ({ req, res }) => ({ req, res }),
+      resolvers: [...customTypes],
     }),
     TypeOrmModule.forRoot({
       type: process.env.DATABASE_TYPE as 'mysql',
@@ -35,7 +37,6 @@ import * as redisStore from 'cache-manager-redis-store';
       entities: [__dirname + '/apis/**/*.entity.*'],
       synchronize: true,
       logging: true,
-      // retryAttempts: 30,
     }),
     CacheModule.register<RedisClientOptions>({
       store: redisStore,
@@ -50,7 +51,7 @@ import * as redisStore from 'cache-manager-redis-store';
     PhoneModule,
   ],
   providers: [
-    AppService, //
+    AppService,
     JwtAccessStrategy,
     JwtRefreshStrategy,
     JwtAdminAccessStrategy,

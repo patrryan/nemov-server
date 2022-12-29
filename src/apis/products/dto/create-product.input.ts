@@ -1,5 +1,6 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
 import { Min } from 'class-validator';
+import { VEGAN_LEVEL_TYPE } from 'src/apis/users/entities/user.entity';
 import { CreateDateColumn } from 'typeorm';
 import { PRODUCT_CATEGORY_TYPE } from '../entities/product.entity';
 
@@ -17,7 +18,7 @@ export class CreateProductInput {
   @Field(() => String)
   image: string;
 
-  @Field(() => String)
+  @Field(() => VEGAN_LEVEL_TYPE)
   veganLevel: string;
 
   @Min(0)
