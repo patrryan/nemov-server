@@ -1,22 +1,9 @@
-import {
-  Entity,
-  Column,
-  JoinTable,
-  OneToOne,
-  ManyToOne,
-  JoinColumn,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-  DeleteDateColumn,
-} from 'typeorm';
-// import { ProductAllergy } from 'src/apis/productsAllergy/productAllergy.entity'
-// import { Payment } from 'src/apis/payment/entities/payment.entity'
-// import { ProductCategory } from 'src/apis/productsCategory/entities/productCategory.entity'
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 
 export enum PRODUCT_CATEGORY_TYPE { //
   FOOD = 'FOOD',
-  BEVERAGE = 'BEVERAGE',
+  DRINK = 'DRINK',
   BEAUTY = 'BEAUTY',
   LIFE = 'LIFE',
 }
@@ -66,26 +53,5 @@ export class Product {
 
   @Column({ default: false })
   @Field(() => Boolean)
-  status: boolean;
-
-  //////////////////////////////////////
-
-  // @ManyToOne(() => ProductCategory)
-  // @Field(() => ProductCategory)
-  // productCategory: ProductCategory;
-
-  // @JoinColumn()
-  // @OneToOne(() => Payment)
-  // @Field(() => Payment)
-  // payment: Payment;
-
-  // @JoinTable()
-  // @Field(() => [ProductAllergy])
-  // @ManyToMany(() => ProductAllergy, (productAllergy) => productAllergy.products)
-  // productAllergy: ProductAllergy[]
-
-  // @JoinColumn()
-  // @OneToOne(() => Payment)
-  // @Field(()=>Payment)
-  // payment: Payment;
+  isOutOfStock: boolean;
 }
