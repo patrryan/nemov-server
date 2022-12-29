@@ -29,6 +29,20 @@ export class AuthService {
       { secret: process.env.JWT_ACCESS_KEY, expiresIn: '1w' },
     );
   }
+  // setRefreshToken({ id, res }): void {
+  //   const refreshToken = this.jwtService.sign(
+  //     { id },
+  //     { secret: process.env.JWT_REFRESH_KEY, expiresIn: '1w' },
+  //   );
+  //   res.setHeader('Set-Cookie', `refreshToken=${refreshToken}`);
+  // }
+
+  // getAccessToken({ id }): string {
+  //   return this.jwtService.sign(
+  //     { id },
+  //     { secret: process.env.JWT_ACCESS_KEY, expiresIn: '1w' },
+  //   );
+  // }
 
   async getTokenForAdmin({ email, password, res }) {
     const admin = await this.adminService.findOneByEmail({ email });

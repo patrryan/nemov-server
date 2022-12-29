@@ -7,11 +7,14 @@ import { UseGuards } from '@nestjs/common';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth-guard';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { UpdateUserInput } from './dto/update-user.input';
+import { CreateUserInput } from './dto/create-user.input';
 
 @Resolver()
 export class UsersResolver {
   constructor(
     private readonly usersService: UsersService,
+
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
   ) {}
@@ -19,21 +22,12 @@ export class UsersResolver {
   // 유저정보 생성
   @Mutation(() => User)
   async createUser(
-    @Args('email') email: string,
-    @Args('password') password: string,
-    @Args('name') name: string,
-    @Args('address') address: string,
-    @Args('phoneNumber') phoneNumber: string,
-    @Args('veganLevel') veganLevel: string,
+    @Args('createUserInput') createUserInput: CreateUserInput,
   ): Promise<User> {
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(createUserInput.password, 10);
     return this.usersService.create({
-      email,
       hashedPassword,
-      name,
-      address,
-      phoneNumber,
-      veganLevel,
+      createUserInput,
     });
   }
 
@@ -59,17 +53,10 @@ export class UsersResolver {
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => User)
   async updateUser(
-    @Args('name') name: string,
-    @Args('address') address: string,
-    @Args('phoneNumber') phoneNumber: string,
-    @Args('veganLevel') veganLevel: string,
+    @Context() context: IContext,
+    @Args('updateUserInput') updateUserInput: UpdateUserInput, //
   ) {
-    return this.usersService.update({
-      name,
-      address,
-      phoneNumber,
-      veganLevel,
-    });
+    return await this.usersService.update({ context, updateUserInput });
   }
 
   // 로그인한 유저 비밀번호 변경
