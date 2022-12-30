@@ -1,4 +1,10 @@
-import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
+import {
+  Field,
+  GraphQLISODateTime,
+  ID,
+  Int,
+  ObjectType,
+} from '@nestjs/graphql';
 import { Image } from 'src/apis/Images/entities/Image.entity';
 import { User } from 'src/apis/users/entities/user.entity';
 import {
@@ -8,6 +14,7 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -29,15 +36,22 @@ export class Review {
   @Field(() => Int)
   rating: number;
 
-  @CreateDateColumn()
-  @Field(() => Date)
-  createdAt: Date;
-
-  @ManyToOne(() => User, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User)
   @Field(() => User)
   user: User;
 
-  @OneToMany(() => Image, (image) => image.review)
-  @Field(() => [Image])
-  image: Image[];
+  @OneToMany(() => Image, (image) => image.review, {
+    nullable: true,
+    cascade: true,
+  })
+  @Field(() => [Image], { nullable: true })
+  images: Image[];
+
+  @CreateDateColumn()
+  @Field(() => GraphQLISODateTime)
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  @Field(() => GraphQLISODateTime)
+  updatedAt: Date;
 }

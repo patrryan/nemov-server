@@ -62,7 +62,7 @@ enum ROLE_TYPE {
 }
 
 type Product {
-  id: String!
+  id: ID!
   name: String!
   category: PRODUCT_CATEGORY_TYPE!
   description: String!
@@ -94,9 +94,10 @@ type Review {
   title: String!
   contents: String!
   rating: Int!
-  createdAt: DateTime!
   user: User!
-  image: [Image!]!
+  images: [Image!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 """
@@ -105,7 +106,7 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 scalar DateTime
 
 type Image {
-  id: String!
+  id: ID!
   url: String!
 }
 
@@ -114,7 +115,7 @@ type Query {
   fetchProducts: [Product!]!
   fetchProduct(productId: String!): Product!
   fetchProductsCount: Int!
-  fetchReview(reviewId: String!): Review!
+  fetchReview(reviewId: ID!): Review!
 }
 
 type Mutation {
@@ -135,7 +136,7 @@ type Mutation {
   getToken(phone: Phone!): String!
   checkValidToken(phone: Phone!, token: String!): String!
   createReview(createReviewInput: CreateReviewInput!): Review!
-  updateReview(updateReviewInput: UpdateReviewInput!, reviewId: String!): Review!
+  updateReview(updateReviewInput: UpdateReviewInput!, reviewId: ID!): Review!
   deleteReview(reviewId: String!): Boolean!
 }
 
@@ -191,12 +192,12 @@ input CreateReviewInput {
   title: String!
   contents: String!
   rating: Int!
-  imageId: [String!]!
+  images: [String!]
 }
 
 input UpdateReviewInput {
   title: String
   contents: String
   rating: Int
-  imageId: [String!]
+  images: [String!]
 }

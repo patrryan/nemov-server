@@ -1,5 +1,5 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
-import { Column } from 'typeorm';
+import { Max, Min } from 'class-validator';
 
 @InputType()
 export class CreateReviewInput {
@@ -9,10 +9,11 @@ export class CreateReviewInput {
   @Field(() => String)
   contents: string;
 
-  @Column({ default: 0 })
+  @Min(0)
+  @Max(5)
   @Field(() => Int)
   rating: number;
 
-  @Field(() => [String])
-  imageId: string[];
+  @Field(() => [String], { nullable: true })
+  images: string[];
 }

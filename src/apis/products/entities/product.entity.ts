@@ -4,7 +4,7 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
 } from 'typeorm';
-import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { Field, ID, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { VEGAN_LEVEL_TYPE } from 'src/apis/users/entities/user.entity';
 
 export enum PRODUCT_CATEGORY_TYPE { //
@@ -29,7 +29,7 @@ registerEnumType(PRODUCT_CATEGORY_TYPE, {
 @Entity()
 export class Product {
   @PrimaryGeneratedColumn('uuid')
-  @Field(() => String)
+  @Field(() => ID)
   id: string;
 
   @Column()
