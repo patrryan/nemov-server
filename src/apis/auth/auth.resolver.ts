@@ -20,7 +20,7 @@ export class AuthResolver {
     @Context() context: IContext,
   ): Promise<string> {
     // 로그인
-    const user = await this.usersService.findOne({ email });
+    const user = await this.usersService.findOneByEmail({ email });
     if (!user)
       throw new UnprocessableEntityException('등록된 이메일이 아닙니다.');
 

@@ -1,12 +1,15 @@
 import { Field, ID, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { GraphQLBusinessLicenseNumber } from 'src/commons/graphql/customTypes/businessLicenseNumber.type';
 import { GraphQLEmail } from 'src/commons/graphql/customTypes/email.type';
 import { GraphQLPhone } from 'src/commons/graphql/customTypes/phone.type';
 import { GraphQLZipCode } from 'src/commons/graphql/customTypes/zipCode.type';
 import {
   Column,
+  CreateDateColumn,
   DeleteDateColumn,
   Entity,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 export enum VEGAN_LEVEL_TYPE {
@@ -33,6 +36,20 @@ registerEnumType(VEGAN_LEVEL_TYPE, {
   },
 });
 
+export enum ROLE_TYPE {
+  BUYER = 'BUYER',
+  SELLER = 'SELLER',
+}
+
+registerEnumType(ROLE_TYPE, {
+  name: 'ROLE_TYPE',
+  description: '유저 역할에 대한 타입',
+  valuesMap: {
+    BUYER: { description: '구매자(일반 유저)' },
+    SELLER: { description: '판매자' },
+  },
+});
+
 @Entity()
 @ObjectType()
 export class User {
@@ -55,25 +72,39 @@ export class User {
   @Field(() => GraphQLPhone)
   phone: string;
 
-  @Column({ type: 'enum', enum: VEGAN_LEVEL_TYPE })
-  @Field(() => VEGAN_LEVEL_TYPE)
-  veganLevel: string;
+  @Column({ type: 'enum', enum: VEGAN_LEVEL_TYPE, nullable: true })
+  @Field(() => VEGAN_LEVEL_TYPE, { nullable: true })
+  veganLevel: VEGAN_LEVEL_TYPE;
 
-  @Column()
-  @Field(() => GraphQLZipCode)
+  @Column({ nullable: true })
+  @Field(() => GraphQLZipCode, { nullable: true })
   zipCode: string;
 
-  @Column()
-  @Field(() => String)
+  @Column({ nullable: true })
+  @Field(() => String, { nullable: true })
   address: string;
 
-  @Column()
-  @Field(() => String)
+  @Column({ nullable: true })
+  @Field(() => String, { nullable: true })
   addressDetail: string;
+
+  @Column({ nullable: true })
+  @Field(() => GraphQLBusinessLicenseNumber, { nullable: true })
+  bln: string;
+
+  @Column({ type: 'enum', enum: ROLE_TYPE })
+  @Field(() => ROLE_TYPE)
+  role: ROLE_TYPE;
 
   @Column({ default: 0 })
   @Field(() => Int)
   point: number;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @DeleteDateColumn()
   deletedAt: Date;
