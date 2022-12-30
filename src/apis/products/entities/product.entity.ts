@@ -5,10 +5,10 @@ import {
   JoinColumn,
   OneToOne,
   CreateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { VEGAN_LEVEL_TYPE } from 'src/apis/users/entities/user.entity';
-import { Image } from 'src/apis/Images/entities/Image.entity';
 
 export enum PRODUCT_CATEGORY_TYPE { //
   FOOD = 'FOOD',
@@ -48,6 +48,10 @@ export class Product {
   description: string;
 
   @Column()
+  @Field(() => String)
+  image: string;
+
+  @Column()
   @Field(() => VEGAN_LEVEL_TYPE)
   veganLevel: string;
 
@@ -66,11 +70,6 @@ export class Product {
   @Column({ default: false })
   @Field(() => Boolean)
   isOutOfStock: boolean;
-
-  @JoinColumn()
-  @OneToOne(() => Image)
-  @Field(() => Image)
-  image: Image;
 
   @CreateDateColumn()
   createdAt: Date;
