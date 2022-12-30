@@ -63,7 +63,7 @@ export class UsersService {
       }
       await this.cacheManager.set(bln, true, { ttl: 0 });
       return true;
-    } catch (e) {
+    } catch (error) {
       throw new HttpException('에러 발생', 400);
     }
   }
@@ -81,20 +81,35 @@ export class UsersService {
 
     if (result2) throw new ConflictException('이미 가입된 회원입니다.');
 
-    if (bln) {
-      const result3 = await this.cacheManager.get(bln);
+    const result3 = await this.cacheManager.get(phone);
 
-      if (!result3)
+    if (result3 !== true) {
+      throw new UnprocessableEntityException(
+        '휴대폰 본인 인증 완료 후 회원가입을 진행해주세요.',
+      );
+    }
+
+    if (bln) {
+      const result4 = await this.cacheManager.get(bln);
+
+      if (!result4)
         throw new UnprocessableEntityException(
           '사업자등록번호 인증 후 회원가입을 진행해주세요.',
         );
 
-      const result4 = await this.usersRepository.findOne({ where: { bln } });
+      const result5 = await this.usersRepository.findOne({ where: { bln } });
 
-      if (result4) throw new ConflictException('이미 가입된 회원입니다.');
+      if (result5) throw new ConflictException('이미 가입된 회원입니다.');
     }
 
+    await this.cacheManager.del(phone);
     await this.cacheManager.del(bln);
+  }
+
+  async checkEmail({ email }) {
+    const result = await this.usersRepository.findOne({ where: { email } });
+
+    return result ? false : true;
   }
 
   findOneByEmail({ email }: IUsersServiceFindOneByEmail): Promise<User> {

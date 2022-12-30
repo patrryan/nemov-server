@@ -2,10 +2,7 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  JoinColumn,
-  OneToOne,
   CreateDateColumn,
-  DeleteDateColumn,
 } from 'typeorm';
 import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { VEGAN_LEVEL_TYPE } from 'src/apis/users/entities/user.entity';
@@ -51,8 +48,8 @@ export class Product {
   @Field(() => String)
   image: string;
 
-  @Column()
-  @Field(() => VEGAN_LEVEL_TYPE)
+  @Column({ nullable: true })
+  @Field(() => VEGAN_LEVEL_TYPE, { nullable: true })
   veganLevel: string;
 
   @Column()

@@ -67,7 +67,7 @@ type Product {
   category: PRODUCT_CATEGORY_TYPE!
   description: String!
   image: String!
-  veganLevel: VEGAN_LEVEL_TYPE!
+  veganLevel: VEGAN_LEVEL_TYPE
   deliveryFee: Int!
   price: Int!
   discount: Int!
@@ -122,6 +122,7 @@ type Mutation {
   login(email: String!, password: String!): String!
   restoreAccessToken: String!
   checkBusinessLicenseNumber(bln: BusinessLicenseNumber!): Boolean!
+  checkEmailExist(email: Email!): Boolean!
   createUser(createUserInput: CreateUserInput!): User!
   checkUserPassword(password: Password!): Boolean!
   updateUser(updateUserInput: UpdateUserInput!): User!
@@ -131,8 +132,8 @@ type Mutation {
   createProduct(createProductInput: CreateProductInput!): Product!
   updateProduct(productId: String!, updateProductInput: UpdateProductInput!): Product!
   deleteProduct(productId: String!): Boolean!
-  getToken(phoneNumber: String!): String!
-  checkValidToken(phoneNumber: String!, token: String!): String!
+  getToken(phone: Phone!): String!
+  checkValidToken(phone: Phone!, token: String!): String!
   createReview(createReviewInput: CreateReviewInput!): Review!
   updateReview(updateReviewInput: UpdateReviewInput!, reviewId: String!): Review!
   deleteReview(reviewId: String!): Boolean!
@@ -169,7 +170,7 @@ input CreateProductInput {
   category: PRODUCT_CATEGORY_TYPE!
   description: String!
   image: String!
-  veganLevel: VEGAN_LEVEL_TYPE!
+  veganLevel: VEGAN_LEVEL_TYPE
   deliveryFee: Int!
   price: Int!
   discount: Int!
