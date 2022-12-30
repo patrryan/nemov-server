@@ -1,5 +1,5 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
-import { Min } from 'class-validator';
+import { Max, Min } from 'class-validator';
 import { VEGAN_LEVEL_TYPE } from 'src/apis/users/entities/user.entity';
 import { PRODUCT_CATEGORY_TYPE } from '../entities/product.entity';
 
@@ -17,7 +17,7 @@ export class CreateProductInput {
   @Field(() => String)
   image: string;
 
-  @Field(() => VEGAN_LEVEL_TYPE)
+  @Field(() => VEGAN_LEVEL_TYPE, { nullable: true })
   veganLevel: string;
 
   @Min(0)
@@ -29,6 +29,7 @@ export class CreateProductInput {
   price: number;
 
   @Min(0)
+  @Max(100)
   @Field(() => Int)
   discount: number;
 }

@@ -1,6 +1,7 @@
 import { CACHE_MANAGER, Inject } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { Cache } from 'cache-manager';
+import { GraphQLPhone } from 'src/commons/graphql/customTypes/phone.type';
 import { PhoneService } from './phone.service';
 
 @Resolver()
@@ -10,22 +11,20 @@ export class PhoneResolver {
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
-  // 핸드폰 토큰
   @Mutation(() => String)
-  async getToken(
-    @Args('phoneNumber') phoneNumber: string, //
+  getToken(
+    @Args('phone', { type: () => GraphQLPhone }) phone: string, //
   ) {
-    return await this.phoneService.sendTokenToSMS({
-      phone: phoneNumber,
+    return this.phoneService.sendTokenToSMS({
+      phone,
     });
   }
 
-  // 핸드폰 토큰인증 검증
   @Mutation(() => String)
-  async checkValidToken(
-    @Args('phoneNumber') phoneNumber: string,
+  checkValidToken(
+    @Args('phone', { type: () => GraphQLPhone }) phone: string,
     @Args('token') token: string,
   ) {
-    return await this.phoneService.checkToken({ phoneNumber, token });
+    return this.phoneService.checkToken({ phone, token });
   }
 }

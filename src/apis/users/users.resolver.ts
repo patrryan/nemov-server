@@ -29,9 +29,17 @@ export class UsersResolver {
     return this.usersService.checkBLN({ bln });
   }
 
+  @Mutation(() => Boolean)
+  checkEmailExist(
+    @Args('email', { type: () => GraphQLEmail })
+    email: string,
+  ): Promise<boolean> {
+    return this.usersService.checkEmail({ email });
+  }
+
   @Mutation(() => User)
   async createUser(
-    @Args('createUserInput') createUserInput: CreateUserInput, //
+    @Args('createUserInput') createUserInput: CreateUserInput,
   ): Promise<User> {
     return this.usersService.create({
       createUserInput,
@@ -51,7 +59,7 @@ export class UsersResolver {
   @Mutation(() => User)
   updateUser(
     @CurrentUser() id: string,
-    @Args('updateUserInput') updateUserInput: UpdateUserInput, //
+    @Args('updateUserInput') updateUserInput: UpdateUserInput,
   ): Promise<User> {
     return this.usersService.update({ id, updateUserInput });
   }
@@ -74,7 +82,7 @@ export class UsersResolver {
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
   restoreUser(
-    @Args('email', { type: () => GraphQLEmail }) email: string, //
+    @Args('email', { type: () => GraphQLEmail }) email: string,
   ): Promise<boolean> {
     return this.usersService.restore({ email });
   }
