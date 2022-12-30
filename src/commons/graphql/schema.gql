@@ -7,10 +7,12 @@ type User {
   name: String!
   email: Email!
   phone: Phone!
-  veganLevel: VEGAN_LEVEL_TYPE!
-  zipCode: ZipCode!
-  address: String!
-  addressDetail: String!
+  veganLevel: VEGAN_LEVEL_TYPE
+  zipCode: ZipCode
+  address: String
+  addressDetail: String
+  bln: BusinessLicenseNumber
+  role: ROLE_TYPE!
   point: Int!
 }
 
@@ -47,6 +49,18 @@ enum VEGAN_LEVEL_TYPE {
 """우편번호"""
 scalar ZipCode
 
+"""사업자등록번호형식: (101~999)-(01~99)-(0001~9999)(0~9)"""
+scalar BusinessLicenseNumber
+
+"""유저 역할에 대한 타입"""
+enum ROLE_TYPE {
+  """구매자(일반 유저)"""
+  BUYER
+
+  """판매자"""
+  SELLER
+}
+
 type Image {
   id: String!
   url: String!
@@ -81,7 +95,6 @@ enum PRODUCT_CATEGORY_TYPE {
 }
 
 type Query {
-  fetchUser(email: String!): User!
   fetchLoginUser: User!
   fetchProducts: [Product!]!
   fetchProduct(productId: String!): Product!
@@ -91,11 +104,13 @@ type Mutation {
   uploadFile(file: Upload!): String!
   login(email: String!, password: String!): String!
   restoreAccessToken: String!
+  checkBusinessLicenseNumber(bln: BusinessLicenseNumber!): Boolean!
   createUser(createUserInput: CreateUserInput!): User!
-  restoreUser(email: String!): Boolean!
+  checkUserPassword(password: Password!): Boolean!
   updateUser(updateUserInput: UpdateUserInput!): User!
-  updateUserPwd(password: String!): User!
+  updateUserPassword(password: Password!): User!
   deleteLoginUser: Boolean!
+  restoreUser(email: Email!): Boolean!
   createProduct(createProductInput: CreateProductInput!): Product!
   updateProduct(productId: String!, updateProductInput: UpdateProductInput!): Product!
   deleteProduct(productId: String!): Boolean!
@@ -111,10 +126,11 @@ input CreateUserInput {
   email: Email!
   password: Password!
   phone: Phone!
-  veganLevel: VEGAN_LEVEL_TYPE!
-  zipCode: ZipCode!
-  address: String!
-  addressDetail: String!
+  veganLevel: VEGAN_LEVEL_TYPE
+  zipCode: ZipCode
+  address: String
+  addressDetail: String
+  bln: BusinessLicenseNumber
 }
 
 """비밀번호 형식: 알파벳 대,소문자, 숫자, 특수기호(!@#$%^&*?) 각 1개씩 포함, (최소: 8글자, 최대 16글자)"""
@@ -122,9 +138,6 @@ scalar Password
 
 input UpdateUserInput {
   name: String
-  email: Email
-  password: Password
-  phone: Phone
   veganLevel: VEGAN_LEVEL_TYPE
   zipCode: ZipCode
   address: String

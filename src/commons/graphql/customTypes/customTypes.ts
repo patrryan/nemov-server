@@ -1,3 +1,4 @@
+import { GraphQLBusinessLicenseNumber } from './businessLicenseNumber.type';
 import { GraphQLEmail } from './email.type';
 import { GraphQLPassword } from './password.type';
 import { GraphQLPhone } from './phone.type';
@@ -8,4 +9,5 @@ export const customTypes = [
   { Password: GraphQLPassword },
   { Phone: GraphQLPhone },
   { ZipCode: GraphQLZipCode },
+  { BusinessLicenseNumber: GraphQLBusinessLicenseNumber },
 ];
