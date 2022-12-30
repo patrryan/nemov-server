@@ -1,18 +1,14 @@
-import { Injectable } from "@nestjs/common";
-import { IFilesServiceUpload } from "./interfaces/files-service.interface";
-import { Storage } from '@google-cloud/storage'
-
+import { Injectable } from '@nestjs/common';
+import { IFilesServiceUpload } from './interfaces/files-service.interface';
+import { Storage } from '@google-cloud/storage';
 
 @Injectable()
 export class FilesService {
-
   upload({ file }: IFilesServiceUpload): Promise<string> {
-
     const storage = new Storage({
       projectId: process.env.GCP_PROJECTID,
       keyFilename: process.env.GCP_STORAGE, //암호파일 이름
     }).bucket(process.env.GCP_BUCKET);
-​
     const result = new Promise<string>((resolve, reject) => {
       file
         .createReadStream()
