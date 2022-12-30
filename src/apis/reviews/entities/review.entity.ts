@@ -1,8 +1,12 @@
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
+import { Image } from 'src/apis/Images/entities/Image.entity';
+import { User } from 'src/apis/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -28,4 +32,12 @@ export class Review {
   @CreateDateColumn()
   @Field(() => Date)
   createdAt: Date;
+
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
+  @Field(() => User)
+  user: User;
+
+  @OneToMany(() => Image, (image) => image.review)
+  @Field(() => [Image])
+  image: Image[];
 }

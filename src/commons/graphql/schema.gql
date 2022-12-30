@@ -95,12 +95,19 @@ type Review {
   contents: String!
   rating: Int!
   createdAt: DateTime!
+  user: User!
+  image: [Image!]!
 }
 
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
+
+type Image {
+  id: String!
+  url: String!
+}
 
 type Query {
   fetchLoginUser: User!
@@ -184,10 +191,12 @@ input CreateReviewInput {
   title: String!
   contents: String!
   rating: Int!
+  imageId: [String!]!
 }
 
 input UpdateReviewInput {
   title: String
   contents: String
   rating: Int
+  imageId: [String!]
 }

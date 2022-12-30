@@ -12,4 +12,7 @@ export class CreateReviewInput {
   @Column({ default: 0 })
   @Field(() => Int)
   rating: number;
+
+  @Field(() => [String])
+  imageId: string[];
 }
