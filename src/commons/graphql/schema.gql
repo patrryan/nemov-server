@@ -80,11 +80,25 @@ enum PRODUCT_CATEGORY_TYPE {
   LIFE
 }
 
+type Review {
+  id: ID!
+  title: String!
+  contents: String!
+  rating: Int!
+  createdAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
 type Query {
   fetchUser(email: String!): User!
   fetchLoginUser: User!
   fetchProducts: [Product!]!
   fetchProduct(productId: String!): Product!
+  fetchReview(reviewId: String!): Review!
 }
 
 type Mutation {
@@ -101,6 +115,9 @@ type Mutation {
   deleteProduct(productId: String!): Boolean!
   getToken(phoneNumber: String!): String!
   checkValidToken(phoneNumber: String!, token: String!): String!
+  createReview(createReviewInput: CreateReviewInput!): Review!
+  updateReview(updateReviewInput: UpdateReviewInput!, reviewId: String!): Review!
+  deleteReview(reviewId: String!): Boolean!
 }
 
 """The `Upload` scalar type represents a file upload."""
@@ -151,4 +168,16 @@ input UpdateProductInput {
   price: Int
   discount: Int
   image: String
+}
+
+input CreateReviewInput {
+  title: String!
+  contents: String!
+  rating: Int!
+}
+
+input UpdateReviewInput {
+  title: String
+  contents: String
+  rating: Int
 }

@@ -15,6 +15,7 @@ import { customTypes } from './commons/graphql/customTypes/customTypes';
 import { PhoneModule } from './apis/phone/phone.module';
 import { RedisClientOptions } from 'redis';
 import * as redisStore from 'cache-manager-redis-store';
+import { ReviewsModule } from './apis/reviews/reviews.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import * as redisStore from 'cache-manager-redis-store';
     UsersModule,
     ProductsModule,
     PhoneModule,
+    ReviewsModule,
   ],
   providers: [
     AppService, //
