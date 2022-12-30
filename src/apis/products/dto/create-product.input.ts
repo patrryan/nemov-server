@@ -14,6 +14,9 @@ export class CreateProductInput {
   @Field(() => String)
   description: string;
 
+  @Field(() => String)
+  image: string;
+
   @Field(() => VEGAN_LEVEL_TYPE)
   veganLevel: string;
 
@@ -28,7 +31,4 @@ export class CreateProductInput {
   @Min(0)
   @Field(() => Int)
   discount: number;
-
-  @Field(() => String)
-  image: string;
 }
