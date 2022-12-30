@@ -61,22 +61,17 @@ enum ROLE_TYPE {
   SELLER
 }
 
-type Image {
-  id: String!
-  url: String!
-}
-
 type Product {
   id: String!
   name: String!
   category: PRODUCT_CATEGORY_TYPE!
   description: String!
+  image: String!
   veganLevel: VEGAN_LEVEL_TYPE!
   deliveryFee: Int!
   price: Int!
   discount: Int!
   isOutOfStock: Boolean!
-  image: Image!
 }
 
 """물품 카테고리에 대한 타입"""
@@ -100,6 +95,8 @@ type Review {
   contents: String!
   rating: Int!
   createdAt: DateTime!
+  user: User!
+  image: [Image!]!
 }
 
 """
@@ -107,10 +104,16 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type Image {
+  id: String!
+  url: String!
+}
+
 type Query {
   fetchLoginUser: User!
   fetchProducts: [Product!]!
   fetchProduct(productId: String!): Product!
+  fetchProductsCount: Int!
   fetchReview(reviewId: String!): Review!
 }
 
@@ -165,32 +168,34 @@ input CreateProductInput {
   name: String!
   category: PRODUCT_CATEGORY_TYPE!
   description: String!
+  image: String!
   veganLevel: VEGAN_LEVEL_TYPE!
   deliveryFee: Int!
   price: Int!
   discount: Int!
-  image: String!
 }
 
 input UpdateProductInput {
   name: String
   category: PRODUCT_CATEGORY_TYPE
   description: String
+  image: String
   veganLevel: VEGAN_LEVEL_TYPE
   deliveryFee: Int
   price: Int
   discount: Int
-  image: String
 }
 
 input CreateReviewInput {
   title: String!
   contents: String!
   rating: Int!
+  imageId: [String!]!
 }
 
 input UpdateReviewInput {
   title: String
   contents: String
   rating: Int
+  imageId: [String!]
 }

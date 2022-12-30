@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Field, ObjectType } from '@nestjs/graphql';
+import { Review } from 'src/apis/reviews/entities/review.entity';
 
 @Entity()
 @ObjectType()
@@ -11,4 +12,7 @@ export class Image {
   @Column()
   @Field(() => String)
   url: string;
+
+  @ManyToOne(() => Review)
+  review: Review;
 }
