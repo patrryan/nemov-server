@@ -1,6 +1,7 @@
 import { UseGuards } from '@nestjs/common';
 import { Query, Args, Mutation, Resolver, Context } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth-guard';
+import { IContext } from 'src/commons/types/context';
 import { CreateReviewInput } from './dto/create-review.input';
 import { UpdateReviewInput } from './dto/update-review.inputs';
 import { Review } from './entities/review.entity';
@@ -12,11 +13,13 @@ export class ReviewResolver {
     private readonly reviewsService: ReviewsService, //
   ) {}
 
+  @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Review)
   createReview(
     @Args('createReviewInput') createReviewInput: CreateReviewInput, //
+    @Context() context: IContext,
   ): Promise<Review> {
-    return this.reviewsService.create({ createReviewInput });
+    return this.reviewsService.create({ context, createReviewInput });
   }
 
   // 리뷰 조회
@@ -35,8 +38,13 @@ export class ReviewResolver {
   async updateReview(
     @Args('updateReviewInput') updateReviewInput: UpdateReviewInput, //
     @Args('reviewId') reviewId: string,
+    @Context() context: IContext,
   ) {
-    return await this.reviewsService.update({ reviewId, updateReviewInput });
+    return await this.reviewsService.update({
+      reviewId,
+      updateReviewInput,
+      context,
+    });
   }
 
   // 리뷰 게시글 삭제
