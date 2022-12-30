@@ -1,19 +1,22 @@
-import { Image } from 'src/apis/Images/entities/Image.entity';
-import { IContext } from 'src/commons/types/context';
 import { CreateReviewInput } from '../dto/create-review.input';
-import { Review } from '../entities/review.entity';
+import { UpdateReviewInput } from '../dto/update-review.inputs';
+
+export interface IReviewsServiceFindReview {
+  id: string;
+}
 
 export interface IReviewsServiceCreate {
   createReviewInput: CreateReviewInput;
-  context: IContext;
-  imageId: Image;
+  id: string;
 }
 
 export interface IReviewsServiceUpdate {
-  review: Review;
-  context: IContext;
+  reviewId: string;
+  updateReviewInput: UpdateReviewInput;
+  id: string;
 }
 
-export interface IReviewsServiceFindOne {
+export interface IReviewsServiceDelete {
   reviewId: string;
+  id: string;
 }
