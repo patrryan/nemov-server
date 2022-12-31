@@ -100,10 +100,11 @@ export class UsersService {
       const result5 = await this.usersRepository.findOne({ where: { bln } });
 
       if (result5) throw new ConflictException('이미 가입된 회원입니다.');
+
+      await this.cacheManager.del(bln);
     }
 
     await this.cacheManager.del(phone);
-    await this.cacheManager.del(bln);
   }
 
   async checkEmail({ email }) {
