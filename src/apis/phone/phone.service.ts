@@ -4,7 +4,7 @@ import {
   Inject,
   Injectable,
 } from '@nestjs/common';
-import coolsms from 'coolsms-node-sdk';
+// import coolsms from 'coolsms-node-sdk';
 import { Cache } from 'cache-manager';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
@@ -28,21 +28,21 @@ export class PhoneService {
       throw new ConflictException('이미 등록된 번호입니다.');
     }
 
-    const phoneConverted = phone.split('-').join('');
+    // const phoneConverted = phone.split('-').join('');
 
     const token = String(Math.floor(Math.random() * 1000000)).padStart(6, '0');
 
-    const messageService = new coolsms(
-      process.env.SMS_KEY,
-      process.env.SMS_SECRET,
-    );
-    messageService.sendOne({
-      to: phoneConverted,
-      from: process.env.SMS_SENDER,
-      text: `[NEMO-V 발신] 안녕하세요!!! 요청하신 인증번호는 ${token} 입니다!.`,
-      type: 'SMS',
-      autoTypeDetect: false,
-    });
+    // const messageService = new coolsms(
+    //   process.env.SMS_KEY,
+    //   process.env.SMS_SECRET,
+    // );
+    // messageService.sendOne({
+    //   to: phoneConverted,
+    //   from: process.env.SMS_SENDER,
+    //   text: `[NEMO-V 발신] 안녕하세요!!! 요청하신 인증번호는 ${token} 입니다!.`,
+    //   type: 'SMS',
+    //   autoTypeDetect: false,
+    // });
 
     await this.cacheManager.set(phone, token, {
       ttl: 300,
