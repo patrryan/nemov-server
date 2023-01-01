@@ -6,7 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './apis/users/users.module';
-import { JwtAccessStrategy } from './commons/auth/jwt-access-strategy';
+import { JwtAccessStrategy } from './commons/auth/jwt-access.strategy';
 import { JwtRefreshStrategy } from './commons/auth/jwt-refresh.strategy';
 import { AuthModule } from './apis/auth/auth.module';
 import { FilesModule } from './apis/files/file.module';
@@ -16,6 +16,7 @@ import { PhoneModule } from './apis/phone/phone.module';
 import { RedisClientOptions } from 'redis';
 import * as redisStore from 'cache-manager-redis-store';
 import { ReviewsModule } from './apis/reviews/reviews.module';
+import { PointsModule } from './apis/points/points.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { ReviewsModule } from './apis/reviews/reviews.module';
     ProductsModule,
     PhoneModule,
     ReviewsModule,
+    PointsModule,
   ],
   providers: [
     AppService, //
