@@ -134,6 +134,7 @@ type Query {
   fetchProduct(productId: String!): Product!
   fetchProductsCount: Int!
   fetchReview(reviewId: ID!): Review!
+  fetchPointTransactions(startDate: DateTime, endDate: DateTime, page: Int!): [Point!]!
 }
 
 type Mutation {

@@ -4,6 +4,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import setTimeToLocal from 'src/commons/utils/setTimeToLocal';
 import { DataSource, Repository } from 'typeorm';
 import { IamportService } from '../iamport/iamport.service';
 import { User } from '../users/entities/user.entity';
@@ -19,6 +20,37 @@ export class PointsService {
     private readonly iamportService: IamportService,
     private readonly dataSource: DataSource,
   ) {}
+
+  async findAllById({ startDate, endDate, page, id }) {
+    if ((startDate && !endDate) || (!startDate && endDate))
+      throw new UnprocessableEntityException(
+        '날짜 설정시 시작과 끝을 모두 지정해주세요.',
+      );
+    if (startDate && endDate) {
+      const { startLocal, endLocal } = setTimeToLocal({ startDate, endDate });
+      return await this.pointsRepository
+        .createQueryBuilder('point')
+        .leftJoinAndSelect('point.user', 'user')
+        .where('point.user = :id', { id })
+        .andWhere('point.createdAt BETWEEN :startLocal AND :endLocal', {
+          startLocal,
+          endLocal,
+        })
+        .orderBy('point.createdAt', 'DESC')
+        .skip((page - 1) * 10)
+        .take(10)
+        .getMany();
+    } else {
+      return await this.pointsRepository
+        .createQueryBuilder('point')
+        .leftJoinAndSelect('point.user', 'user')
+        .where('point.user = :id', { id })
+        .orderBy('point.createdAt', 'DESC')
+        .skip((page - 1) * 10)
+        .take(10)
+        .getMany();
+    }
+  }
 
   async createPointCharge({ impUid, amount, id }): Promise<Point> {
     await this.validateForPointCharge({ impUid, amount });
