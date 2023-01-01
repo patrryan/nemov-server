@@ -2,7 +2,7 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 import { UseGuards } from '@nestjs/common';
-import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth-guard';
+import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
 import { UpdateUserInput } from './dto/update-user.input';
 import { CreateUserInput } from './dto/create-user.input';
 import { CurrentUser } from 'src/commons/decorators/current-user.decorator';

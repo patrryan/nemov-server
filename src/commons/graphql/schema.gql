@@ -13,7 +13,7 @@ type User {
   addressDetail: String
   bln: BusinessLicenseNumber
   role: ROLE_TYPE!
-  point: Int!
+  balance: Int!
 }
 
 """이메일 형식: @가 포함되어있어야함."""
@@ -110,6 +110,24 @@ type Image {
   url: String!
 }
 
+type Point {
+  id: ID!
+  impUid: ID!
+  amount: Int!
+  status: POINT_TRANSACTION_STATUS_ENUM!
+  user: User!
+  createdAt: DateTime!
+}
+
+"""결제 상태에 대한 타입"""
+enum POINT_TRANSACTION_STATUS_ENUM {
+  """결제완료"""
+  PAID
+
+  """환불완료"""
+  CANCELLED
+}
+
 type Query {
   fetchLoginUser: User!
   fetchProducts: [Product!]!
@@ -138,6 +156,14 @@ type Mutation {
   createReview(createReviewInput: CreateReviewInput!): Review!
   updateReview(updateReviewInput: UpdateReviewInput!, reviewId: ID!): Review!
   deleteReview(reviewId: String!): Boolean!
+  createPointCharge(
+    """포인트 결제를 진행한 imp 결제번호"""
+    impUid: ID!
+
+    """포인트 충전 금액"""
+    amount: Int!
+  ): Point!
+  cancelPointCharge(impUid: ID!): Point!
 }
 
 """The `Upload` scalar type represents a file upload."""
