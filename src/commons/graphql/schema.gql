@@ -110,12 +110,21 @@ type Image {
   url: String!
 }
 
+type Question {
+  id: ID!
+  title: String!
+  contents: String!
+  product: Product!
+  user: User!
+}
+
 type Query {
   fetchLoginUser: User!
   fetchProducts: [Product!]!
   fetchProduct(productId: String!): Product!
   fetchProductsCount: Int!
   fetchReview(reviewId: ID!): Review!
+  fetchQuestion(questionId: ID!): Question!
 }
 
 type Mutation {
@@ -138,6 +147,9 @@ type Mutation {
   createReview(createReviewInput: CreateReviewInput!): Review!
   updateReview(updateReviewInput: UpdateReviewInput!, reviewId: ID!): Review!
   deleteReview(reviewId: String!): Boolean!
+  createQuestion(createQuestionInput: CreateQuestionInput!, productId: String!): Question!
+  updateQuestion(updateQuestionInput: UpdateQuestionInput!, questionId: ID!): Question!
+  deleteQuestion(questionId: String!): Boolean!
 }
 
 """The `Upload` scalar type represents a file upload."""
@@ -200,4 +212,14 @@ input UpdateReviewInput {
   contents: String
   rating: Int
   images: [String!]
+}
+
+input CreateQuestionInput {
+  title: String!
+  contents: String!
+}
+
+input UpdateQuestionInput {
+  title: String
+  contents: String
 }
