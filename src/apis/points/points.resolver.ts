@@ -1,5 +1,13 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, ID, Int, Mutation, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  GraphQLISODateTime,
+  ID,
+  Int,
+  Mutation,
+  Query,
+  Resolver,
+} from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
 import { CurrentUser } from 'src/commons/decorators/current-user.decorator';
 import { Point } from './entities/point.entity';
@@ -12,8 +20,21 @@ export class PointsResolver {
   ) {}
 
   @UseGuards(GqlAuthAccessGuard)
+  @Query(() => [Point])
+  fetchPointTransactions(
+    @Args('startDate', { type: () => GraphQLISODateTime, nullable: true })
+    startDate: Date,
+    @Args('endDate', { type: () => GraphQLISODateTime, nullable: true })
+    endDate: Date,
+    @Args('page', { type: () => Int }) page: number,
+    @CurrentUser() id: string,
+  ) {
+    return this.pointsService.findAllById({ startDate, endDate, page, id });
+  }
+
+  @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Point)
-  async createPointCharge(
+  createPointCharge(
     @Args('impUid', {
       type: () => ID,
       description: '포인트 결제를 진행한 imp 결제번호',
@@ -23,7 +44,7 @@ export class PointsResolver {
     amount: number,
     @CurrentUser() id: string,
   ) {
-    return await this.pointsService.createPointCharge({
+    return this.pointsService.createPointCharge({
       impUid,
       amount,
       id,
@@ -32,11 +53,11 @@ export class PointsResolver {
 
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Point)
-  async cancelPointCharge(
+  cancelPointCharge(
     @Args('impUid', { type: () => ID }) impUid: string, //
     @CurrentUser() id: string,
   ) {
-    return await this.pointsService.cancelPointCharge({
+    return this.pointsService.cancelPointCharge({
       impUid,
       id,
     });
