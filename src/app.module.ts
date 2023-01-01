@@ -16,6 +16,7 @@ import { PhoneModule } from './apis/phone/phone.module';
 import { RedisClientOptions } from 'redis';
 import * as redisStore from 'cache-manager-redis-store';
 import { ReviewsModule } from './apis/reviews/reviews.module';
+import { QuestiosnModule } from './apis/questions/questions.module';
 import { PointsModule } from './apis/points/points.module';
 
 @Module({
@@ -49,6 +50,7 @@ import { PointsModule } from './apis/points/points.module';
     ProductsModule,
     PhoneModule,
     ReviewsModule,
+    QuestiosnModule,
     PointsModule,
   ],
   providers: [
