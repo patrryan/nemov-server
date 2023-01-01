@@ -4,7 +4,7 @@ import { IContext } from 'src/commons/types/context';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
 import * as bcrypt from 'bcrypt';
-import { GqlAuthRefreshGuard } from 'src/commons/auth/gql-auth-guard';
+import { GqlAuthRefreshGuard } from 'src/commons/auth/gql-auth.guard';
 
 @Resolver()
 export class AuthResolver {

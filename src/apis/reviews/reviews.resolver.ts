@@ -1,6 +1,6 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth-guard';
+import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
 import { CurrentUser } from 'src/commons/decorators/current-user.decorator';
 // import { IContext } from 'src/commons/types/context';
 import { CreateReviewInput } from './dto/create-review.input';
