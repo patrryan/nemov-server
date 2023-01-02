@@ -72,6 +72,7 @@ type Product {
   price: Int!
   discount: Int!
   isOutOfStock: Boolean!
+  user: User!
 }
 
 """물품 카테고리에 대한 타입"""
@@ -141,12 +142,17 @@ type Query {
   fetchProducts: [Product!]!
   fetchProduct(productId: String!): Product!
   fetchProductsCount: Int!
+  fetchProductsBySeller(sellerId: String!, page: Int!): [Product!]!
   fetchReview(reviewId: ID!): Review!
   fetchQuestion(questionId: ID!): Question!
   fetchPointTransactions(startDate: DateTime, endDate: DateTime, page: Int!): [Point!]!
   fetchPointTransactionsCount(startDate: DateTime, endDate: DateTime): Int!
   fetchBasket: [Product!]!
-  isInBasket(productId: ID!): Boolean!
+  fetchIsInBasket(productId: ID!): Boolean!
+  fetchProductsIPicked(page: Int!): [Product!]!
+  fetchProductsIPickedCount: Int!
+  fetchIsPicked(productId: ID!): Boolean!
+  fetchPickCountOfProduct(productId: ID!): Int!
 }
 
 type Mutation {
@@ -182,6 +188,7 @@ type Mutation {
   ): Point!
   cancelPointCharge(impUid: ID!): Point!
   toggleProductToBasket(productId: ID!): Boolean!
+  toggleProductPick(productId: ID!): Boolean!
 }
 
 """The `Upload` scalar type represents a file upload."""

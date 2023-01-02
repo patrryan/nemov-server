@@ -19,6 +19,7 @@ import { ReviewsModule } from './apis/reviews/reviews.module';
 import { QuestiosnModule } from './apis/questions/questions.module';
 import { PointsModule } from './apis/points/points.module';
 import { CartModule } from './apis/cart/cart.module';
+import { ProductsPicksModule } from './apis/productsPicks/productsPicks.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { CartModule } from './apis/cart/cart.module';
     QuestiosnModule,
     PointsModule,
     CartModule,
+    ProductsPicksModule,
   ],
   providers: [
     AppService, //
