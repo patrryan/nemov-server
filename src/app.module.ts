@@ -18,6 +18,7 @@ import * as redisStore from 'cache-manager-redis-store';
 import { ReviewsModule } from './apis/reviews/reviews.module';
 import { QuestiosnModule } from './apis/questions/questions.module';
 import { PointsModule } from './apis/points/points.module';
+import { CartModule } from './apis/cart/cart.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { PointsModule } from './apis/points/points.module';
     ReviewsModule,
     QuestiosnModule,
     PointsModule,
+    CartModule,
   ],
   providers: [
     AppService, //
