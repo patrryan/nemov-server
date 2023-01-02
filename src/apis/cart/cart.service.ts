@@ -8,6 +8,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Cache } from 'cache-manager';
 import { Repository } from 'typeorm';
 import { Product } from '../products/entities/product.entity';
+import {
+  ICartServiceCreate,
+  ICartServiceFindAll,
+  ICartServiceFindOne,
+} from './interfaces/cart-service.interface';
 
 @Injectable()
 export class CartService {
@@ -18,18 +23,18 @@ export class CartService {
     private readonly productsRepository: Repository<Product>,
   ) {}
 
-  async findAll({ id }) {
+  async findAll({ id }: ICartServiceFindAll): Promise<Product[]> {
     const target = await this.cacheManager.get(`${id}-basket`);
     if (!target) return [];
 
     if (typeof target === 'string') {
-      const cart = JSON.parse(target);
+      const cart: string[] = JSON.parse(target);
       if (!cart.length) {
         return [];
       }
       return await Promise.all(
         cart.map((el) => {
-          return new Promise(async (resolve, reject) => {
+          return new Promise<Product>(async (resolve, reject) => {
             try {
               const product = await this.productsRepository.findOne({
                 where: { id: el },
@@ -44,16 +49,16 @@ export class CartService {
     }
   }
 
-  async findOne({ productId, id }) {
+  async findOne({ productId, id }: ICartServiceFindOne): Promise<boolean> {
     const result = await this.cacheManager.get(`${id}-basket`);
     if (!result) return false;
     if (typeof result === 'string') {
-      const cart = JSON.parse(result);
+      const cart: string[] = JSON.parse(result);
       return cart.includes(productId);
     }
   }
 
-  async toggleBasket({ productId, id }) {
+  async create({ productId, id }: ICartServiceCreate): Promise<boolean> {
     const result = await this.cacheManager.get(`${id}-basket`);
     if (!result) {
       const cart = [productId];
