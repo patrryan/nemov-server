@@ -1,10 +1,12 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, ID, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
+import { CurrentUser } from 'src/commons/decorators/current-user.decorator';
 import { CreateProductInput } from './dto/create-product.input';
 import { UpdateProductInput } from './dto/update-product.input';
 import { Product } from './entities/product.entity';
 import { ProductsService } from './products.service';
+import { PRODUCT_CATEGORY_TYPE } from './entities/product.entity';
 
 @Resolver()
 export class ProductsResolver {
@@ -15,8 +17,11 @@ export class ProductsResolver {
   ///-----------------------------///
 
   @Query(() => [Product])
-  fetchProducts(): Promise<Product[]> {
-    return this.productsService.findAll();
+  fetchProducts(
+    @Args('category', { type: () => PRODUCT_CATEGORY_TYPE }) category: string, //
+    @Args({ name: 'page', type: () => Int }) page: number,
+  ) {
+    return this.productsService.findAll({ category, page });
   }
 
   ///-----------------------------///
@@ -30,28 +35,32 @@ export class ProductsResolver {
   ///-----------------------------///
 
   @Query(() => Int)
-  fetchProductsCount() {
-    return this.productsService.findCount();
+  fetchProductsCount(
+    @Args('category', { type: () => PRODUCT_CATEGORY_TYPE }) category: string, //
+  ) {
+    return this.productsService.findCount({ category });
   }
 
   ///-----------------------------///
-
+  @UseGuards(GqlAuthAccessGuard)
   @Query(() => [Product])
   async fetchProductsBySeller(
-    @Args('sellerId') sellerId: string, //
     @Args({ name: 'page', type: () => Int }) page: number,
+    @CurrentUser() id: string,
   ) {
-    return await this.productsService.findProductBySeller({ sellerId, page });
+    return await this.productsService.findProductBySeller({ id, page });
   }
 
   ///-----------------------------///
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Product)
   createProduct(
+    @CurrentUser()
+    id: string,
     @Args('createProductInput')
     createProductInput: CreateProductInput,
   ): Promise<Product> {
-    return this.productsService.create({ createProductInput });
+    return this.productsService.create({ createProductInput, id });
   }
 
   ///-----------------------------///

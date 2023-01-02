@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { User } from '../users/entities/user.entity';
 import { Product } from './entities/product.entity';
 import {
   IProductsServiceCreate,
@@ -14,13 +15,20 @@ export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private readonly productsRepository: Repository<Product>,
+
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
   ) {}
 
   ///-----------------------------///
-  findAll(): Promise<Product[]> {
-    return this.productsRepository.find({
-      // relations: ['productCategory', 'productAllergy'],
-    });
+  async findAll({ category, page }) {
+    return this.productsRepository
+      .createQueryBuilder('product')
+      .where('product.category = :category', { category })
+      .orderBy('product.createdAt', 'DESC')
+      .skip((page - 1) * 9)
+      .take(9)
+      .getMany();
   }
 
   ///-----------------------------///
@@ -31,27 +39,38 @@ export class ProductsService {
   }
   ///-----------------------------///
 
-  async findCount() {
-    return await this.productsRepository.count();
+  async findCount({ category }) {
+    return this.productsRepository
+      .createQueryBuilder('product')
+      .where('product.category = :category', { category })
+      .getCount();
   }
 
   ///-----------------------------///
-  async findProductBySeller({ sellerId, page }) {
+  async findProductBySeller({ id, page }) {
     return this.productsRepository
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.user', 'user')
-      .where('seller.id = :sellerId', { sellerId })
+      .where('user = :user', { id })
       .orderBy('product.createdAt', 'DESC')
-      .skip((page - 1) * 10)
+      .skip((page - 1) * 9)
       .take(10)
       .getMany();
   }
   ///-----------------------------///
   async create({
     createProductInput,
+    id,
   }: IProductsServiceCreate): Promise<Product> {
+    const user = await this.usersRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+    console.log(user);
     return await this.productsRepository.save({
       ...createProductInput,
+      user: { ...user },
     });
   }
 
