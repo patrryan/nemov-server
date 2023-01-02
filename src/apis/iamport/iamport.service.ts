@@ -24,7 +24,7 @@ export class IamportService {
     } catch (e) {
       if (
         e.response.data.message ===
-        'imp_key, imp_secret 파라메터가 누락되었습니다.' // status가 docs처럼 401로 안 넘어오고 400으로 넘어옴
+        'imp_key, imp_secret 파라메터가 누락되었습니다.'
       ) {
         throw new UnauthorizedException(e.response.data.message);
       }
@@ -68,7 +68,7 @@ export class IamportService {
           Authorization: `Bearer ${accessToken}`,
         },
         data: {
-          reason: '프로젝트 테스트 환불',
+          reason: '네모비 프로젝트 환불',
           imp_uid,
           amount,
           checksum: amount,
