@@ -6,7 +6,7 @@ import {
   ManyToOne,
 } from 'typeorm';
 import { Field, ID, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { User, VEGAN_LEVEL_TYPE } from 'src/apis/users/entities/user.entity';
+import { User } from 'src/apis/users/entities/user.entity';
 
 export enum PRODUCT_CATEGORY_TYPE { //
   FOOD = 'FOOD',
@@ -50,8 +50,8 @@ export class Product {
   image: string;
 
   @Column({ nullable: true })
-  @Field(() => VEGAN_LEVEL_TYPE, { nullable: true })
-  veganLevel: string;
+  @Field(() => Int, { nullable: true })
+  veganLevel: number;
 
   @Column()
   @Field(() => Int)

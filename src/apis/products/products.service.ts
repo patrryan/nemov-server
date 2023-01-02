@@ -21,10 +21,11 @@ export class ProductsService {
   ) {}
 
   ///-----------------------------///
-  async findAll({ category, page }) {
+  async findAll({ category, page, veganLevel }) {
     return this.productsRepository
       .createQueryBuilder('product')
       .where('product.category = :category', { category })
+      .andWhere('product.veganLevel = :veganLevel', { veganLevel })
       .orderBy('product.createdAt', 'DESC')
       .skip((page - 1) * 9)
       .take(9)
@@ -39,10 +40,11 @@ export class ProductsService {
   }
   ///-----------------------------///
 
-  async findCount({ category }) {
+  async findCount({ category, veganLevel }) {
     return this.productsRepository
       .createQueryBuilder('product')
       .where('product.category = :category', { category })
+      .andWhere('product.veganLevel = :veganLevel', { veganLevel })
       .getCount();
   }
 

@@ -19,9 +19,12 @@ export class ProductsResolver {
   @Query(() => [Product])
   fetchProducts(
     @Args('category', { type: () => PRODUCT_CATEGORY_TYPE }) category: string, //
-    @Args({ name: 'page', type: () => Int }) page: number,
+    @Args({ name: 'veganLevel', type: () => Int })
+    veganLevel: number,
+    @Args({ name: 'page', type: () => Int })
+    page: number,
   ) {
-    return this.productsService.findAll({ category, page });
+    return this.productsService.findAll({ category, page, veganLevel });
   }
 
   ///-----------------------------///
@@ -37,8 +40,10 @@ export class ProductsResolver {
   @Query(() => Int)
   fetchProductsCount(
     @Args('category', { type: () => PRODUCT_CATEGORY_TYPE }) category: string, //
+    @Args({ name: 'veganLevel', type: () => Int })
+    veganLevel: number,
   ) {
-    return this.productsService.findCount({ category });
+    return this.productsService.findCount({ category, veganLevel });
   }
 
   ///-----------------------------///
