@@ -1,9 +1,4 @@
-import {
-  UnprocessableEntityException,
-  UseGuards,
-  CACHE_MANAGER,
-  Inject,
-} from '@nestjs/common';
+import { UnprocessableEntityException, UseGuards } from '@nestjs/common';
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { IContext } from 'src/commons/types/context';
 import { UsersService } from '../users/users.service';
@@ -13,17 +8,12 @@ import {
   GqlAuthAccessGuard,
   GqlAuthRefreshGuard,
 } from 'src/commons/auth/gql-auth.guard';
-import { Cache } from 'cache-manager';
-import * as jwt from 'jsonwebtoken';
 
 @Resolver()
 export class AuthResolver {
   constructor(
     private readonly usersService: UsersService, //
     private readonly authService: AuthService,
-
-    @Inject(CACHE_MANAGER)
-    private readonly cacheManager: Cache,
   ) {}
 
   @Mutation(() => String)
@@ -54,56 +44,13 @@ export class AuthResolver {
 
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => String)
-  async logout(@Context() context: IContext) {
-    const accessToken = context.req.headers.authorization.replace(
-      'Bearer ',
-      '',
-    );
-    // console.log('==============', accessToken);
-    const refreshToken = context.req.headers.cookie.replace(
-      'refreshToken=',
-      '',
-    );
-
-    // console.log('==============', refreshToken);
-
-    const verifiedAccess = jwt.verify(accessToken, process.env.JWT_ACCESS_KEY);
-
-    const verifiedRefresh = jwt.verify(
-      refreshToken,
-      process.env.JWT_REFRESH_KEY,
-    );
-
-    const current = new Date().getTime();
-
-    const ttlOfAccess = Math.trunc(
-      (verifiedAccess['exp'] * 1000 - current) / 1000,
-    );
-
-    const ttlOfRefresh = Math.trunc(
-      (verifiedRefresh['exp'] * 1000 - current) / 1000,
-    );
-
-    try {
-      verifiedAccess;
-      await this.cacheManager.set(
-        // 캐시매니저에 저장
-        `accessToken = ${accessToken}`,
-        'accessToken',
-        { ttl: ttlOfAccess },
-      );
-
-      verifiedRefresh;
-      await this.cacheManager.set(
-        // 캐시매니저 저장
-        `refreshToken = ${refreshToken}`,
-        'refreshToken',
-        { ttl: ttlOfRefresh },
-      );
-    } catch (error) {
-      throw new UnprocessableEntityException(error);
-    }
-
-    return '로그아웃 성공';
+  async logout(
+    //
+    @Context() context: IContext,
+  ) {
+    return this.authService.logout({
+      req: context.req,
+      res: context.res,
+    });
   }
 }
