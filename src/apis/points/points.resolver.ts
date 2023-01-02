@@ -33,6 +33,18 @@ export class PointsResolver {
   }
 
   @UseGuards(GqlAuthAccessGuard)
+  @Query(() => Int)
+  fetchPointTransactionsCount(
+    @Args('startDate', { type: () => GraphQLISODateTime, nullable: true })
+    startDate: Date,
+    @Args('endDate', { type: () => GraphQLISODateTime, nullable: true })
+    endDate: Date,
+    @CurrentUser() id: string,
+  ) {
+    return this.pointsService.findAllCount({ startDate, endDate, id });
+  }
+
+  @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Point)
   createPointCharge(
     @Args('impUid', {

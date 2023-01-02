@@ -52,6 +52,31 @@ export class PointsService {
     }
   }
 
+  async findAllCount({ startDate, endDate, id }) {
+    if ((startDate && !endDate) || (!startDate && endDate))
+      throw new UnprocessableEntityException(
+        '날짜 설정시 시작과 끝을 모두 지정해주세요.',
+      );
+    if (startDate && endDate) {
+      const { endLocal } = setEndToLocal({ endDate });
+      return await this.pointsRepository
+        .createQueryBuilder('point')
+        .leftJoinAndSelect('point.user', 'user')
+        .where('point.user = :id', { id })
+        .andWhere('point.createdAt BETWEEN :startDate AND :endLocal', {
+          startDate,
+          endLocal,
+        })
+        .getCount();
+    } else {
+      return await this.pointsRepository
+        .createQueryBuilder('point')
+        .leftJoinAndSelect('point.user', 'user')
+        .where('point.user = :id', { id })
+        .getCount();
+    }
+  }
+
   async createPointCharge({ impUid, amount, id }): Promise<Point> {
     await this.validateForPointCharge({ impUid, amount });
 
@@ -76,7 +101,6 @@ export class PointsService {
         impUid,
         amount,
         status: POINT_TRANSACTION_STATUS_ENUM.PAID,
-        createdAt: new Date().toString(),
         user: updatedUser,
       });
 
