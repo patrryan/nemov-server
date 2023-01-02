@@ -36,6 +36,17 @@ export class ProductsService {
   }
 
   ///-----------------------------///
+  async findProductBySeller({ sellerId, page }) {
+    return this.productsRepository
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.user', 'user')
+      .where('seller.id = :sellerId', { sellerId })
+      .orderBy('product.createdAt', 'DESC')
+      .skip((page - 1) * 10)
+      .take(10)
+      .getMany();
+  }
+  ///-----------------------------///
   async create({
     createProductInput,
   }: IProductsServiceCreate): Promise<Product> {

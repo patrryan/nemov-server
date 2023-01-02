@@ -1,4 +1,6 @@
+import { UseGuards } from '@nestjs/common';
 import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
 import { CreateProductInput } from './dto/create-product.input';
 import { UpdateProductInput } from './dto/update-product.input';
 import { Product } from './entities/product.entity';
@@ -34,6 +36,16 @@ export class ProductsResolver {
 
   ///-----------------------------///
 
+  @Query(() => [Product])
+  async fetchProductsBySeller(
+    @Args('sellerId') sellerId: string, //
+    @Args({ name: 'page', type: () => Int }) page: number,
+  ) {
+    return await this.productsService.findProductBySeller({ sellerId, page });
+  }
+
+  ///-----------------------------///
+  @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Product)
   createProduct(
     @Args('createProductInput')
@@ -43,7 +55,7 @@ export class ProductsResolver {
   }
 
   ///-----------------------------///
-
+  @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Product)
   async updateProduct(
     @Args('productId') productId: string,
@@ -55,7 +67,7 @@ export class ProductsResolver {
   }
 
   ///-----------------------------///
-
+  @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
   deleteProduct(
     @Args('productId') productId: string, //

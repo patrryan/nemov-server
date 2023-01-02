@@ -3,9 +3,10 @@ import {
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
+  ManyToOne,
 } from 'typeorm';
 import { Field, ID, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { VEGAN_LEVEL_TYPE } from 'src/apis/users/entities/user.entity';
+import { User, VEGAN_LEVEL_TYPE } from 'src/apis/users/entities/user.entity';
 
 export enum PRODUCT_CATEGORY_TYPE { //
   FOOD = 'FOOD',
@@ -70,4 +71,8 @@ export class Product {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @ManyToOne(() => User)
+  @Field(() => User)
+  user: User;
 }
