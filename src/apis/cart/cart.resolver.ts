@@ -15,17 +15,16 @@ export class CartResolver {
   @Query(() => [Product])
   fetchBasket(
     @CurrentUser() id: string, //
-  ) {
+  ): Promise<Product[]> {
     return this.cartService.findAll({ id });
   }
 
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => Boolean)
-  isInBasket(
+  fetchIsInBasket(
     @Args('productId', { type: () => ID }) productId: string,
-    @CurrentUser()
-    id: string,
-  ) {
+    @CurrentUser() id: string,
+  ): Promise<boolean> {
     return this.cartService.findOne({ productId, id });
   }
 
@@ -34,7 +33,7 @@ export class CartResolver {
   toggleProductToBasket(
     @Args('productId', { type: () => ID }) productId: string,
     @CurrentUser() id: string,
-  ) {
-    return this.cartService.toggleBasket({ productId, id });
+  ): Promise<boolean> {
+    return this.cartService.create({ productId, id });
   }
 }

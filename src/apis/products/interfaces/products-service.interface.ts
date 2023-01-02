@@ -4,6 +4,7 @@ import { Product } from '../entities/product.entity';
 
 export interface IProductsServiceCreate {
   createProductInput: CreateProductInput;
+  id: string;
 }
 
 export interface IProductsServiceFindOne {

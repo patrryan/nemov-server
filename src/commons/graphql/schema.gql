@@ -139,10 +139,10 @@ enum POINT_TRANSACTION_STATUS_ENUM {
 
 type Query {
   fetchLoginUser: User!
-  fetchProducts: [Product!]!
+  fetchProducts(category: PRODUCT_CATEGORY_TYPE!, page: Int!): [Product!]!
   fetchProduct(productId: String!): Product!
-  fetchProductsCount: Int!
-  fetchProductsBySeller(sellerId: String!, page: Int!): [Product!]!
+  fetchProductsCount(category: PRODUCT_CATEGORY_TYPE!): Int!
+  fetchProductsBySeller(page: Int!): [Product!]!
   fetchReview(reviewId: ID!): Review!
   fetchQuestion(questionId: ID!): Question!
   fetchPointTransactions(startDate: DateTime, endDate: DateTime, page: Int!): [Point!]!
