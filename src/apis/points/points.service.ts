@@ -4,7 +4,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import setTimeToLocal from 'src/commons/utils/setTimeToLocal';
+import setEndToLocal from 'src/commons/utils/setEndToLocal';
 import { DataSource, Repository } from 'typeorm';
 import { IamportService } from '../iamport/iamport.service';
 import { User } from '../users/entities/user.entity';
@@ -27,13 +27,13 @@ export class PointsService {
         '날짜 설정시 시작과 끝을 모두 지정해주세요.',
       );
     if (startDate && endDate) {
-      const { startLocal, endLocal } = setTimeToLocal({ startDate, endDate });
+      const { endLocal } = setEndToLocal({ endDate });
       return await this.pointsRepository
         .createQueryBuilder('point')
         .leftJoinAndSelect('point.user', 'user')
         .where('point.user = :id', { id })
-        .andWhere('point.createdAt BETWEEN :startLocal AND :endLocal', {
-          startLocal,
+        .andWhere('point.createdAt BETWEEN :startDate AND :endLocal', {
+          startDate,
           endLocal,
         })
         .orderBy('point.createdAt', 'DESC')
@@ -76,6 +76,7 @@ export class PointsService {
         impUid,
         amount,
         status: POINT_TRANSACTION_STATUS_ENUM.PAID,
+        createdAt: new Date().toString(),
         user: updatedUser,
       });
 
