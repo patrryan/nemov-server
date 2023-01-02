@@ -144,12 +144,14 @@ type Query {
   fetchReview(reviewId: ID!): Review!
   fetchQuestion(questionId: ID!): Question!
   fetchPointTransactions(startDate: DateTime, endDate: DateTime, page: Int!): [Point!]!
+  fetchPointTransactionsCount(startDate: DateTime, endDate: DateTime): Int!
 }
 
 type Mutation {
   uploadFile(file: Upload!): String!
   login(email: String!, password: String!): String!
   restoreAccessToken: String!
+  logout: String!
   checkBusinessLicenseNumber(bln: BusinessLicenseNumber!): Boolean!
   checkEmailExist(email: Email!): Boolean!
   createUser(createUserInput: CreateUserInput!): User!
