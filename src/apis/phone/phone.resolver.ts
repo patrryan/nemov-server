@@ -3,14 +3,12 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { Cache } from 'cache-manager';
 import { GraphQLPhone } from 'src/commons/graphql/customTypes/phone.type';
 import { PhoneService } from './phone.service';
-
 @Resolver()
 export class PhoneResolver {
   constructor(
     private readonly phoneService: PhoneService, //
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
-
   @Mutation(() => String)
   getToken(
     @Args('phone', { type: () => GraphQLPhone }) phone: string, //
@@ -19,7 +17,6 @@ export class PhoneResolver {
       phone,
     });
   }
-
   @Mutation(() => String)
   checkValidToken(
     @Args('phone', { type: () => GraphQLPhone }) phone: string,
