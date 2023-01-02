@@ -1,6 +1,7 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Product } from '../products/entities/product.entity';
 import { User } from '../users/entities/user.entity';
 import { Question } from './entities/question.entity';
 import {
@@ -18,6 +19,9 @@ export class QuestionsService {
 
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
   ) {}
 
   async create({
@@ -27,10 +31,21 @@ export class QuestionsService {
   }: IQuestionsServiceCreate): Promise<Question> {
     if (productId) {
       try {
+        const Product = await this.productRepository.findOne({
+          where: {
+            id: productId,
+          },
+        });
+        const User = await this.usersRepository.findOne({
+          where: {
+            id: id,
+          },
+        });
+        console.log(User, Product, id);
         const result = await this.questionsRepository.save({
-          product: { id: productId },
+          product: { ...Product },
+          user: { ...User },
           ...createQuestionInput,
-          user: { id },
         });
         return result;
       } catch (err) {
@@ -58,7 +73,7 @@ export class QuestionsService {
     }
     const result = await this.questionsRepository.save({
       ...target,
-      updateQuestionInput,
+      ...updateQuestionInput,
     });
     return result;
   }
