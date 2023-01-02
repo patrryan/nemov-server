@@ -13,7 +13,7 @@ type User {
   addressDetail: String
   bln: BusinessLicenseNumber
   role: ROLE_TYPE!
-  point: Int!
+  balance: Int!
 }
 
 """이메일 형식: @가 포함되어있어야함."""
@@ -110,18 +110,48 @@ type Image {
   url: String!
 }
 
+type Question {
+  id: ID!
+  title: String!
+  contents: String!
+  product: Product!
+  user: User!
+}
+
+type Point {
+  id: ID!
+  impUid: ID!
+  amount: Int!
+  status: POINT_TRANSACTION_STATUS_ENUM!
+  user: User!
+  createdAt: DateTime!
+}
+
+"""결제 상태에 대한 타입"""
+enum POINT_TRANSACTION_STATUS_ENUM {
+  """결제완료"""
+  PAID
+
+  """환불완료"""
+  CANCELLED
+}
+
 type Query {
   fetchLoginUser: User!
   fetchProducts: [Product!]!
   fetchProduct(productId: String!): Product!
   fetchProductsCount: Int!
   fetchReview(reviewId: ID!): Review!
+  fetchQuestion(questionId: ID!): Question!
+  fetchPointTransactions(startDate: DateTime, endDate: DateTime, page: Int!): [Point!]!
+  fetchPointTransactionsCount(startDate: DateTime, endDate: DateTime): Int!
 }
 
 type Mutation {
   uploadFile(file: Upload!): String!
   login(email: String!, password: String!): String!
   restoreAccessToken: String!
+  logout: String!
   checkBusinessLicenseNumber(bln: BusinessLicenseNumber!): Boolean!
   checkEmailExist(email: Email!): Boolean!
   createUser(createUserInput: CreateUserInput!): User!
@@ -138,6 +168,17 @@ type Mutation {
   createReview(createReviewInput: CreateReviewInput!): Review!
   updateReview(updateReviewInput: UpdateReviewInput!, reviewId: ID!): Review!
   deleteReview(reviewId: String!): Boolean!
+  createQuestion(createQuestionInput: CreateQuestionInput!, productId: String!): Question!
+  updateQuestion(updateQuestionInput: UpdateQuestionInput!, questionId: ID!): Question!
+  deleteQuestion(questionId: String!): Boolean!
+  createPointCharge(
+    """포인트 결제를 진행한 imp 결제번호"""
+    impUid: ID!
+
+    """포인트 충전 금액"""
+    amount: Int!
+  ): Point!
+  cancelPointCharge(impUid: ID!): Point!
 }
 
 """The `Upload` scalar type represents a file upload."""
@@ -200,4 +241,14 @@ input UpdateReviewInput {
   contents: String
   rating: Int
   images: [String!]
+}
+
+input CreateQuestionInput {
+  title: String!
+  contents: String!
+}
+
+input UpdateQuestionInput {
+  title: String
+  contents: String
 }
