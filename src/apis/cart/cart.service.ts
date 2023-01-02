@@ -86,4 +86,17 @@ export class CartService {
       }
     }
   }
+
+  async deleteBoughtFromCart({ productId, id }) {
+    const result = await this.cacheManager.get(`${id}-basket`);
+    if (typeof result === 'string') {
+      const cart = JSON.parse(result);
+      if (cart.includes(productId)) {
+        cart.splice(cart.indexOf(productId), 1);
+        await this.cacheManager.set(`${id}-basket`, JSON.stringify(cart), {
+          ttl: 0,
+        });
+      }
+    }
+  }
 }

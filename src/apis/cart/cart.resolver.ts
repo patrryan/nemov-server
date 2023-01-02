@@ -13,7 +13,7 @@ export class CartResolver {
 
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => [Product])
-  fetchBasket(
+  fetchCart(
     @CurrentUser() id: string, //
   ): Promise<Product[]> {
     return this.cartService.findAll({ id });
@@ -21,7 +21,7 @@ export class CartResolver {
 
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => Boolean)
-  fetchIsInBasket(
+  fetchIsInCart(
     @Args('productId', { type: () => ID }) productId: string,
     @CurrentUser() id: string,
   ): Promise<boolean> {
@@ -30,7 +30,7 @@ export class CartResolver {
 
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
-  toggleProductToBasket(
+  toggleProductToCart(
     @Args('productId', { type: () => ID }) productId: string,
     @CurrentUser() id: string,
   ): Promise<boolean> {

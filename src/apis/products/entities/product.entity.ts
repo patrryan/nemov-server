@@ -65,6 +65,10 @@ export class Product {
   @Field(() => Int)
   discount: number;
 
+  @Column()
+  @Field(() => Int)
+  quantity: number;
+
   @Column({ default: false })
   @Field(() => Boolean)
   isOutOfStock: boolean;

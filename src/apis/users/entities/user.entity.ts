@@ -74,7 +74,7 @@ export class User {
 
   @Column({ default: 0 })
   @Field(() => Int)
-  balance: number;
+  point: number;
 
   @CreateDateColumn()
   createdAt: Date;

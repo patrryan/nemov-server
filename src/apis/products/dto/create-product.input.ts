@@ -30,6 +30,10 @@ export class CreateProductInput {
   price: number;
 
   @Min(0)
+  @Field(() => Int)
+  quantity: number;
+
+  @Min(0)
   @Max(100)
   @Field(() => Int)
   discount: number;

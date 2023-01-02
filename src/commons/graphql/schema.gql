@@ -7,13 +7,13 @@ type User {
   name: String!
   email: Email!
   phone: Phone!
-  veganLevel: VEGAN_LEVEL_TYPE
+  veganLevel: Int
   zipCode: ZipCode
   address: String
   addressDetail: String
   bln: BusinessLicenseNumber
   role: ROLE_TYPE!
-  balance: Int!
+  point: Int!
 }
 
 """이메일 형식: @가 포함되어있어야함."""
@@ -21,30 +21,6 @@ scalar Email
 
 """일반적인 핸드폰 번호 형식을 적용. 번호 사이에 -가 들어감"""
 scalar Phone
-
-"""비건 레벨(0~6단계)에 대한 타입"""
-enum VEGAN_LEVEL_TYPE {
-  """0단계 비건 - 플렉시테리언"""
-  FLEX
-
-  """1단계 비건 - 폴로"""
-  POLO
-
-  """2단계 비건 - 페스코"""
-  PESCO
-
-  """3단계 비건 - 락토오보"""
-  LACTOOVO
-
-  """4단계 비건 - 오보"""
-  OVO
-
-  """5단계 비건 - 락토"""
-  LACTO
-
-  """6단계 비건 - 비건"""
-  VEGAN
-}
 
 """우편번호"""
 scalar ZipCode
@@ -67,10 +43,11 @@ type Product {
   category: PRODUCT_CATEGORY_TYPE!
   description: String!
   image: String!
-  veganLevel: VEGAN_LEVEL_TYPE
+  veganLevel: Int
   deliveryFee: Int!
   price: Int!
   discount: Int!
+  quantity: Int!
   isOutOfStock: Boolean!
   user: User!
 }
@@ -121,38 +98,76 @@ type Question {
 
 type Point {
   id: ID!
-  impUid: ID!
+  impUid: ID
   amount: Int!
   status: POINT_TRANSACTION_STATUS_ENUM!
+  balance: Int!
   user: User!
   createdAt: DateTime!
 }
 
 """결제 상태에 대한 타입"""
 enum POINT_TRANSACTION_STATUS_ENUM {
-  """결제완료"""
+  """포인트 결제 완료"""
   PAID
 
-  """환불완료"""
+  """포인트 환불 완료"""
   CANCELLED
+
+  """상품 구매 완료"""
+  BOUGHT
+
+  """상품 구매 취소 완료"""
+  REFUNDED
+
+  """상품 판매 완료"""
+  SOLD
+
+  """상품 판매 취소 완료"""
+  COLLECTED
+}
+
+type ProductOrder {
+  id: ID!
+  amount: Int!
+  quantity: Int!
+  status: PRODUCT_ORDER_STATUS_ENUM!
+  buyer: User!
+  seller: User!
+  product: Product!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""상품 구매에 대한 타입"""
+enum PRODUCT_ORDER_STATUS_ENUM {
+  """상품 구매 완료"""
+  BOUGHT
+
+  """상품 취소 완료"""
+  REFUNDED
 }
 
 type Query {
   fetchLoginUser: User!
-  fetchProducts(category: PRODUCT_CATEGORY_TYPE!, page: Int!): [Product!]!
+  fetchProducts(category: PRODUCT_CATEGORY_TYPE!, veganLevel: Int!, page: Int!): [Product!]!
   fetchProduct(productId: String!): Product!
-  fetchProductsCount(category: PRODUCT_CATEGORY_TYPE!): Int!
+  fetchProductsCount(category: PRODUCT_CATEGORY_TYPE!, veganLevel: Int!): Int!
   fetchProductsBySeller(page: Int!): [Product!]!
   fetchReview(reviewId: ID!): Review!
   fetchQuestion(questionId: ID!): Question!
   fetchPointTransactions(startDate: DateTime, endDate: DateTime, page: Int!): [Point!]!
   fetchPointTransactionsCount(startDate: DateTime, endDate: DateTime): Int!
-  fetchBasket: [Product!]!
-  fetchIsInBasket(productId: ID!): Boolean!
+  fetchCart: [Product!]!
+  fetchIsInCart(productId: ID!): Boolean!
   fetchProductsIPicked(page: Int!): [Product!]!
   fetchProductsIPickedCount: Int!
   fetchIsPicked(productId: ID!): Boolean!
   fetchPickCountOfProduct(productId: ID!): Int!
+  fetchProductOrdersByBuyer(startDate: DateTime, endDate: DateTime, page: Int!): [ProductOrder!]!
+  fetchProductOrdersCountByBuyer(startDate: DateTime, endDate: DateTime): Int!
+  fetchProductOrdersBySeller(startDate: DateTime, endDate: DateTime, page: Int!): [ProductOrder!]!
+  fetchProductOrdersCountBySeller(startDate: DateTime, endDate: DateTime): Int!
 }
 
 type Mutation {
@@ -187,8 +202,10 @@ type Mutation {
     amount: Int!
   ): Point!
   cancelPointCharge(impUid: ID!): Point!
-  toggleProductToBasket(productId: ID!): Boolean!
+  toggleProductToCart(productId: ID!): Boolean!
   toggleProductPick(productId: ID!): Boolean!
+  createProductOrder(productId: ID!, amount: Int!, quantity: Int!): ProductOrder!
+  cancelProductOrder(productOrderId: ID!): Boolean!
 }
 
 """The `Upload` scalar type represents a file upload."""
@@ -199,7 +216,7 @@ input CreateUserInput {
   email: Email!
   password: Password!
   phone: Phone!
-  veganLevel: VEGAN_LEVEL_TYPE
+  veganLevel: Int
   zipCode: ZipCode
   address: String
   addressDetail: String
@@ -211,7 +228,7 @@ scalar Password
 
 input UpdateUserInput {
   name: String
-  veganLevel: VEGAN_LEVEL_TYPE
+  veganLevel: Int
   zipCode: ZipCode
   address: String
   addressDetail: String
@@ -222,9 +239,10 @@ input CreateProductInput {
   category: PRODUCT_CATEGORY_TYPE!
   description: String!
   image: String!
-  veganLevel: VEGAN_LEVEL_TYPE
+  veganLevel: Int!
   deliveryFee: Int!
   price: Int!
+  quantity: Int!
   discount: Int!
 }
 
@@ -233,9 +251,10 @@ input UpdateProductInput {
   category: PRODUCT_CATEGORY_TYPE
   description: String
   image: String
-  veganLevel: VEGAN_LEVEL_TYPE
+  veganLevel: Int
   deliveryFee: Int
   price: Int
+  quantity: Int
   discount: Int
 }
 
