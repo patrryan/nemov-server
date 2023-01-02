@@ -114,7 +114,7 @@ export class PointsService {
 
       const updatedUser = this.usersRepository.create({
         ...target,
-        balance: target.balance + amount,
+        point: target.point + amount,
       });
 
       await queryRunner.manager.save(updatedUser);
@@ -122,6 +122,7 @@ export class PointsService {
       const payment = this.pointsRepository.create({
         impUid,
         amount,
+        balance: updatedUser.point,
         status: POINT_TRANSACTION_STATUS_ENUM.PAID,
         user: updatedUser,
       });
@@ -181,7 +182,7 @@ export class PointsService {
     try {
       const updatedUser = this.usersRepository.create({
         ...user,
-        balance: user.balance - refundAmount,
+        point: user.point - refundAmount,
       });
 
       await queryRunner.manager.save(updatedUser);
@@ -189,6 +190,7 @@ export class PointsService {
       const payment = this.pointsRepository.create({
         impUid,
         amount: -refundAmount,
+        balance: updatedUser.point,
         status: POINT_TRANSACTION_STATUS_ENUM.CANCELLED,
         user: updatedUser,
       });
@@ -223,7 +225,7 @@ export class PointsService {
       throw new UnprocessableEntityException('이미 취소된 결제 건입니다.');
     }
 
-    if (target.balance < result.amount) {
+    if (target.point < result.amount) {
       throw new UnprocessableEntityException('환불이 불가능합니다.');
     }
 

@@ -1,5 +1,4 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
-import { Max, Min } from 'class-validator';
 import { GraphQLBusinessLicenseNumber } from 'src/commons/graphql/customTypes/businessLicenseNumber.type';
 import { GraphQLEmail } from 'src/commons/graphql/customTypes/email.type';
 import { GraphQLPassword } from 'src/commons/graphql/customTypes/password.type';
@@ -20,9 +19,7 @@ export class CreateUserInput {
   @Field(() => GraphQLPhone)
   phone: string;
 
-  @Min(1)
-  @Max(7)
-  @Field(() => Int)
+  @Field(() => Int, { nullable: true })
   veganLevel: number;
 
   @Field(() => GraphQLZipCode, { nullable: true })
