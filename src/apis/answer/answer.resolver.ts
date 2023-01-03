@@ -1,5 +1,6 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, ID, Mutation, Resolver, Query } from '@nestjs/graphql';
+import { Args, ID, Mutation, Resolver, Query, Int } from '@nestjs/graphql';
+import { type } from 'os';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
 import { CurrentUser } from 'src/commons/decorators/current-user.decorator';
 import { AnswersService } from './answer.service';
@@ -16,6 +17,15 @@ export class AnswersResolver {
     @Args('answerId', { type: () => ID }) answerId: string, //
   ): Promise<Answer> {
     return this.answersService.findAnswer({ id: answerId });
+  }
+
+  @Query(() => Answer)
+  fetchAnswerByQuestion(
+    @Args('questionId', { type: () => ID }) questionId: string,
+  ) {
+    return this.answersService.findAllByQuestion({
+      questionId,
+    });
   }
 
   @UseGuards(GqlAuthAccessGuard)
