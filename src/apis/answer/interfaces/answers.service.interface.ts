@@ -3,13 +3,14 @@ export interface IAnswersServiceFindAnswer {
 }
 
 export interface IAnswersServiceCreate {
-  answer_contentsId: string;
+  questionId: string;
+  answers_contents: string;
   id: string;
 }
 
 export interface IAnswersServiceUpdate {
   answerId: string;
-  answer_contentsId: string;
+  answers_contents: string;
   id: string;
 }
 
