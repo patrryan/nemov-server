@@ -21,8 +21,6 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
   }
 
   async validate(req, payload) {
-    console.log('===============', req.headers.cookie);
-
     const refreshToken = req.headers.cookie.replace('refreshToken=', '');
     const cheekRefresh = await this.cacheManager.get(
       `refreshToken = ${refreshToken}`,
@@ -33,9 +31,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'refresh') {
     }
 
     return {
-      email: payload.email,
-      id: payload.sub,
-      exp: payload.exp,
+      id: payload.id,
     };
   }
 }
