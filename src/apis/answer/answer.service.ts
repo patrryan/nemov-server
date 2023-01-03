@@ -1,4 +1,8 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Question } from '../questions/entities/question.entity';
@@ -31,6 +35,16 @@ export class AnswersService {
     });
   }
 
+  async findAllByQuestion({ questionId }) {
+    const list = await this.answersRepository.findOne({
+      where: { question: { id: questionId } },
+      relations: ['question'],
+    });
+    if (!list) {
+      throw new NotFoundException('헤당 문의에 대한 답변이 없습니다.');
+    }
+    return list;
+  }
   async create({
     questionId,
     answers_contents,
@@ -50,6 +64,12 @@ export class AnswersService {
       question: { ...question },
       user: { ...user },
       answers_contents,
+    });
+    await this.questionsRepository.save({
+      ...question,
+      answer: {
+        ...result,
+      },
     });
     return result;
   }

@@ -22,14 +22,13 @@ export class Answer {
   @Field(() => String)
   answers_contents: string;
 
-  @ManyToOne(() => User)
-  @Field(() => User)
-  user: User;
-
-  @JoinColumn()
   @OneToOne(() => Question)
   @Field(() => Question)
   question: Question;
+
+  @ManyToOne(() => User)
+  @Field(() => User)
+  user: User;
 
   @CreateDateColumn()
   @Field(() => GraphQLISODateTime)

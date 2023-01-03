@@ -1,5 +1,5 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, Mutation, Resolver, Query, ID } from '@nestjs/graphql';
+import { Args, Mutation, Resolver, Query, ID, Int } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
 import { CurrentUser } from 'src/commons/decorators/current-user.decorator';
 import { CreateQuestionInput } from './dto/create-question.input';
@@ -42,6 +42,21 @@ export class QuestionsResolver {
     @Args('questionId', { type: () => ID }) questionId: string, //
   ): Promise<Question> {
     return this.questionsService.findQuestion({ id: questionId });
+  }
+
+  @Query(() => [Question])
+  async fetchQuestionsByProduct(
+    @Args('productId', { type: () => ID }) productId: string, //
+    @Args('page', { type: () => Int }) page: number,
+  ): Promise<Question[]> {
+    return this.questionsService.findAllByProduct({ productId, page });
+  }
+
+  @Query(() => Int)
+  async fetchQuestionsCountByProduct(
+    @Args('productId', { type: () => ID }) productId: string, //
+  ) {
+    return this.questionsService.findAllCountByProduct({ productId });
   }
 
   @UseGuards(GqlAuthAccessGuard)

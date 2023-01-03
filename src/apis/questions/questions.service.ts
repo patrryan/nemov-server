@@ -24,6 +24,24 @@ export class QuestionsService {
     private readonly productRepository: Repository<Product>,
   ) {}
 
+  async findAllByProduct({ productId, page }) {
+    return await this.questionsRepository
+      .createQueryBuilder('question')
+      .leftJoinAndSelect('question.product', 'product')
+      .where('question.product = :productId', { productId })
+      .skip((page - 1) * 10)
+      .take(10)
+      .getMany();
+  }
+
+  async findAllCountByProduct({ productId }) {
+    return await this.questionsRepository
+      .createQueryBuilder('question')
+      .leftJoinAndSelect('question.product', 'product')
+      .where('question.product = :productId', { productId })
+      .getCount();
+  }
+
   async create({
     createQuestionInput,
     id,
@@ -81,7 +99,7 @@ export class QuestionsService {
   findQuestion({ id }: IQuestionsServiceFIndReview): Promise<Question> {
     return this.questionsRepository.findOne({
       where: { id },
-      relations: ['user', 'product'],
+      relations: ['user', 'product', 'answer'],
     });
   }
 

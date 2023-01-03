@@ -1,11 +1,14 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Answer } from 'src/apis/answer/entities/answer.entity';
 import { Product } from 'src/apis/products/entities/product.entity';
 import { User } from 'src/apis/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -24,6 +27,11 @@ export class Question {
   @Column()
   @Field(() => String)
   contents: string;
+
+  @JoinColumn()
+  @OneToOne(() => Answer)
+  @Field(() => Answer)
+  answer: Answer;
 
   @ManyToOne(() => Product)
   @Field(() => Product)
