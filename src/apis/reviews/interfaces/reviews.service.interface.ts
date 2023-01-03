@@ -6,6 +6,7 @@ export interface IReviewsServiceFindReview {
 }
 
 export interface IReviewsServiceCreate {
+  productOrderId: string;
   createReviewInput: CreateReviewInput;
   id: string;
 }

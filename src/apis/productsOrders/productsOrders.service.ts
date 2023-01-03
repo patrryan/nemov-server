@@ -140,6 +140,29 @@ export class ProductsOrdersService {
     }
   }
 
+  async findAllWithoutReview({ page, id }) {
+    return await this.productsOrdersRepository
+      .createQueryBuilder('productOrder')
+      .leftJoinAndSelect('productOrder.product', 'product')
+      .leftJoinAndSelect('productOrder.review', 'review')
+      .where('productOrder.buyer = :id', { id })
+      .andWhere('productOrder.status = :status', { status: 'BOUGHT' })
+      .andWhere('productOrder.review IS NULL')
+      .orderBy('productOrder.createdAt', 'DESC')
+      .skip((page - 1) * 10)
+      .take(10)
+      .getMany();
+  }
+
+  async findAllCountWithoutReview({ id }) {
+    return await this.productsOrdersRepository
+      .createQueryBuilder('productOrder')
+      .where('productOrder.buyer = :id', { id })
+      .andWhere('productOrder.status = :status', { status: 'BOUGHT' })
+      .andWhere('productOrder.review IS NULL')
+      .getCount();
+  }
+
   async create({ productId, amount, quantity, id }) {
     const { product, buyer, seller } = await this.validateForPurchase({
       productId,

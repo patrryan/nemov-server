@@ -88,6 +88,26 @@ export class ProductsOrdersResolver {
   }
 
   @UseGuards(GqlAuthAccessGuard)
+  @Query(() => [ProductOrder])
+  fetchProductOrdersWithoutReview(
+    @Args('page', { type: () => Int }) page: number,
+    @CurrentUser() id: string,
+  ) {
+    return this.productsOrdersService.findAllWithoutReview({
+      page,
+      id,
+    });
+  }
+
+  @UseGuards(GqlAuthAccessGuard)
+  @Query(() => Int)
+  fetchProductOrdersCountWithoutReview(
+    @CurrentUser() id: string, //
+  ) {
+    return this.productsOrdersService.findAllCountWithoutReview({ id });
+  }
+
+  @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => ProductOrder)
   createProductOrder(
     @Args('productId', { type: () => ID }) productId: string,

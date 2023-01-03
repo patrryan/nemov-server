@@ -7,12 +7,15 @@ import {
   registerEnumType,
 } from '@nestjs/graphql';
 import { Product } from 'src/apis/products/entities/product.entity';
+import { Review } from 'src/apis/reviews/entities/review.entity';
 import { User } from 'src/apis/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -61,6 +64,11 @@ export class ProductOrder {
   @ManyToOne(() => Product)
   @Field(() => Product)
   product: Product;
+
+  @JoinColumn()
+  @OneToOne(() => Review, { nullable: true })
+  @Field(() => Review, { nullable: true })
+  review: Review;
 
   @CreateDateColumn()
   @Field(() => GraphQLISODateTime)

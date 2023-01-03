@@ -59,6 +59,32 @@ export class ProductsService {
       .take(10)
       .getMany();
   }
+
+  async findByRecommend() {
+    return await this.productsRepository
+      .createQueryBuilder('product')
+      .select('product.id')
+      .addSelect('count(review.id)', 'countReview')
+      .leftJoin('product.reviews', 'review')
+      .groupBy('product.id')
+      .orderBy('countReview', 'DESC')
+      .take(3)
+      .getMany();
+  }
+
+  async findBySelling() {
+    return await this.productsRepository
+      .createQueryBuilder('product')
+      .leftJoin('product.productOrder', 'productOrder')
+      .where('productOrder.status = :status', { status: 'BOUGHT' })
+      .select('product.id')
+      .addSelect('count(productOrder.id)', 'countOrder')
+      .groupBy('product.id')
+      .orderBy('countOrder', 'DESC')
+      .take(8)
+      .getMany();
+  }
+
   ///-----------------------------///
   async create({
     createProductInput,

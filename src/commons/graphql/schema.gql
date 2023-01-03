@@ -37,6 +37,50 @@ enum ROLE_TYPE {
   SELLER
 }
 
+type ReviewImage {
+  id: ID!
+  url: String!
+}
+
+type Review {
+  id: ID!
+  title: String!
+  contents: String!
+  rating: Int!
+  product: Product!
+  user: User!
+  images: [ReviewImage!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type ProductOrder {
+  id: ID!
+  amount: Int!
+  quantity: Int!
+  status: PRODUCT_ORDER_STATUS_ENUM!
+  buyer: User!
+  seller: User!
+  product: Product!
+  review: Review
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""상품 구매에 대한 타입"""
+enum PRODUCT_ORDER_STATUS_ENUM {
+  """상품 구매 완료"""
+  BOUGHT
+
+  """상품 취소 완료"""
+  REFUNDED
+}
+
 type Product {
   id: ID!
   name: String!
@@ -65,27 +109,6 @@ enum PRODUCT_CATEGORY_TYPE {
 
   """생활용품 카테고리"""
   LIFE
-}
-
-type Review {
-  id: ID!
-  title: String!
-  contents: String!
-  rating: Int!
-  user: User!
-  images: [Image!]
-  createdAt: DateTime!
-  updatedAt: DateTime!
-}
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
-
-type Image {
-  id: ID!
-  url: String!
 }
 
 type Question {
@@ -127,33 +150,18 @@ enum POINT_TRANSACTION_STATUS_ENUM {
   COLLECTED
 }
 
-type ProductOrder {
-  id: ID!
-  amount: Int!
-  quantity: Int!
-  status: PRODUCT_ORDER_STATUS_ENUM!
-  buyer: User!
-  seller: User!
-  product: Product!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-}
-
-"""상품 구매에 대한 타입"""
-enum PRODUCT_ORDER_STATUS_ENUM {
-  """상품 구매 완료"""
-  BOUGHT
-
-  """상품 취소 완료"""
-  REFUNDED
-}
-
 type Query {
   fetchLoginUser: User!
   fetchProducts(category: PRODUCT_CATEGORY_TYPE!, veganLevel: Int!, page: Int!): [Product!]!
-  fetchProduct(productId: String!): Product!
+  fetchProduct(productId: ID!): Product!
   fetchProductsCount(category: PRODUCT_CATEGORY_TYPE!, veganLevel: Int!): Int!
   fetchProductsBySeller(page: Int!): [Product!]!
+  fetchProductsOfRecommend: [Product!]!
+  fetchProductsOfBestSelling: [Product!]!
+  fetchReviewsByProduct(productId: ID!, page: Int!): [Review!]!
+  fetchReviewsCountByProduct(productId: ID!): Int!
+  fetchReviewsByBuyer(page: Int!): [Review!]!
+  fetchReviewsCountByBuyer: Int!
   fetchReview(reviewId: ID!): Review!
   fetchQuestion(questionId: ID!): Question!
   fetchPointTransactions(startDate: DateTime, endDate: DateTime, page: Int!): [Point!]!
@@ -168,6 +176,8 @@ type Query {
   fetchProductOrdersCountByBuyer(startDate: DateTime, endDate: DateTime): Int!
   fetchProductOrdersBySeller(startDate: DateTime, endDate: DateTime, page: Int!): [ProductOrder!]!
   fetchProductOrdersCountBySeller(startDate: DateTime, endDate: DateTime): Int!
+  fetchProductOrdersWithoutReview(page: Int!): [ProductOrder!]!
+  fetchProductOrdersCountWithoutReview: Int!
 }
 
 type Mutation {
@@ -184,11 +194,11 @@ type Mutation {
   deleteLoginUser: Boolean!
   restoreUser(email: Email!): Boolean!
   createProduct(createProductInput: CreateProductInput!): Product!
-  updateProduct(productId: String!, updateProductInput: UpdateProductInput!): Product!
-  deleteProduct(productId: String!): Boolean!
+  updateProduct(productId: ID!, updateProductInput: UpdateProductInput!): Product!
+  deleteProduct(productId: ID!): Boolean!
   getToken(phone: Phone!): String!
   checkValidToken(phone: Phone!, token: String!): String!
-  createReview(createReviewInput: CreateReviewInput!): Review!
+  createReview(productOrderId: ID!, createReviewInput: CreateReviewInput!): Review!
   updateReview(updateReviewInput: UpdateReviewInput!, reviewId: ID!): Review!
   deleteReview(reviewId: String!): Boolean!
   createQuestion(createQuestionInput: CreateQuestionInput!, productId: String!): Question!
