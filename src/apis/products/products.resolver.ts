@@ -31,7 +31,7 @@ export class ProductsResolver {
 
   @Query(() => Product)
   fetchProduct(
-    @Args('productId') productId: string, //
+    @Args('productId', { type: () => ID }) productId: string, //
   ): Promise<Product> {
     return this.productsService.findOne({ productId });
   }
@@ -49,21 +49,29 @@ export class ProductsResolver {
   ///-----------------------------///
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => [Product])
-  async fetchProductsBySeller(
+  fetchProductsBySeller(
     @Args({ name: 'page', type: () => Int }) page: number,
     @CurrentUser() id: string,
   ) {
-    return await this.productsService.findProductBySeller({ id, page });
+    return this.productsService.findProductBySeller({ id, page });
+  }
+
+  @Query(() => [Product])
+  fetchProductsOfRecommend() {
+    return this.productsService.findByRecommend();
+  }
+
+  @Query(() => [Product])
+  fetchProductsOfBestSelling() {
+    return this.productsService.findBySelling();
   }
 
   ///-----------------------------///
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Product)
   createProduct(
-    @CurrentUser()
-    id: string,
-    @Args('createProductInput')
-    createProductInput: CreateProductInput,
+    @CurrentUser() id: string, //
+    @Args('createProductInput') createProductInput: CreateProductInput,
   ): Promise<Product> {
     return this.productsService.create({ createProductInput, id });
   }
@@ -72,7 +80,7 @@ export class ProductsResolver {
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Product)
   async updateProduct(
-    @Args('productId') productId: string,
+    @Args('productId', { type: () => ID }) productId: string,
     @Args('updateProductInput') updateProductInput: UpdateProductInput,
   ): Promise<Product> {
     const product = await this.productsService.findOne({ productId });
@@ -84,7 +92,7 @@ export class ProductsResolver {
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
   deleteProduct(
-    @Args('productId') productId: string, //
+    @Args('productId', { type: () => ID }) productId: string, //
   ): Promise<boolean> {
     return this.productsService.delete({ productId });
   }

@@ -4,9 +4,12 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { Field, ID, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { User } from 'src/apis/users/entities/user.entity';
+import { Review } from 'src/apis/reviews/entities/review.entity';
+import { ProductOrder } from 'src/apis/productsOrders/entities/productOrder.entity';
 
 export enum PRODUCT_CATEGORY_TYPE { //
   FOOD = 'FOOD',
@@ -72,6 +75,12 @@ export class Product {
   @Column({ default: false })
   @Field(() => Boolean)
   isOutOfStock: boolean;
+
+  @OneToMany(() => Review, (reviews) => reviews.product)
+  reviews: Review[];
+
+  @OneToMany(() => ProductOrder, (productOrder) => productOrder.product)
+  productOrder: ProductOrder[];
 
   @CreateDateColumn()
   createdAt: Date;

@@ -10,7 +10,7 @@ import { Review } from 'src/apis/reviews/entities/review.entity';
 
 @Entity()
 @ObjectType()
-export class Image {
+export class ReviewImage {
   @PrimaryGeneratedColumn('uuid')
   @Field(() => ID)
   id: string;
