@@ -150,6 +150,15 @@ enum POINT_TRANSACTION_STATUS_ENUM {
   COLLECTED
 }
 
+type Answer {
+  id: ID!
+  answers_contents: String!
+  user: User!
+  question: Question!
+  createdAt: DateTime!
+  deletedAt: DateTime!
+}
+
 type Query {
   fetchLoginUser: User!
   fetchProducts(category: PRODUCT_CATEGORY_TYPE!, veganLevel: Int!, page: Int!): [Product!]!
@@ -178,6 +187,7 @@ type Query {
   fetchProductOrdersCountBySeller(startDate: DateTime, endDate: DateTime): Int!
   fetchProductOrdersWithoutReview(page: Int!): [ProductOrder!]!
   fetchProductOrdersCountWithoutReview: Int!
+  fetchAnswer(answerId: ID!): Answer!
 }
 
 type Mutation {
@@ -216,6 +226,9 @@ type Mutation {
   toggleProductPick(productId: ID!): Boolean!
   createProductOrder(productId: ID!, amount: Int!, quantity: Int!): ProductOrder!
   cancelProductOrder(productOrderId: ID!): Boolean!
+  createAnswer(questionId: String!, answers_contents: String!): Answer!
+  updateAnswer(answerId: ID!, answers_contents: String!): Answer!
+  deleteAnswer(answerId: String!): Boolean!
 }
 
 """The `Upload` scalar type represents a file upload."""

@@ -19,4 +19,4 @@ import { QuestionsService } from './questions.service';
     QuestionsService,
   ],
 })
-export class QuestiosnModule {}
+export class QuestionsModule {}

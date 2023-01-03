@@ -20,7 +20,7 @@ export class Answer {
 
   @Column()
   @Field(() => String)
-  answer_content: string;
+  answers_contents: string;
 
   @ManyToOne(() => User)
   @Field(() => User)
