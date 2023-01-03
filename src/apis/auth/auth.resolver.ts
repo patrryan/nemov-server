@@ -1,4 +1,9 @@
-import { UnprocessableEntityException, UseGuards } from '@nestjs/common';
+import {
+  UnprocessableEntityException,
+  UseGuards,
+  CACHE_MANAGER,
+  Inject,
+} from '@nestjs/common';
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { IContext } from 'src/commons/types/context';
 import { UsersService } from '../users/users.service';
@@ -31,9 +36,15 @@ export class AuthResolver {
     if (!isAuth)
       throw new UnprocessableEntityException('비밀번호가 틀렸습니다.');
 
-    this.authService.setRefreshToken({ id: user.id, res: context.res });
+    this.authService.setRefreshToken({
+      id: user.id,
+      res: context.res,
+      req: context.req,
+    });
     return this.authService.getAccessToken({ id: user.id });
   }
+
+  //--------------------------------------
 
   @UseGuards(GqlAuthRefreshGuard)
   @Mutation(() => String)
