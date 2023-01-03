@@ -12,30 +12,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-export enum VEGAN_LEVEL_TYPE {
-  FLEX = 'FLEX',
-  POLO = 'POLO',
-  PESCO = 'PESCO',
-  LACTOOVO = 'LACTOOVO',
-  OVO = 'OVO',
-  LACTO = 'LACTO',
-  VEGAN = 'VEGAN',
-}
-
-registerEnumType(VEGAN_LEVEL_TYPE, {
-  name: 'VEGAN_LEVEL_TYPE',
-  description: '비건 레벨(0~6단계)에 대한 타입',
-  valuesMap: {
-    FLEX: { description: '0단계 비건 - 플렉시테리언' },
-    POLO: { description: '1단계 비건 - 폴로' },
-    PESCO: { description: '2단계 비건 - 페스코' },
-    LACTOOVO: { description: '3단계 비건 - 락토오보' },
-    OVO: { description: '4단계 비건 - 오보' },
-    LACTO: { description: '5단계 비건 - 락토' },
-    VEGAN: { description: '6단계 비건 - 비건' },
-  },
-});
-
 export enum ROLE_TYPE {
   BUYER = 'BUYER',
   SELLER = 'SELLER',
@@ -72,9 +48,9 @@ export class User {
   @Field(() => GraphQLPhone)
   phone: string;
 
-  @Column({ type: 'enum', enum: VEGAN_LEVEL_TYPE, nullable: true })
-  @Field(() => VEGAN_LEVEL_TYPE, { nullable: true })
-  veganLevel: VEGAN_LEVEL_TYPE;
+  @Column({ nullable: true })
+  @Field(() => Int, { nullable: true })
+  veganLevel: number;
 
   @Column({ nullable: true })
   @Field(() => GraphQLZipCode, { nullable: true })
@@ -98,7 +74,7 @@ export class User {
 
   @Column({ default: 0 })
   @Field(() => Int)
-  balance: number;
+  point: number;
 
   @CreateDateColumn()
   createdAt: Date;

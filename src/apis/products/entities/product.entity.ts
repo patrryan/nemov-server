@@ -3,9 +3,13 @@ import {
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
+  ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { Field, ID, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { VEGAN_LEVEL_TYPE } from 'src/apis/users/entities/user.entity';
+import { User } from 'src/apis/users/entities/user.entity';
+import { Review } from 'src/apis/reviews/entities/review.entity';
+import { ProductOrder } from 'src/apis/productsOrders/entities/productOrder.entity';
 
 export enum PRODUCT_CATEGORY_TYPE { //
   FOOD = 'FOOD',
@@ -49,8 +53,8 @@ export class Product {
   image: string;
 
   @Column({ nullable: true })
-  @Field(() => VEGAN_LEVEL_TYPE, { nullable: true })
-  veganLevel: string;
+  @Field(() => Int, { nullable: true })
+  veganLevel: number;
 
   @Column()
   @Field(() => Int)
@@ -64,10 +68,24 @@ export class Product {
   @Field(() => Int)
   discount: number;
 
+  @Column()
+  @Field(() => Int)
+  quantity: number;
+
   @Column({ default: false })
   @Field(() => Boolean)
   isOutOfStock: boolean;
 
+  @OneToMany(() => Review, (reviews) => reviews.product)
+  reviews: Review[];
+
+  @OneToMany(() => ProductOrder, (productOrder) => productOrder.product)
+  productOrder: ProductOrder[];
+
   @CreateDateColumn()
   createdAt: Date;
+
+  @ManyToOne(() => User)
+  @Field(() => User)
+  user: User;
 }

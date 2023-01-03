@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { User } from '../users/entities/user.entity';
 import { Product } from './entities/product.entity';
 import {
   IProductsServiceCreate,
@@ -14,13 +15,21 @@ export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private readonly productsRepository: Repository<Product>,
+
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
   ) {}
 
   ///-----------------------------///
-  findAll(): Promise<Product[]> {
-    return this.productsRepository.find({
-      // relations: ['productCategory', 'productAllergy'],
-    });
+  async findAll({ category, page, veganLevel }) {
+    return this.productsRepository
+      .createQueryBuilder('product')
+      .where('product.category = :category', { category })
+      .andWhere('product.veganLevel = :veganLevel', { veganLevel })
+      .orderBy('product.createdAt', 'DESC')
+      .skip((page - 1) * 9)
+      .take(9)
+      .getMany();
   }
 
   ///-----------------------------///
@@ -31,16 +40,65 @@ export class ProductsService {
   }
   ///-----------------------------///
 
-  async findCount() {
-    return await this.productsRepository.count();
+  async findCount({ category, veganLevel }) {
+    return this.productsRepository
+      .createQueryBuilder('product')
+      .where('product.category = :category', { category })
+      .andWhere('product.veganLevel = :veganLevel', { veganLevel })
+      .getCount();
+  }
+
+  ///-----------------------------///
+  async findProductBySeller({ id, page }) {
+    return this.productsRepository
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.user', 'user')
+      .where('user = :user', { id })
+      .orderBy('product.createdAt', 'DESC')
+      .skip((page - 1) * 9)
+      .take(10)
+      .getMany();
+  }
+
+  async findByRecommend() {
+    return await this.productsRepository
+      .createQueryBuilder('product')
+      .select('product.id')
+      .addSelect('count(review.id)', 'countReview')
+      .leftJoin('product.reviews', 'review')
+      .groupBy('product.id')
+      .orderBy('countReview', 'DESC')
+      .take(3)
+      .getMany();
+  }
+
+  async findBySelling() {
+    return await this.productsRepository
+      .createQueryBuilder('product')
+      .leftJoin('product.productOrder', 'productOrder')
+      .where('productOrder.status = :status', { status: 'BOUGHT' })
+      .select('product.id')
+      .addSelect('count(productOrder.id)', 'countOrder')
+      .groupBy('product.id')
+      .orderBy('countOrder', 'DESC')
+      .take(8)
+      .getMany();
   }
 
   ///-----------------------------///
   async create({
     createProductInput,
+    id,
   }: IProductsServiceCreate): Promise<Product> {
+    const user = await this.usersRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+    console.log(user);
     return await this.productsRepository.save({
       ...createProductInput,
+      user: { ...user },
     });
   }
 

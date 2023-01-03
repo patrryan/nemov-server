@@ -26,8 +26,20 @@ export class PointsResolver {
     endDate: Date,
     @Args('page', { type: () => Int }) page: number,
     @CurrentUser() id: string,
-  ) {
-    return this.pointsService.findAllById({ startDate, endDate, page, id });
+  ): Promise<Point[]> {
+    return this.pointsService.findAllByUser({ startDate, endDate, page, id });
+  }
+
+  @UseGuards(GqlAuthAccessGuard)
+  @Query(() => Int)
+  fetchPointTransactionsCount(
+    @Args('startDate', { type: () => GraphQLISODateTime, nullable: true })
+    startDate: Date,
+    @Args('endDate', { type: () => GraphQLISODateTime, nullable: true })
+    endDate: Date,
+    @CurrentUser() id: string,
+  ): Promise<number> {
+    return this.pointsService.findAllCountByUser({ startDate, endDate, id });
   }
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => Int)
@@ -51,7 +63,7 @@ export class PointsResolver {
     @Args('amount', { type: () => Int, description: '포인트 충전 금액' })
     amount: number,
     @CurrentUser() id: string,
-  ) {
+  ): Promise<Point> {
     return this.pointsService.createPointCharge({
       impUid,
       amount,
@@ -63,7 +75,7 @@ export class PointsResolver {
   cancelPointCharge(
     @Args('impUid', { type: () => ID }) impUid: string, //
     @CurrentUser() id: string,
-  ) {
+  ): Promise<Point> {
     return this.pointsService.cancelPointCharge({
       impUid,
       id,

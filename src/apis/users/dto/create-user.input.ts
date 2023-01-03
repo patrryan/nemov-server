@@ -1,10 +1,9 @@
-import { Field, InputType } from '@nestjs/graphql';
+import { Field, InputType, Int } from '@nestjs/graphql';
 import { GraphQLBusinessLicenseNumber } from 'src/commons/graphql/customTypes/businessLicenseNumber.type';
 import { GraphQLEmail } from 'src/commons/graphql/customTypes/email.type';
 import { GraphQLPassword } from 'src/commons/graphql/customTypes/password.type';
 import { GraphQLPhone } from 'src/commons/graphql/customTypes/phone.type';
 import { GraphQLZipCode } from 'src/commons/graphql/customTypes/zipCode.type';
-import { VEGAN_LEVEL_TYPE } from '../entities/user.entity';
 
 @InputType()
 export class CreateUserInput {
@@ -20,8 +19,8 @@ export class CreateUserInput {
   @Field(() => GraphQLPhone)
   phone: string;
 
-  @Field(() => VEGAN_LEVEL_TYPE, { nullable: true })
-  veganLevel: VEGAN_LEVEL_TYPE;
+  @Field(() => Int, { nullable: true })
+  veganLevel: number;
 
   @Field(() => GraphQLZipCode, { nullable: true })
   zipCode: string;

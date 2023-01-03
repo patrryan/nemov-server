@@ -5,7 +5,8 @@ import {
   Int,
   ObjectType,
 } from '@nestjs/graphql';
-import { Image } from 'src/apis/Images/entities/Image.entity';
+import { Product } from 'src/apis/products/entities/product.entity';
+import { ReviewImage } from 'src/apis/reviewImages/entities/reviewImage.entity';
 import { User } from 'src/apis/users/entities/user.entity';
 import {
   Column,
@@ -36,16 +37,20 @@ export class Review {
   @Field(() => Int)
   rating: number;
 
+  @ManyToOne(() => Product)
+  @Field(() => Product)
+  product: Product;
+
   @ManyToOne(() => User)
   @Field(() => User)
   user: User;
 
-  @OneToMany(() => Image, (image) => image.review, {
+  @OneToMany(() => ReviewImage, (images) => images.review, {
     nullable: true,
     cascade: true,
   })
-  @Field(() => [Image], { nullable: true })
-  images: Image[];
+  @Field(() => [ReviewImage], { nullable: true })
+  images: ReviewImage[];
 
   @CreateDateColumn()
   @Field(() => GraphQLISODateTime)

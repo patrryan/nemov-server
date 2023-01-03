@@ -9,6 +9,16 @@ import { DataSource, Repository } from 'typeorm';
 import { IamportService } from '../iamport/iamport.service';
 import { User } from '../users/entities/user.entity';
 import { Point, POINT_TRANSACTION_STATUS_ENUM } from './entities/point.entity';
+import {
+  IPointsServiceCancelPointCharge,
+  IPointsServiceCreatePointCharge,
+  IPointsServiceFindAllByUser,
+  IPointsServiceFindAllCountByUser,
+  IPointsServiceValidateForPointCharge,
+  IPointsServiceValidateForPointRefund,
+  IPointsServiceValidateForPointRefundReturn,
+} from './interfaces/points-service.interface';
+
 @Injectable()
 export class PointsService {
   constructor(
@@ -19,6 +29,13 @@ export class PointsService {
     private readonly iamportService: IamportService,
     private readonly dataSource: DataSource,
   ) {}
+  
+  async findAllByUser({
+    startDate,
+    endDate,
+    page,
+    id,
+  }: IPointsServiceFindAllByUser): Promise<Point[]> {
   async findAllById({ startDate, endDate, page, id }) {
     if ((startDate && !endDate) || (!startDate && endDate))
       throw new UnprocessableEntityException(
@@ -49,7 +66,12 @@ export class PointsService {
         .getMany();
     }
   }
-  async findAllCount({ startDate, endDate, id }) {
+
+  async findAllCountByUser({
+    startDate,
+    endDate,
+    id,
+  }: IPointsServiceFindAllCountByUser): Promise<number> {
     if ((startDate && !endDate) || (!startDate && endDate))
       throw new UnprocessableEntityException(
         '날짜 설정시 시작과 끝을 모두 지정해주세요.',
@@ -73,7 +95,12 @@ export class PointsService {
         .getCount();
     }
   }
-  async createPointCharge({ impUid, amount, id }): Promise<Point> {
+
+  async createPointCharge({
+    impUid,
+    amount,
+    id,
+  }: IPointsServiceCreatePointCharge): Promise<Point> {
     await this.validateForPointCharge({ impUid, amount });
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -85,12 +112,13 @@ export class PointsService {
       });
       const updatedUser = this.usersRepository.create({
         ...target,
-        balance: target.balance + amount,
+        point: target.point + amount,
       });
       await queryRunner.manager.save(updatedUser);
       const payment = this.pointsRepository.create({
         impUid,
         amount,
+        balance: updatedUser.point,
         status: POINT_TRANSACTION_STATUS_ENUM.PAID,
         user: updatedUser,
       });
@@ -103,7 +131,11 @@ export class PointsService {
       await queryRunner.release();
     }
   }
-  async validateForPointCharge({ impUid, amount: _amount }): Promise<void> {
+
+  async validateForPointCharge({
+    impUid,
+    amount: _amount,
+  }: IPointsServiceValidateForPointCharge): Promise<void> {
     const result = await this.pointsRepository.findOne({
       where: { impUid },
     });
@@ -120,7 +152,11 @@ export class PointsService {
       );
     }
   }
-  async cancelPointCharge({ impUid, id }) {
+  
+  async cancelPointCharge({
+    impUid,
+    id,
+  }: IPointsServiceCancelPointCharge): Promise<Point> {
     const { amount, user } = await this.validateForPointRefund({ impUid, id });
     const refundAmount = await this.iamportService.cancelTransaction({
       imp_uid: impUid,
@@ -132,12 +168,13 @@ export class PointsService {
     try {
       const updatedUser = this.usersRepository.create({
         ...user,
-        balance: user.balance - refundAmount,
+        point: user.point - refundAmount,
       });
       await queryRunner.manager.save(updatedUser);
       const payment = this.pointsRepository.create({
         impUid,
         amount: -refundAmount,
+        balance: updatedUser.point,
         status: POINT_TRANSACTION_STATUS_ENUM.CANCELLED,
         user: updatedUser,
       });
@@ -150,7 +187,11 @@ export class PointsService {
       await queryRunner.release();
     }
   }
-  async validateForPointRefund({ impUid, id }) {
+
+  async validateForPointRefund({
+    impUid,
+    id,
+  }: IPointsServiceValidateForPointRefund): Promise<IPointsServiceValidateForPointRefundReturn> {
     const target = await this.usersRepository.findOne({ where: { id } });
     const result = await this.pointsRepository.findOne({
       where: { impUid },
@@ -161,7 +202,8 @@ export class PointsService {
     if (result.status === 'CANCEL') {
       throw new UnprocessableEntityException('이미 취소된 결제 건입니다.');
     }
-    if (target.balance < result.amount) {
+
+    if (target.point < result.amount) {
       throw new UnprocessableEntityException('환불이 불가능합니다.');
     }
     return { amount: result.amount, user: target };
