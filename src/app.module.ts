@@ -31,19 +31,6 @@ import { AnswersModule } from './apis/answer/answer.module';
       autoSchemaFile: 'src/commons/graphql/schema.gql',
       context: ({ req, res }) => ({ req, res }),
       resolvers: [...customTypes],
-      cors: {
-        origin: ['http://localhost:3000', 'https://code-backend.shop/graphql'],
-        credentials: true,
-        exposedHeaders: ['Set-Cookie', 'Cookie'],
-        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-        allowedHeaders: [
-          'Access-Control-Allow-Headers',
-          'Authorization',
-          'X-Requested-With',
-          'Content-Type',
-          'Accept',
-        ],
-      },
     }),
     TypeOrmModule.forRoot({
       type: process.env.DATABASE_TYPE as 'mysql',
@@ -58,7 +45,7 @@ import { AnswersModule } from './apis/answer/answer.module';
     }),
     CacheModule.register<RedisClientOptions>({
       store: redisStore,
-      url: process.env.REDIS_URL,
+      url: 'reids://my-redis:6379',
       isGlobal: true,
     }),
     FilesModule,
