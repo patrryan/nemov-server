@@ -18,12 +18,31 @@ export class AuthService {
     private readonly cacheManager: Cache,
   ) {}
 
-  setRefreshToken({ id, res }): void {
+  setRefreshToken({ id, res, req }): void {
     const refreshToken = this.jwtService.sign(
       { id },
       { secret: process.env.JWT_REFRESH_KEY, expiresIn: '2w' },
     );
-    res.setHeader('Set-Cookie', `refreshToken=${refreshToken}`);
+
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'https://code-backend.shop/graphql',
+    ];
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT');
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
+    );
+    res.setHeader(
+      'Set-Cookie',
+      `refreshToken=${refreshToken}; path=/; domain=.code-backend.shop; SameSite=None; Secure; httpOnly;`,
+    );
+    // res.setHeader('Set-Cookie', `refreshToken=${refreshToken}`);
   }
 
   getAccessToken({ id }): string {
@@ -81,7 +100,10 @@ export class AuthService {
       throw new UnprocessableEntityException(error);
     }
 
-    res.setHeader('Set-Cookie', `refreshToken=; path=/; Secure; httpOnly;`);
+    res.setHeader(
+      'Set-Cookie',
+      `refreshToken=${refreshToken}; path=/; domain=.code-backend.shop; SameSite=None; Secure; httpOnly;`,
+    );
 
     return '로그아웃 성공';
   }
