@@ -12,13 +12,11 @@ import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
 import { CurrentUser } from 'src/commons/decorators/current-user.decorator';
 import { Point } from './entities/point.entity';
 import { PointsService } from './points.service';
-
 @Resolver()
 export class PointsResolver {
   constructor(
     private readonly pointsService: PointsService, //
   ) {}
-
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => [Point])
   fetchPointTransactions(
@@ -43,7 +41,17 @@ export class PointsResolver {
   ): Promise<number> {
     return this.pointsService.findAllCountByUser({ startDate, endDate, id });
   }
-
+  @UseGuards(GqlAuthAccessGuard)
+  @Query(() => Int)
+  fetchPointTransactionsCount(
+    @Args('startDate', { type: () => GraphQLISODateTime, nullable: true })
+    startDate: Date,
+    @Args('endDate', { type: () => GraphQLISODateTime, nullable: true })
+    endDate: Date,
+    @CurrentUser() id: string,
+  ) {
+    return this.pointsService.findAllCount({ startDate, endDate, id });
+  }
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Point)
   createPointCharge(
@@ -62,7 +70,6 @@ export class PointsResolver {
       id,
     });
   }
-
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Point)
   cancelPointCharge(
