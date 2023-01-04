@@ -22,6 +22,7 @@ import { CartModule } from './apis/cart/cart.module';
 import { ProductsPicksModule } from './apis/productsPicks/productsPicks.module';
 import { ProductsOrdersModule } from './apis/productsOrders/productsOrders.module';
 import { AnswersModule } from './apis/answer/answer.module';
+import { ProductsCategoriesModule } from './apis/productsCategories/productsCategories.module';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { AnswersModule } from './apis/answer/answer.module';
     ProductsPicksModule,
     ProductsOrdersModule,
     AnswersModule,
+    ProductsCategoriesModule,
   ],
   providers: [
     AppService, //
