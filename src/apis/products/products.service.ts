@@ -24,6 +24,7 @@ export class ProductsService {
   async findAll({ category, page, veganLevel }) {
     return this.productsRepository
       .createQueryBuilder('product')
+      .leftJoinAndSelect('product.user', 'user')
       .where('product.category = :category', { category })
       .andWhere('product.veganLevel = :veganLevel', { veganLevel })
       .orderBy('product.createdAt', 'DESC')
@@ -36,6 +37,7 @@ export class ProductsService {
   findOne({ productId }: IProductsServiceFindOne): Promise<Product> {
     return this.productsRepository.findOne({
       where: { id: productId },
+      relations: ['user'],
     });
   }
   ///-----------------------------///
@@ -53,7 +55,7 @@ export class ProductsService {
     return this.productsRepository
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.user', 'user')
-      .where('user = :user', { id })
+      .where('product.user = :id', { id })
       .orderBy('product.createdAt', 'DESC')
       .skip((page - 1) * 9)
       .take(10)
