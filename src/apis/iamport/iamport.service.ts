@@ -5,7 +5,6 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import axios from 'axios';
-
 @Injectable()
 export class IamportService {
   async getAccessToken() {
@@ -19,7 +18,6 @@ export class IamportService {
           imp_secret: process.env.IMP_SECRET,
         },
       });
-
       return result.data.response.access_token;
     } catch (e) {
       if (
@@ -31,7 +29,6 @@ export class IamportService {
       throw new HttpException(e.response.data.message, e.response.status);
     }
   }
-
   async getPaymentData({ impUid }) {
     try {
       const accessToken = await this.getAccessToken();
@@ -40,7 +37,6 @@ export class IamportService {
         method: 'get',
         headers: { Authorization: `Bearer ${accessToken}` },
       });
-
       return {
         amount: result.data.response.amount,
         status: result.data.response.status,
@@ -55,11 +51,9 @@ export class IamportService {
       throw new HttpException(e.response.data.message, e.response.status);
     }
   }
-
   async cancelTransaction({ imp_uid, amount }) {
     try {
       const accessToken = await this.getAccessToken();
-
       const result = await axios({
         url: 'https://api.iamport.kr/payments/cancel',
         method: 'post',
@@ -74,11 +68,9 @@ export class IamportService {
           checksum: amount,
         },
       });
-
       if (result.data.code !== 0) {
         throw new HttpException(result.data.message, 400);
       }
-
       return result.data.response.amount;
     } catch (e) {
       if (e.response.status === 401) {

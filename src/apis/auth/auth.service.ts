@@ -41,6 +41,7 @@ export class AuthService {
     res.setHeader(
       'Set-Cookie',
       `refreshToken=${refreshToken}; path=/; domain=.code-backend.shop; SameSite=None; Secure; httpOnly;`,
+
     );
     // res.setHeader('Set-Cookie', `refreshToken=${refreshToken}`);
   }
@@ -103,6 +104,7 @@ export class AuthService {
     res.setHeader(
       'Set-Cookie',
       `refreshToken=${refreshToken}; path=/; domain=.code-backend.shop; SameSite=None; Secure; httpOnly;`,
+
     );
 
     return '로그아웃 성공';
