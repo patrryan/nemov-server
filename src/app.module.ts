@@ -16,11 +16,12 @@ import { PhoneModule } from './apis/phone/phone.module';
 import { RedisClientOptions } from 'redis';
 import * as redisStore from 'cache-manager-redis-store';
 import { ReviewsModule } from './apis/reviews/reviews.module';
-import { QuestiosnModule } from './apis/questions/questions.module';
+import { QuestionsModule } from './apis/questions/questions.module';
 import { PointsModule } from './apis/points/points.module';
 import { CartModule } from './apis/cart/cart.module';
 import { ProductsPicksModule } from './apis/productsPicks/productsPicks.module';
 import { ProductsOrdersModule } from './apis/productsOrders/productsOrders.module';
+import { AnswersModule } from './apis/answer/answer.module';
 
 @Module({
   imports: [
@@ -66,11 +67,12 @@ import { ProductsOrdersModule } from './apis/productsOrders/productsOrders.modul
     ProductsModule,
     PhoneModule,
     ReviewsModule,
-    QuestiosnModule,
+    QuestionsModule,
     PointsModule,
     CartModule,
     ProductsPicksModule,
     ProductsOrdersModule,
+    AnswersModule,
   ],
   providers: [
     AppService, //

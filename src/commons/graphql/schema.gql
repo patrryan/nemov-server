@@ -111,10 +111,20 @@ enum PRODUCT_CATEGORY_TYPE {
   LIFE
 }
 
+type Answer {
+  id: ID!
+  answers_contents: String!
+  question: Question!
+  user: User!
+  createdAt: DateTime!
+  deletedAt: DateTime!
+}
+
 type Question {
   id: ID!
   title: String!
   contents: String!
+  answer: Answer!
   product: Product!
   user: User!
 }
@@ -164,6 +174,8 @@ type Query {
   fetchReviewsCountByBuyer: Int!
   fetchReview(reviewId: ID!): Review!
   fetchQuestion(questionId: ID!): Question!
+  fetchQuestionsByProduct(productId: ID!, page: Int!): [Question!]!
+  fetchQuestionsCountByProduct(productId: ID!): Int!
   fetchPointTransactions(startDate: DateTime, endDate: DateTime, page: Int!): [Point!]!
   fetchPointTransactionsCount(startDate: DateTime, endDate: DateTime): Int!
   fetchCart: [Product!]!
@@ -178,6 +190,8 @@ type Query {
   fetchProductOrdersCountBySeller(startDate: DateTime, endDate: DateTime): Int!
   fetchProductOrdersWithoutReview(page: Int!): [ProductOrder!]!
   fetchProductOrdersCountWithoutReview: Int!
+  fetchAnswer(answerId: ID!): Answer!
+  fetchAnswerByQuestion(questionId: ID!): Answer!
 }
 
 type Mutation {
@@ -216,6 +230,9 @@ type Mutation {
   toggleProductPick(productId: ID!): Boolean!
   createProductOrder(productId: ID!, amount: Int!, quantity: Int!): ProductOrder!
   cancelProductOrder(productOrderId: ID!): Boolean!
+  createAnswer(questionId: String!, answers_contents: String!): Answer!
+  updateAnswer(answerId: ID!, answers_contents: String!): Answer!
+  deleteAnswer(answerId: String!): Boolean!
 }
 
 """The `Upload` scalar type represents a file upload."""

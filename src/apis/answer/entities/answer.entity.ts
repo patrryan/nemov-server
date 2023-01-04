@@ -20,16 +20,15 @@ export class Answer {
 
   @Column()
   @Field(() => String)
-  answer_content: string;
+  answers_contents: string;
+
+  @OneToOne(() => Question)
+  @Field(() => Question)
+  question: Question;
 
   @ManyToOne(() => User)
   @Field(() => User)
   user: User;
-
-  @JoinColumn()
-  @OneToOne(() => Question)
-  @Field(() => Question)
-  question: Question;
 
   @CreateDateColumn()
   @Field(() => GraphQLISODateTime)
