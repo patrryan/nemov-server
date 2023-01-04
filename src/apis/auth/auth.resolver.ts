@@ -31,11 +31,7 @@ export class AuthResolver {
     if (!isAuth)
       throw new UnprocessableEntityException('비밀번호가 틀렸습니다.');
 
-    this.authService.setRefreshToken({
-      id: user.id,
-      res: context.res,
-      req: context.req,
-    });
+    this.authService.setRefreshToken({ id: user.id, res: context.res });
     return this.authService.getAccessToken({ id: user.id });
   }
 
