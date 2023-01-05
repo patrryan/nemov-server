@@ -38,6 +38,7 @@ export class ProductsOrdersService {
       return await this.productsOrdersRepository
         .createQueryBuilder('productOrder')
         .leftJoinAndSelect('productOrder.buyer', 'buyer')
+        .leftJoinAndSelect('productOrder.product', 'product')
         .where('productOrder.buyer = :id', { id })
         .andWhere('productOrder.updatedAt BETWEEN :startDate AND :endLocal', {
           startDate,
@@ -51,6 +52,7 @@ export class ProductsOrdersService {
       return await this.productsOrdersRepository
         .createQueryBuilder('productOrder')
         .leftJoinAndSelect('productOrder.buyer', 'buyer')
+        .leftJoinAndSelect('productOrder.product', 'product')
         .where('productOrder.buyer = :id', { id })
         .orderBy('productOrder.updatedAt', 'DESC')
         .skip((page - 1) * 10)
@@ -102,6 +104,7 @@ export class ProductsOrdersService {
       return await this.productsOrdersRepository
         .createQueryBuilder('productOrder')
         .leftJoinAndSelect('productOrder.seller', 'seller')
+        .leftJoinAndSelect('productOrder.product', 'product')
         .where('productOrder.seller = :id', { id })
         .andWhere('productOrder.updatedAt BETWEEN :startDate AND :endLocal', {
           startDate,
@@ -115,6 +118,7 @@ export class ProductsOrdersService {
       return await this.productsOrdersRepository
         .createQueryBuilder('productOrder')
         .leftJoinAndSelect('productOrder.seller', 'seller')
+        .leftJoinAndSelect('productOrder.product', 'product')
         .where('productOrder.seller = :id', { id })
         .orderBy('productOrder.updatedAt', 'DESC')
         .skip((page - 1) * 10)
