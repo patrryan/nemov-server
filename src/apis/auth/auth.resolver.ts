@@ -22,7 +22,6 @@ export class AuthResolver {
     @Args('password') password: string,
     @Context() context: IContext,
   ): Promise<string> {
-    // 로그인
     const user = await this.usersService.findOneByEmail({ email });
     if (!user)
       throw new UnprocessableEntityException('등록된 이메일이 아닙니다.');
@@ -31,7 +30,11 @@ export class AuthResolver {
     if (!isAuth)
       throw new UnprocessableEntityException('비밀번호가 틀렸습니다.');
 
-    this.authService.setRefreshToken({ id: user.id, res: context.res });
+    this.authService.setRefreshToken({
+      id: user.id,
+      res: context.res,
+      req: context.req,
+    });
     return this.authService.getAccessToken({ id: user.id });
   }
 
@@ -40,14 +43,10 @@ export class AuthResolver {
   restoreAccessToken(@Context() context: IContext): string {
     return this.authService.getAccessToken({ id: context.req.user.id });
   }
-  //--------------------------------------
 
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => String)
-  async logout(
-    //
-    @Context() context: IContext,
-  ) {
+  async logout(@Context() context: IContext) {
     return this.authService.logout({
       req: context.req,
       res: context.res,
