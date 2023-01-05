@@ -1,5 +1,10 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 @ObjectType()
@@ -15,4 +20,7 @@ export class ProductCategory {
   @Column()
   @Field(() => String)
   image: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
 }

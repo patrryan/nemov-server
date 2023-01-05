@@ -17,7 +17,10 @@ export class ProductsCategoriesService {
   ) {}
 
   findAll(): Promise<ProductCategory[]> {
-    return this.productsCategoriesRepository.find();
+    return this.productsCategoriesRepository
+      .createQueryBuilder('productCategory')
+      .orderBy('productCategory.createdAt', 'DESC')
+      .getMany();
   }
 
   findOne({
