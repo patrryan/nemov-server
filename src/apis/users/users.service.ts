@@ -118,8 +118,8 @@ export class UsersService {
     return result ? false : true;
   }
 
-  findOneByEmail({ email }: IUsersServiceFindOneByEmail): Promise<User> {
-    return this.usersRepository.findOne({
+  async findOneByEmail({ email }: IUsersServiceFindOneByEmail): Promise<User> {
+    return await this.usersRepository.findOne({
       where: { email },
       withDeleted: true,
     });

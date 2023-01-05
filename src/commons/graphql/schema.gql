@@ -104,7 +104,7 @@ type Product {
 
 type Answer {
   id: ID!
-  answers_contents: String!
+  contents: String!
   question: Question!
   user: User!
   createdAt: DateTime!
@@ -208,7 +208,7 @@ type Mutation {
   updateProduct(productCategoryId: ID!, updateProductCategoryInput: UpdateProductCategoryInput!): ProductCategory!
   deleteProduct(productId: ID!): Boolean!
   getToken(phone: Phone!): String!
-  checkValidToken(phone: Phone!, token: String!): String!
+  checkValidToken(phone: Phone!, token: String!): Boolean!
   createReview(productOrderId: ID!, createReviewInput: CreateReviewInput!): Review!
   updateReview(updateReviewInput: UpdateReviewInput!, reviewId: ID!): Review!
   deleteReview(reviewId: String!): Boolean!
@@ -227,8 +227,8 @@ type Mutation {
   toggleProductPick(productId: ID!): Boolean!
   createProductOrder(productId: ID!, amount: Int!, quantity: Int!): ProductOrder!
   cancelProductOrder(productOrderId: ID!): Boolean!
-  createAnswer(questionId: ID!, answers_contents: String!): Answer!
-  updateAnswer(answerId: ID!, answers_contents: String!): Answer!
+  createAnswer(questionId: ID!, contents: String!): Answer!
+  updateAnswer(answerId: ID!, contents: String!): Answer!
   deleteAnswer(answerId: ID!): Boolean!
   createProductCategory(createProductCategoryInput: CreateProductCategoryInput!): ProductCategory!
   deleteProductCategory(productId: ID!): Boolean!

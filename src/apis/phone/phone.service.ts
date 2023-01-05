@@ -9,6 +9,10 @@ import { Cache } from 'cache-manager';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
 import { Repository } from 'typeorm';
+import {
+  IPhoneServiceCheckToken,
+  IPhoneServiceSendTokenToSMS,
+} from './interfaces/phone-service.interface';
 
 @Injectable()
 export class PhoneService {
@@ -20,7 +24,9 @@ export class PhoneService {
     private readonly cacheManager: Cache,
   ) {}
 
-  async sendTokenToSMS({ phone }) {
+  async sendTokenToSMS({
+    phone,
+  }: IPhoneServiceSendTokenToSMS): Promise<string> {
     const result = await this.usersRepository.findOne({
       where: { phone },
     });
@@ -50,7 +56,10 @@ export class PhoneService {
     return token;
   }
 
-  async checkToken({ phone, token }) {
+  async checkToken({
+    phone,
+    token,
+  }: IPhoneServiceCheckToken): Promise<boolean> {
     const myToken = await this.cacheManager.get(phone);
     if (myToken === token) {
       await this.cacheManager.set(phone, true, { ttl: 0 });

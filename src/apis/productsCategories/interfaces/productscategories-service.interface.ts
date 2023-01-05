@@ -1,6 +1,5 @@
 import { CreateProductCategoryInput } from '../dto/create-product.input';
 import { UpdateProductCategoryInput } from '../dto/update-product.input';
-import { ProductCategory } from '../entities/productCategory.entity';
 
 export interface IProductsCategoriesServiceCreate {
   createProductCategoryInput: CreateProductCategoryInput;
@@ -15,6 +14,6 @@ export interface IProductsCategoryServiceDelete {
 }
 
 export interface IProductsCategoriesServiceUpdate {
-  productCategory: ProductCategory;
+  productCategoryId: string;
   updateProductCategoryInput: UpdateProductCategoryInput;
 }

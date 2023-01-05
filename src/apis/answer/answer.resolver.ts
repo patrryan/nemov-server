@@ -15,14 +15,14 @@ export class AnswersResolver {
   async fetchAnswer(
     @Args('answerId', { type: () => ID }) answerId: string, //
   ): Promise<Answer> {
-    return this.answersService.findAnswer({ id: answerId });
+    return this.answersService.findOne({ id: answerId });
   }
 
   @Query(() => Answer)
   fetchAnswerByQuestion(
     @Args('questionId', { type: () => ID }) questionId: string,
   ): Promise<Answer> {
-    return this.answersService.findAllByQuestion({
+    return this.answersService.findOneByQuestion({
       questionId,
     });
   }
@@ -31,12 +31,12 @@ export class AnswersResolver {
   @Mutation(() => Answer)
   async createAnswer(
     @Args('questionId', { type: () => ID }) questionId: string,
-    @Args('answers_contents') answers_contents: string, //
+    @Args('contents') contents: string, //
     @CurrentUser() id: string,
   ): Promise<Answer> {
     return await this.answersService.create({
       questionId,
-      answers_contents,
+      contents,
       id,
     });
   }
@@ -45,12 +45,12 @@ export class AnswersResolver {
   @Mutation(() => Answer)
   async updateAnswer(
     @Args('answerId', { type: () => ID }) answerId: string, //
-    @Args('answers_contents') answers_contents: string,
+    @Args('contents') contents: string,
     @CurrentUser() id: string,
   ): Promise<Answer> {
     return await this.answersService.update({
       answerId,
-      answers_contents,
+      contents,
       id,
     });
   }
