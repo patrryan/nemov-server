@@ -18,12 +18,39 @@ export class AuthService {
     private readonly cacheManager: Cache,
   ) {}
 
-  setRefreshToken({ id, res }): void {
+  setRefreshToken({ id, res, req }): void {
     const refreshToken = this.jwtService.sign(
       { id },
       { secret: process.env.JWT_REFRESH_KEY, expiresIn: '2w' },
     );
-    res.setHeader('Set-Cookie', `refreshToken=${refreshToken}`);
+
+    if (process.env.DEPLOY_ENV === 'LOCAL') {
+      res.setHeader('Set-Cookie', `refreshToken=${refreshToken}`);
+    } else {
+      const allowedOrigins = [
+        'http://localhost:3000',
+        'https://code-backend.shop/graphql',
+        'https://nemov.store',
+      ];
+
+      const origin = req.headers.origin;
+      if (allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+      }
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+      res.setHeader(
+        'Access-Control-Allow-Methods',
+        'GET,HEAD,OPTIONS,POST,PUT',
+      );
+      res.setHeader(
+        'Access-Control-Allow-Headers',
+        'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
+      );
+      res.setHeader(
+        'Set-Cookie',
+        `refreshToken=${refreshToken}; path=/; domain=.code-backend.shop; SameSite=None; Secure; httpOnly;`,
+      );
+    }
   }
 
   getAccessToken({ id }): string {
@@ -33,10 +60,9 @@ export class AuthService {
     );
   }
 
-  //--------------------------------------
-
   async logout({ req, res }: IContext) {
     const accessToken = req.headers.authorization.replace('Bearer ', '');
+
     const refreshToken = req.headers.cookie.replace('refreshToken=', '');
 
     const verifiedAccess = jwt.verify(accessToken, process.env.JWT_ACCESS_KEY);
@@ -74,7 +100,14 @@ export class AuthService {
       throw new UnprocessableEntityException(error);
     }
 
-    res.setHeader('Set-Cookie', `refreshToken=; path=/; Secure; httpOnly;`);
+    if (process.env.DEPLOY_ENV === 'LOCAL') {
+      res.setHeader('Set-Cookie', `refreshToken=`);
+    } else {
+      res.setHeader(
+        'Set-Cookie',
+        `refreshToken=; path=/; domain=.code-backend.shop; SameSite=None; Secure; httpOnly;`,
+      );
+    }
 
     return '로그아웃 성공';
   }
