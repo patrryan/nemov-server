@@ -38,6 +38,7 @@ export class CartService {
             try {
               const product = await this.productsRepository.findOne({
                 where: { id: el },
+                relations: ['user', 'productCategory'],
               });
               resolve(product);
             } catch (error) {
@@ -47,6 +48,12 @@ export class CartService {
         }),
       );
     }
+  }
+
+  async findAllCount({ id }) {
+    const result = await this.findAll({ id });
+
+    return result.length;
   }
 
   async findOne({ productId, id }: ICartServiceFindOne): Promise<boolean> {
@@ -59,6 +66,13 @@ export class CartService {
   }
 
   async create({ productId, id }: ICartServiceCreate): Promise<boolean> {
+    const target = await this.productsRepository.findOne({
+      where: { id: productId },
+    });
+
+    if (!target)
+      throw new UnprocessableEntityException('존재하지 않는 상품입니다.');
+
     const result = await this.cacheManager.get(`${id}-basket`);
     if (!result) {
       const cart = [productId];

@@ -54,6 +54,12 @@ export class ProductsOrdersResolver {
   }
 
   @UseGuards(GqlAuthAccessGuard)
+  @Query(() => Int)
+  fetchProductOrdersCountOfBought(@CurrentUser() id: string) {
+    return this.productsOrdersService.findAllCountOfBought({ id });
+  }
+
+  @UseGuards(GqlAuthAccessGuard)
   @Query(() => [ProductOrder])
   fetchProductOrdersBySeller(
     @Args('startDate', { type: () => GraphQLISODateTime, nullable: true })
