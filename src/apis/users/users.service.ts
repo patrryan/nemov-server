@@ -38,6 +38,11 @@ export class UsersService {
     return await this.usersRepository.findOne({ where: { id } });
   }
 
+  async findPointByUser({ id }) {
+    const user = await this.findOneById({ id });
+    return user.point;
+  }
+
   async checkBLN({ bln }: IUsersServiceCheckBLN): Promise<boolean> {
     try {
       const blnConverted = bln.split('-').join('');

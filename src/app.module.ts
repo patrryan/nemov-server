@@ -46,7 +46,7 @@ import { ProductsCategoriesModule } from './apis/productsCategories/productsCate
     }),
     CacheModule.register<RedisClientOptions>({
       store: redisStore,
-      url: 'reids://my-redis:6379',
+      url: 'redis://my-redis:6379',
       isGlobal: true,
     }),
     FilesModule,

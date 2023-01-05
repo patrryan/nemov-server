@@ -28,11 +28,6 @@ export class Question {
   @Field(() => String)
   contents: string;
 
-  @JoinColumn()
-  @OneToOne(() => Answer)
-  @Field(() => Answer)
-  answer: Answer;
-
   @ManyToOne(() => Product)
   @Field(() => Product)
   product: Product;
@@ -40,6 +35,11 @@ export class Question {
   @ManyToOne(() => User)
   @Field(() => User)
   user: User;
+
+  @JoinColumn()
+  @OneToOne(() => Answer, { nullable: true })
+  @Field(() => Answer, { nullable: true })
+  answer: Answer;
 
   @CreateDateColumn()
   createdAt: Date;

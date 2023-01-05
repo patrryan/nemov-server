@@ -6,7 +6,6 @@ import { CreateProductInput } from './dto/create-product.input';
 import { UpdateProductInput } from './dto/update-product.input';
 import { Product } from './entities/product.entity';
 import { ProductsService } from './products.service';
-import { PRODUCT_CATEGORY_TYPE } from './entities/product.entity';
 
 @Resolver()
 export class ProductsResolver {
@@ -14,20 +13,25 @@ export class ProductsResolver {
     private readonly productsService: ProductsService, //
   ) {}
 
-  ///-----------------------------///
-
   @Query(() => [Product])
   fetchProducts(
-    @Args('category', { type: () => PRODUCT_CATEGORY_TYPE }) category: string, //
+    @Args('categoryId', { type: () => ID }) categoryId: string,
     @Args({ name: 'veganLevel', type: () => Int })
     veganLevel: number,
     @Args({ name: 'page', type: () => Int })
     page: number,
   ) {
-    return this.productsService.findAll({ category, page, veganLevel });
+    return this.productsService.findAll({ categoryId, page, veganLevel });
   }
 
-  ///-----------------------------///
+  @Query(() => Int)
+  fetchProductsCount(
+    @Args('categoryId', { type: () => ID }) categoryId: string,
+    @Args({ name: 'veganLevel', type: () => Int })
+    veganLevel: number,
+  ) {
+    return this.productsService.findCount({ categoryId, veganLevel });
+  }
 
   @Query(() => Product)
   fetchProduct(
@@ -35,18 +39,7 @@ export class ProductsResolver {
   ): Promise<Product> {
     return this.productsService.findOne({ productId });
   }
-  ///-----------------------------///
 
-  @Query(() => Int)
-  fetchProductsCount(
-    @Args('category', { type: () => PRODUCT_CATEGORY_TYPE }) category: string, //
-    @Args({ name: 'veganLevel', type: () => Int })
-    veganLevel: number,
-  ) {
-    return this.productsService.findCount({ category, veganLevel });
-  }
-
-  ///-----------------------------///
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => [Product])
   fetchProductsBySeller(
@@ -66,7 +59,6 @@ export class ProductsResolver {
     return this.productsService.findBySelling();
   }
 
-  ///-----------------------------///
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Product)
   createProduct(
@@ -76,19 +68,16 @@ export class ProductsResolver {
     return this.productsService.create({ createProductInput, id });
   }
 
-  ///-----------------------------///
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Product)
-  async updateProduct(
+  updateProduct(
     @Args('productId', { type: () => ID }) productId: string,
     @Args('updateProductInput') updateProductInput: UpdateProductInput,
+    @CurrentUser() id: string,
   ): Promise<Product> {
-    const product = await this.productsService.findOne({ productId });
-
-    return this.productsService.update({ product, updateProductInput });
+    return this.productsService.update({ productId, updateProductInput, id });
   }
 
-  ///-----------------------------///
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
   deleteProduct(
@@ -96,6 +85,4 @@ export class ProductsResolver {
   ): Promise<boolean> {
     return this.productsService.delete({ productId });
   }
-
-  ///-----------------------------///
 }

@@ -84,6 +84,14 @@ export class ProductsOrdersService {
     }
   }
 
+  async findAllCountOfBought({ id }) {
+    return await this.productsOrdersRepository
+      .createQueryBuilder('productOrder')
+      .where('productOrder.buyer = :id', { id })
+      .andWhere('productOrder.status = :status', { status: 'BOUGHT' })
+      .getCount();
+  }
+
   async findAllBySeller({ startDate, endDate, page, id }) {
     if ((startDate && !endDate) || (!startDate && endDate))
       throw new UnprocessableEntityException(

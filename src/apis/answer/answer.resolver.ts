@@ -1,6 +1,5 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, ID, Mutation, Resolver, Query, Int } from '@nestjs/graphql';
-import { type } from 'os';
+import { Args, ID, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
 import { CurrentUser } from 'src/commons/decorators/current-user.decorator';
 import { AnswersService } from './answer.service';
@@ -22,7 +21,7 @@ export class AnswersResolver {
   @Query(() => Answer)
   fetchAnswerByQuestion(
     @Args('questionId', { type: () => ID }) questionId: string,
-  ) {
+  ): Promise<Answer> {
     return this.answersService.findAllByQuestion({
       questionId,
     });
@@ -31,7 +30,7 @@ export class AnswersResolver {
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Answer)
   async createAnswer(
-    @Args('questionId') questionId: string,
+    @Args('questionId', { type: () => ID }) questionId: string,
     @Args('answers_contents') answers_contents: string, //
     @CurrentUser() id: string,
   ): Promise<Answer> {
@@ -59,7 +58,7 @@ export class AnswersResolver {
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
   async deleteAnswer(
-    @Args('answerId') answerId: string,
+    @Args('answerId', { type: () => ID }) answerId: string,
     @CurrentUser() id: string,
   ): Promise<boolean> {
     return this.answersService.delete({ answerId, id });

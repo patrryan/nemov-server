@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ProductCategory } from '../productsCategories/entities/productCategory.entity';
 import { User } from '../users/entities/user.entity';
 import { Product } from './entities/product.entity';
 import {
@@ -15,42 +16,69 @@ export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private readonly productsRepository: Repository<Product>,
-
+    @InjectRepository(ProductCategory)
+    private readonly productsCategoriesRepository: Repository<ProductCategory>,
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
   ) {}
 
-  ///-----------------------------///
-  async findAll({ category, page, veganLevel }) {
-    return this.productsRepository
+  async findAll({ categoryId, page, veganLevel }) {
+    if (!categoryId) {
+      return await this.productsRepository
+        .createQueryBuilder('product')
+        .leftJoinAndSelect('product.user', 'user')
+        .leftJoinAndSelect('product.productCategory', 'productCategory')
+        .where('product.veganLevel BETWEEN :veganLevel AND :end', {
+          veganLevel,
+          end: 8,
+        })
+        .orderBy('product.createdAt', 'DESC')
+        .skip((page - 1) * 9)
+        .take(9)
+        .getMany();
+    }
+    return await this.productsRepository
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.user', 'user')
-      .where('product.category = :category', { category })
-      .andWhere('product.veganLevel = :veganLevel', { veganLevel })
+      .leftJoinAndSelect('product.productCategory', 'productCategory')
+      .where('product.productCategory = :categoryId', { categoryId })
+      .andWhere('product.veganLevel BETWEEN :veganLevel AND :end', {
+        veganLevel,
+        end: 8,
+      })
       .orderBy('product.createdAt', 'DESC')
       .skip((page - 1) * 9)
       .take(9)
       .getMany();
   }
 
-  ///-----------------------------///
-  findOne({ productId }: IProductsServiceFindOne): Promise<Product> {
-    return this.productsRepository.findOne({
-      where: { id: productId },
-      relations: ['user'],
-    });
-  }
-  ///-----------------------------///
-
-  async findCount({ category, veganLevel }) {
+  async findCount({ categoryId, veganLevel }) {
+    if (!categoryId) {
+      return await this.productsRepository
+        .createQueryBuilder('product')
+        .where('product.veganLevel BETWEEN :veganLevel AND :end', {
+          veganLevel,
+          end: 8,
+        })
+        .getCount();
+    }
     return this.productsRepository
       .createQueryBuilder('product')
-      .where('product.category = :category', { category })
-      .andWhere('product.veganLevel = :veganLevel', { veganLevel })
+      .where('product.category = :categoryId', { categoryId })
+      .andWhere('product.veganLevel BETWEEN :veganLevel AND :end', {
+        veganLevel,
+        end: 8,
+      })
       .getCount();
   }
 
-  ///-----------------------------///
+  async findOne({ productId }: IProductsServiceFindOne): Promise<Product> {
+    return await this.productsRepository.findOne({
+      where: { id: productId },
+      relations: ['user', 'productCategory'],
+    });
+  }
+
   async findProductBySeller({ id, page }) {
     return this.productsRepository
       .createQueryBuilder('product')
@@ -58,7 +86,7 @@ export class ProductsService {
       .where('product.user = :id', { id })
       .orderBy('product.createdAt', 'DESC')
       .skip((page - 1) * 9)
-      .take(10)
+      .take(9)
       .getMany();
   }
 
@@ -87,36 +115,65 @@ export class ProductsService {
       .getMany();
   }
 
-  ///-----------------------------///
   async create({
     createProductInput,
     id,
   }: IProductsServiceCreate): Promise<Product> {
+    const { productCategoryId, ...rest } = createProductInput;
     const user = await this.usersRepository.findOne({
-      where: {
-        id: id,
-      },
+      where: { id },
     });
-    console.log(user);
+
+    const productCategory = await this.productsCategoriesRepository.findOne({
+      where: { id: productCategoryId },
+    });
+
+    if (!productCategory) {
+      throw new UnprocessableEntityException('존재하지 않는 카테고리입니다.');
+    }
+
     return await this.productsRepository.save({
-      ...createProductInput,
+      ...rest,
       user: { ...user },
+      productCategory: { ...productCategory },
     });
   }
-
-  ///-----------------------------///
 
   async update({
-    product,
+    productId,
     updateProductInput,
+    id,
   }: IProductsServiceUpdate): Promise<Product> {
+    const target = await this.productsRepository.findOne({
+      where: { id: productId },
+      relations: ['productCategory', 'user'],
+    });
+
+    if (!target)
+      throw new UnprocessableEntityException('존재하지 않는 상품입니다.');
+
+    if (target.user.id !== id)
+      throw new UnprocessableEntityException('상품을 수정할 권한이 없습니다.');
+
+    const { productCategoryId, ...rest } = updateProductInput;
+
+    let changedCategory = {};
+
+    if (productCategoryId) {
+      changedCategory = await this.productsCategoriesRepository.findOne({
+        where: { id: productCategoryId },
+      });
+
+      if (changedCategory)
+        throw new UnprocessableEntityException('존재하지 않는 카테고리입니다.');
+    }
+
     return await this.productsRepository.save({
-      ...product,
-      ...updateProductInput,
+      ...target,
+      ...rest,
+      productCategory: { ...target.productCategory, ...changedCategory },
     });
   }
-
-  ///-----------------------------///
 
   async delete({ productId }: IProductsServiceDelete): Promise<boolean> {
     const result = await this.productsRepository.delete({ id: productId });

@@ -1,4 +1,4 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 import { UseGuards } from '@nestjs/common';
@@ -20,6 +20,14 @@ export class UsersResolver {
     @CurrentUser() id: string, //
   ): Promise<User> {
     return this.usersService.findOneById({ id });
+  }
+
+  @UseGuards(GqlAuthAccessGuard)
+  @Query(() => Int)
+  fetchUserPoint(
+    @CurrentUser() id: string, //
+  ) {
+    return this.usersService.findPointByUser({ id });
   }
 
   @Mutation(() => Boolean)

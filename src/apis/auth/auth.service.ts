@@ -37,10 +37,7 @@ export class AuthService {
 
   async logout({ req, res }: IContext) {
     const accessToken = req.headers.authorization.replace('Bearer ', '');
-    // console.log('==============', accessToken);
     const refreshToken = req.headers.cookie.replace('refreshToken=', '');
-
-    // console.log('==============', refreshToken);
 
     const verifiedAccess = jwt.verify(accessToken, process.env.JWT_ACCESS_KEY);
 
@@ -58,13 +55,10 @@ export class AuthService {
     const ttlOfRefresh = Math.trunc(
       (verifiedRefresh['exp'] * 1000 - current) / 1000,
     );
-    console.log(ttlOfAccess);
-    console.log('======', ttlOfRefresh);
 
     try {
       verifiedAccess;
       await this.cacheManager.set(
-        // 캐시매니저에 저장
         `accessToken = ${accessToken}`,
         'accessToken',
         { ttl: ttlOfAccess },
@@ -72,7 +66,6 @@ export class AuthService {
 
       verifiedRefresh;
       await this.cacheManager.set(
-        // 캐시매니저 저장
         `refreshToken = ${refreshToken}`,
         'refreshToken',
         { ttl: ttlOfRefresh },
