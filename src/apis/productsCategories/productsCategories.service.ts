@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProductCategory } from './entities/productCategory.entity';
@@ -16,13 +16,9 @@ export class ProductsCategoriesService {
     private readonly productsCategoriesRepository: Repository<ProductCategory>,
   ) {}
 
-  //-------------------------------------
-
   findAll(): Promise<ProductCategory[]> {
     return this.productsCategoriesRepository.find();
   }
-
-  //-------------------------------------
 
   findOne({
     productCategoryId,
@@ -31,7 +27,6 @@ export class ProductsCategoriesService {
       where: { id: productCategoryId },
     });
   }
-  //-------------------------------------
 
   create({
     createProductCategoryInput,
@@ -43,19 +38,22 @@ export class ProductsCategoriesService {
     return result;
   }
 
-  //-------------------------------------
-
   async update({
-    productCategory,
+    productCategoryId,
     updateProductCategoryInput,
   }: IProductsCategoriesServiceUpdate): Promise<ProductCategory> {
+    const productCategory = await this.productsCategoriesRepository.findOne({
+      where: { id: productCategoryId },
+    });
+
+    if (!productCategory)
+      throw new UnprocessableEntityException('존재하지 않는 카테고리입니다.');
+
     return await this.productsCategoriesRepository.save({
       ...productCategory,
       ...updateProductCategoryInput,
     });
   }
-
-  //-------------------------------------
 
   async delete({
     productCategoryId,

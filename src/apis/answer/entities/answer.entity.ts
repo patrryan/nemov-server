@@ -5,7 +5,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -20,7 +19,7 @@ export class Answer {
 
   @Column()
   @Field(() => String)
-  answers_contents: string;
+  contents: string;
 
   @OneToOne(() => Question)
   @Field(() => Question)
