@@ -29,14 +29,13 @@ export class PointsService {
     private readonly iamportService: IamportService,
     private readonly dataSource: DataSource,
   ) {}
-  
+
   async findAllByUser({
     startDate,
     endDate,
     page,
     id,
   }: IPointsServiceFindAllByUser): Promise<Point[]> {
-  async findAllById({ startDate, endDate, page, id }) {
     if ((startDate && !endDate) || (!startDate && endDate))
       throw new UnprocessableEntityException(
         '날짜 설정시 시작과 끝을 모두 지정해주세요.',
@@ -152,7 +151,7 @@ export class PointsService {
       );
     }
   }
-  
+
   async cancelPointCharge({
     impUid,
     id,
