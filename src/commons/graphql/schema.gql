@@ -102,6 +102,15 @@ type Product {
   productCategory: ProductCategory!
 }
 
+type Answer {
+  id: ID!
+  contents: String!
+  question: Question!
+  user: User!
+  createdAt: DateTime!
+  deletedAt: DateTime!
+}
+
 type Question {
   id: ID!
   title: String!
@@ -109,17 +118,6 @@ type Question {
   product: Product!
   user: User!
   answer: Answer
-  createdAt: DateTime!
-  updatedAt: DateTime!
-}
-
-type Answer {
-  id: ID!
-  contents: String!
-  question: Question!
-  user: User!
-  createdAt: DateTime!
-  updatedAt: DateTime!
 }
 
 type Point {
@@ -156,8 +154,8 @@ enum POINT_TRANSACTION_STATUS_ENUM {
 type Query {
   fetchLoginUser: User!
   fetchUserPoint: Int!
-  fetchProducts(productCategoryId: ID!, veganLevel: Int!, page: Int!): [Product!]!
-  fetchProductsCount(productCategoryId: ID!, veganLevel: Int!): Int!
+  fetchProducts(categoryId: ID!, veganLevel: Int!, page: Int!): [Product!]!
+  fetchProductsCount(categoryId: ID!, veganLevel: Int!): Int!
   fetchProduct(productId: ID!): Product!
   fetchProductsBySeller(page: Int!): [Product!]!
   fetchProductsCountBySeller: Int!
@@ -212,7 +210,7 @@ type Mutation {
   deleteLoginUser: Boolean!
   restoreUser(email: Email!): Boolean!
   createProduct(createProductInput: CreateProductInput!): Product!
-  updateProduct(productId: ID!, updateProductInput: UpdateProductInput!): Product!
+  updateProduct(productCategoryId: ID!, updateProductCategoryInput: UpdateProductCategoryInput!): ProductCategory!
   deleteProduct(productId: ID!): Boolean!
   getTokenForSignUp(phone: Phone!): String!
   getTokenForEmail(phone: Phone!): String!
@@ -242,7 +240,6 @@ type Mutation {
   updateAnswer(answerId: ID!, contents: String!): Answer!
   deleteAnswer(answerId: ID!): Boolean!
   createProductCategory(createProductCategoryInput: CreateProductCategoryInput!): ProductCategory!
-  updateProductCategory(productCategoryId: ID!, updateProductCategoryInput: UpdateProductCategoryInput!): ProductCategory!
   deleteProductCategory(productId: ID!): Boolean!
 }
 
@@ -284,16 +281,9 @@ input CreateProductInput {
   discount: Int!
 }
 
-input UpdateProductInput {
+input UpdateProductCategoryInput {
   name: String
-  productCategoryId: String
-  description: String
   image: String
-  veganLevel: Int
-  deliveryFee: Int
-  price: Int
-  quantity: Int
-  discount: Int
 }
 
 input CreateReviewInput {
@@ -323,9 +313,4 @@ input UpdateQuestionInput {
 input CreateProductCategoryInput {
   name: String!
   image: String!
-}
-
-input UpdateProductCategoryInput {
-  name: String
-  image: String
 }
