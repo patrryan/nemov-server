@@ -1,16 +1,20 @@
-export interface IAnswersServiceFindAnswer {
+export interface IAnswersServiceFindOne {
   id: string;
+}
+
+export interface IAnswersServiceFindOneByQuestion {
+  questionId: string;
 }
 
 export interface IAnswersServiceCreate {
   questionId: string;
-  answers_contents: string;
+  contents: string;
   id: string;
 }
 
 export interface IAnswersServiceUpdate {
   answerId: string;
-  answers_contents: string;
+  contents: string;
   id: string;
 }
 

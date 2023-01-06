@@ -1,6 +1,5 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, ID, Mutation, Resolver, Query, Int } from '@nestjs/graphql';
-import { type } from 'os';
+import { Args, ID, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
 import { CurrentUser } from 'src/commons/decorators/current-user.decorator';
 import { AnswersService } from './answer.service';
@@ -16,14 +15,14 @@ export class AnswersResolver {
   async fetchAnswer(
     @Args('answerId', { type: () => ID }) answerId: string, //
   ): Promise<Answer> {
-    return this.answersService.findAnswer({ id: answerId });
+    return this.answersService.findOne({ id: answerId });
   }
 
   @Query(() => Answer)
   fetchAnswerByQuestion(
     @Args('questionId', { type: () => ID }) questionId: string,
-  ) {
-    return this.answersService.findAllByQuestion({
+  ): Promise<Answer> {
+    return this.answersService.findOneByQuestion({
       questionId,
     });
   }
@@ -31,13 +30,13 @@ export class AnswersResolver {
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Answer)
   async createAnswer(
-    @Args('questionId') questionId: string,
-    @Args('answers_contents') answers_contents: string, //
+    @Args('questionId', { type: () => ID }) questionId: string,
+    @Args('contents') contents: string,
     @CurrentUser() id: string,
   ): Promise<Answer> {
     return await this.answersService.create({
       questionId,
-      answers_contents,
+      contents,
       id,
     });
   }
@@ -46,12 +45,12 @@ export class AnswersResolver {
   @Mutation(() => Answer)
   async updateAnswer(
     @Args('answerId', { type: () => ID }) answerId: string, //
-    @Args('answers_contents') answers_contents: string,
+    @Args('contents') contents: string,
     @CurrentUser() id: string,
   ): Promise<Answer> {
     return await this.answersService.update({
       answerId,
-      answers_contents,
+      contents,
       id,
     });
   }
@@ -59,7 +58,7 @@ export class AnswersResolver {
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
   async deleteAnswer(
-    @Args('answerId') answerId: string,
+    @Args('answerId', { type: () => ID }) answerId: string,
     @CurrentUser() id: string,
   ): Promise<boolean> {
     return this.answersService.delete({ answerId, id });

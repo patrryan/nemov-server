@@ -9,6 +9,7 @@ async function bootstrap() {
     origin: [
       'http://localhost:3000', //
       'https://code-backend.shop/graphql',
+      'https://nemov.store',
     ],
     credentials: true,
   });

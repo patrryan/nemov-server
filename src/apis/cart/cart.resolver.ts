@@ -1,5 +1,5 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, ID, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
 import { CurrentUser } from 'src/commons/decorators/current-user.decorator';
 import { Product } from '../products/entities/product.entity';
@@ -17,6 +17,14 @@ export class CartResolver {
     @CurrentUser() id: string, //
   ): Promise<Product[]> {
     return this.cartService.findAll({ id });
+  }
+
+  @UseGuards(GqlAuthAccessGuard)
+  @Query(() => Int)
+  fetchCartCount(
+    @CurrentUser() id: string, //
+  ) {
+    return this.cartService.findAllCount({ id });
   }
 
   @UseGuards(GqlAuthAccessGuard)

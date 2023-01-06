@@ -38,6 +38,7 @@ export class ProductsOrdersService {
       return await this.productsOrdersRepository
         .createQueryBuilder('productOrder')
         .leftJoinAndSelect('productOrder.buyer', 'buyer')
+        .leftJoinAndSelect('productOrder.product', 'product')
         .where('productOrder.buyer = :id', { id })
         .andWhere('productOrder.updatedAt BETWEEN :startDate AND :endLocal', {
           startDate,
@@ -51,6 +52,7 @@ export class ProductsOrdersService {
       return await this.productsOrdersRepository
         .createQueryBuilder('productOrder')
         .leftJoinAndSelect('productOrder.buyer', 'buyer')
+        .leftJoinAndSelect('productOrder.product', 'product')
         .where('productOrder.buyer = :id', { id })
         .orderBy('productOrder.updatedAt', 'DESC')
         .skip((page - 1) * 10)
@@ -84,6 +86,14 @@ export class ProductsOrdersService {
     }
   }
 
+  async findAllCountOfBought({ id }) {
+    return await this.productsOrdersRepository
+      .createQueryBuilder('productOrder')
+      .where('productOrder.buyer = :id', { id })
+      .andWhere('productOrder.status = :status', { status: 'BOUGHT' })
+      .getCount();
+  }
+
   async findAllBySeller({ startDate, endDate, page, id }) {
     if ((startDate && !endDate) || (!startDate && endDate))
       throw new UnprocessableEntityException(
@@ -94,6 +104,7 @@ export class ProductsOrdersService {
       return await this.productsOrdersRepository
         .createQueryBuilder('productOrder')
         .leftJoinAndSelect('productOrder.seller', 'seller')
+        .leftJoinAndSelect('productOrder.product', 'product')
         .where('productOrder.seller = :id', { id })
         .andWhere('productOrder.updatedAt BETWEEN :startDate AND :endLocal', {
           startDate,
@@ -107,6 +118,7 @@ export class ProductsOrdersService {
       return await this.productsOrdersRepository
         .createQueryBuilder('productOrder')
         .leftJoinAndSelect('productOrder.seller', 'seller')
+        .leftJoinAndSelect('productOrder.product', 'product')
         .where('productOrder.seller = :id', { id })
         .orderBy('productOrder.updatedAt', 'DESC')
         .skip((page - 1) * 10)
@@ -145,6 +157,7 @@ export class ProductsOrdersService {
       .createQueryBuilder('productOrder')
       .leftJoinAndSelect('productOrder.product', 'product')
       .leftJoinAndSelect('productOrder.review', 'review')
+      .leftJoinAndSelect('productOrder.seller', 'seller')
       .where('productOrder.buyer = :id', { id })
       .andWhere('productOrder.status = :status', { status: 'BOUGHT' })
       .andWhere('productOrder.review IS NULL')

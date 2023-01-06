@@ -37,6 +37,12 @@ enum ROLE_TYPE {
   SELLER
 }
 
+type ProductCategory {
+  id: ID!
+  name: String!
+  image: String!
+}
+
 type ReviewImage {
   id: ID!
   url: String!
@@ -84,7 +90,6 @@ enum PRODUCT_ORDER_STATUS_ENUM {
 type Product {
   id: ID!
   name: String!
-  category: PRODUCT_CATEGORY_TYPE!
   description: String!
   image: String!
   veganLevel: Int
@@ -94,26 +99,12 @@ type Product {
   quantity: Int!
   isOutOfStock: Boolean!
   user: User!
-}
-
-"""물품 카테고리에 대한 타입"""
-enum PRODUCT_CATEGORY_TYPE {
-  """식품 카테고리"""
-  FOOD
-
-  """음료 카테고리"""
-  DRINK
-
-  """화장품 카테고리"""
-  BEAUTY
-
-  """생활용품 카테고리"""
-  LIFE
+  productCategory: ProductCategory!
 }
 
 type Answer {
   id: ID!
-  answers_contents: String!
+  contents: String!
   question: Question!
   user: User!
   createdAt: DateTime!
@@ -124,9 +115,9 @@ type Question {
   id: ID!
   title: String!
   contents: String!
-  answer: Answer!
   product: Product!
   user: User!
+  answer: Answer
 }
 
 type Point {
@@ -162,10 +153,12 @@ enum POINT_TRANSACTION_STATUS_ENUM {
 
 type Query {
   fetchLoginUser: User!
-  fetchProducts(category: PRODUCT_CATEGORY_TYPE!, veganLevel: Int!, page: Int!): [Product!]!
+  fetchUserPoint: Int!
+  fetchProducts(categoryId: ID!, veganLevel: Int!, page: Int!): [Product!]!
+  fetchProductsCount(categoryId: ID!, veganLevel: Int!): Int!
   fetchProduct(productId: ID!): Product!
-  fetchProductsCount(category: PRODUCT_CATEGORY_TYPE!, veganLevel: Int!): Int!
   fetchProductsBySeller(page: Int!): [Product!]!
+  fetchProductsCountBySeller: Int!
   fetchProductsOfRecommend: [Product!]!
   fetchProductsOfBestSelling: [Product!]!
   fetchReviewsByProduct(productId: ID!, page: Int!): [Review!]!
@@ -173,12 +166,17 @@ type Query {
   fetchReviewsByBuyer(page: Int!): [Review!]!
   fetchReviewsCountByBuyer: Int!
   fetchReview(reviewId: ID!): Review!
-  fetchQuestion(questionId: ID!): Question!
   fetchQuestionsByProduct(productId: ID!, page: Int!): [Question!]!
   fetchQuestionsCountByProduct(productId: ID!): Int!
+  fetchQuestionsByBuyer(page: Int!): [Question!]!
+  fetchQuestionsCountByBuyer: Int!
+  fetchQuestionsBySeller(page: Int!): [Question!]!
+  fetchQuestionsCountBySeller: Int!
+  fetchQuestion(questionId: ID!): Question!
   fetchPointTransactions(startDate: DateTime, endDate: DateTime, page: Int!): [Point!]!
   fetchPointTransactionsCount(startDate: DateTime, endDate: DateTime): Int!
   fetchCart: [Product!]!
+  fetchCartCount: Int!
   fetchIsInCart(productId: ID!): Boolean!
   fetchProductsIPicked(page: Int!): [Product!]!
   fetchProductsIPickedCount: Int!
@@ -186,19 +184,23 @@ type Query {
   fetchPickCountOfProduct(productId: ID!): Int!
   fetchProductOrdersByBuyer(startDate: DateTime, endDate: DateTime, page: Int!): [ProductOrder!]!
   fetchProductOrdersCountByBuyer(startDate: DateTime, endDate: DateTime): Int!
+  fetchProductOrdersCountOfBought: Int!
   fetchProductOrdersBySeller(startDate: DateTime, endDate: DateTime, page: Int!): [ProductOrder!]!
   fetchProductOrdersCountBySeller(startDate: DateTime, endDate: DateTime): Int!
   fetchProductOrdersWithoutReview(page: Int!): [ProductOrder!]!
   fetchProductOrdersCountWithoutReview: Int!
   fetchAnswer(answerId: ID!): Answer!
   fetchAnswerByQuestion(questionId: ID!): Answer!
+  fetchProductCategories: [ProductCategory!]!
 }
 
 type Mutation {
   uploadFile(file: Upload!): String!
-  login(email: String!, password: String!): String!
+  login(email: Email!, password: Password!): String!
   restoreAccessToken: String!
   logout: String!
+  findEmail(name: String!, phone: Phone!): Email!
+  findPassword(email: Email!, password: Password!): Boolean!
   checkBusinessLicenseNumber(bln: BusinessLicenseNumber!): Boolean!
   checkEmailExist(email: Email!): Boolean!
   createUser(createUserInput: CreateUserInput!): User!
@@ -208,10 +210,14 @@ type Mutation {
   deleteLoginUser: Boolean!
   restoreUser(email: Email!): Boolean!
   createProduct(createProductInput: CreateProductInput!): Product!
-  updateProduct(productId: ID!, updateProductInput: UpdateProductInput!): Product!
+  updateProduct(productCategoryId: ID!, updateProductCategoryInput: UpdateProductCategoryInput!): ProductCategory!
   deleteProduct(productId: ID!): Boolean!
-  getToken(phone: Phone!): String!
-  checkValidToken(phone: Phone!, token: String!): String!
+  getTokenForSignUp(phone: Phone!): String!
+  getTokenForEmail(phone: Phone!): String!
+  getTokenForPassword(phone: Phone!): String!
+  checkValidTokenForSignUp(phone: Phone!, token: String!): Boolean!
+  checkValidTokenForEmail(phone: Phone!, token: String!): Boolean!
+  checkValidTokenForPassword(phone: Phone!, token: String!): Boolean!
   createReview(productOrderId: ID!, createReviewInput: CreateReviewInput!): Review!
   updateReview(updateReviewInput: UpdateReviewInput!, reviewId: ID!): Review!
   deleteReview(reviewId: String!): Boolean!
@@ -230,13 +236,18 @@ type Mutation {
   toggleProductPick(productId: ID!): Boolean!
   createProductOrder(productId: ID!, amount: Int!, quantity: Int!): ProductOrder!
   cancelProductOrder(productOrderId: ID!): Boolean!
-  createAnswer(questionId: String!, answers_contents: String!): Answer!
-  updateAnswer(answerId: ID!, answers_contents: String!): Answer!
-  deleteAnswer(answerId: String!): Boolean!
+  createAnswer(questionId: ID!, contents: String!): Answer!
+  updateAnswer(answerId: ID!, contents: String!): Answer!
+  deleteAnswer(answerId: ID!): Boolean!
+  createProductCategory(createProductCategoryInput: CreateProductCategoryInput!): ProductCategory!
+  deleteProductCategory(productId: ID!): Boolean!
 }
 
 """The `Upload` scalar type represents a file upload."""
 scalar Upload
+
+"""비밀번호 형식: 알파벳 대,소문자, 숫자, 특수기호(!@#$%^&*?) 각 1개씩 포함, (최소: 8글자, 최대 16글자)"""
+scalar Password
 
 input CreateUserInput {
   name: String!
@@ -250,9 +261,6 @@ input CreateUserInput {
   bln: BusinessLicenseNumber
 }
 
-"""비밀번호 형식: 알파벳 대,소문자, 숫자, 특수기호(!@#$%^&*?) 각 1개씩 포함, (최소: 8글자, 최대 16글자)"""
-scalar Password
-
 input UpdateUserInput {
   name: String
   veganLevel: Int
@@ -263,7 +271,7 @@ input UpdateUserInput {
 
 input CreateProductInput {
   name: String!
-  category: PRODUCT_CATEGORY_TYPE!
+  productCategoryId: String!
   description: String!
   image: String!
   veganLevel: Int!
@@ -273,16 +281,9 @@ input CreateProductInput {
   discount: Int!
 }
 
-input UpdateProductInput {
+input UpdateProductCategoryInput {
   name: String
-  category: PRODUCT_CATEGORY_TYPE
-  description: String
   image: String
-  veganLevel: Int
-  deliveryFee: Int
-  price: Int
-  quantity: Int
-  discount: Int
 }
 
 input CreateReviewInput {
@@ -307,4 +308,9 @@ input CreateQuestionInput {
 input UpdateQuestionInput {
   title: String
   contents: String
+}
+
+input CreateProductCategoryInput {
+  name: String!
+  image: String!
 }

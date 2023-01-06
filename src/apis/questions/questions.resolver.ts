@@ -13,9 +13,58 @@ export class QuestionsResolver {
     private readonly questionsService: QuestionsService, //
   ) {}
 
+  @Query(() => [Question])
+  fetchQuestionsByProduct(
+    @Args('productId', { type: () => ID }) productId: string, //
+    @Args('page', { type: () => Int }) page: number,
+  ): Promise<Question[]> {
+    return this.questionsService.findAllByProduct({ productId, page });
+  }
+
+  @Query(() => Int)
+  fetchQuestionsCountByProduct(
+    @Args('productId', { type: () => ID }) productId: string, //
+  ) {
+    return this.questionsService.findAllCountByProduct({ productId });
+  }
+
+  @UseGuards(GqlAuthAccessGuard)
+  @Query(() => [Question])
+  fetchQuestionsByBuyer(
+    @Args('page', { type: () => Int }) page: number,
+    @CurrentUser() id: string, //
+  ) {
+    return this.questionsService.findAllByBuyer({ page, id });
+  }
+
+  @UseGuards(GqlAuthAccessGuard)
+  @Query(() => Int)
+  fetchQuestionsCountByBuyer(
+    @CurrentUser() id: string, //
+  ) {
+    return this.questionsService.findAllCountByBuyer({ id });
+  }
+
+  @UseGuards(GqlAuthAccessGuard)
+  @Query(() => [Question])
+  fetchQuestionsBySeller(
+    @Args('page', { type: () => Int }) page: number,
+    @CurrentUser() id: string,
+  ) {
+    return this.questionsService.findAllBySeller({ page, id });
+  }
+
+  @UseGuards(GqlAuthAccessGuard)
+  @Query(() => Int)
+  fetchQuestionsCountBySeller(
+    @CurrentUser() id: string, //
+  ) {
+    return this.questionsService.findAllCountBySeller({ id });
+  }
+
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Question)
-  async createQuestion(
+  createQuestion(
     @Args('createQuestionInput') createQuestionInput: CreateQuestionInput, //
     @Args('productId') productId: string,
     @CurrentUser() id: string,
@@ -25,12 +74,12 @@ export class QuestionsResolver {
 
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Question)
-  async updateQuestion(
+  updateQuestion(
     @Args('updateQuestionInput') updateQuestionInput: UpdateQuestionInput, //
     @Args('questionId', { type: () => ID }) questionId: string,
     @CurrentUser() id: string,
   ): Promise<Question> {
-    return await this.questionsService.update({
+    return this.questionsService.update({
       questionId,
       updateQuestionInput,
       id,
@@ -38,30 +87,15 @@ export class QuestionsResolver {
   }
 
   @Query(() => Question)
-  async fetchQuestion(
+  fetchQuestion(
     @Args('questionId', { type: () => ID }) questionId: string, //
   ): Promise<Question> {
     return this.questionsService.findQuestion({ id: questionId });
   }
 
-  @Query(() => [Question])
-  async fetchQuestionsByProduct(
-    @Args('productId', { type: () => ID }) productId: string, //
-    @Args('page', { type: () => Int }) page: number,
-  ): Promise<Question[]> {
-    return this.questionsService.findAllByProduct({ productId, page });
-  }
-
-  @Query(() => Int)
-  async fetchQuestionsCountByProduct(
-    @Args('productId', { type: () => ID }) productId: string, //
-  ) {
-    return this.questionsService.findAllCountByProduct({ productId });
-  }
-
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
-  async deleteQuestion(
+  deleteQuestion(
     @Args('questionId') questionId: string,
     @CurrentUser() id: string,
   ): Promise<boolean> {

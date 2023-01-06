@@ -24,26 +24,33 @@ export class AuthService {
       { secret: process.env.JWT_REFRESH_KEY, expiresIn: '2w' },
     );
 
-    const allowedOrigins = [
-      'http://localhost:3000',
-      'https://code-backend.shop/graphql',
-    ];
-    const origin = req.headers.origin;
-    if (allowedOrigins.includes(origin)) {
-      res.setHeader('Access-Control-Allow-Origin', origin);
-    }
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT');
-    res.setHeader(
-      'Access-Control-Allow-Headers',
-      'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
-    );
-    res.setHeader(
-      'Set-Cookie',
-      `refreshToken=${refreshToken}; path=/; domain=.code-backend.shop; SameSite=None; Secure; httpOnly;`,
+    if (process.env.DEPLOY_ENV === 'LOCAL') {
+      res.setHeader('Set-Cookie', `refreshToken=${refreshToken}`);
+    } else {
+      const allowedOrigins = [
+        'http://localhost:3000',
+        'https://code-backend.shop/graphql',
+        'https://nemov.store',
+      ];
 
-    );
-    // res.setHeader('Set-Cookie', `refreshToken=${refreshToken}`);
+      const origin = req.headers.origin;
+      if (allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+      }
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+      res.setHeader(
+        'Access-Control-Allow-Methods',
+        'GET,HEAD,OPTIONS,POST,PUT',
+      );
+      res.setHeader(
+        'Access-Control-Allow-Headers',
+        'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
+      );
+      res.setHeader(
+        'Set-Cookie',
+        `refreshToken=${refreshToken}; path=/; domain=.code-backend.shop; SameSite=None; Secure; httpOnly;`,
+      );
+    }
   }
 
   getAccessToken({ id }): string {
@@ -53,14 +60,10 @@ export class AuthService {
     );
   }
 
-  //--------------------------------------
-
   async logout({ req, res }: IContext) {
     const accessToken = req.headers.authorization.replace('Bearer ', '');
-    // console.log('==============', accessToken);
-    const refreshToken = req.headers.cookie.replace('refreshToken=', '');
 
-    // console.log('==============', refreshToken);
+    const refreshToken = req.headers.cookie.replace('refreshToken=', '');
 
     const verifiedAccess = jwt.verify(accessToken, process.env.JWT_ACCESS_KEY);
 
@@ -78,13 +81,10 @@ export class AuthService {
     const ttlOfRefresh = Math.trunc(
       (verifiedRefresh['exp'] * 1000 - current) / 1000,
     );
-    console.log(ttlOfAccess);
-    console.log('======', ttlOfRefresh);
 
     try {
       verifiedAccess;
       await this.cacheManager.set(
-        // 캐시매니저에 저장
         `accessToken = ${accessToken}`,
         'accessToken',
         { ttl: ttlOfAccess },
@@ -92,7 +92,6 @@ export class AuthService {
 
       verifiedRefresh;
       await this.cacheManager.set(
-        // 캐시매니저 저장
         `refreshToken = ${refreshToken}`,
         'refreshToken',
         { ttl: ttlOfRefresh },
@@ -101,11 +100,14 @@ export class AuthService {
       throw new UnprocessableEntityException(error);
     }
 
-    res.setHeader(
-      'Set-Cookie',
-      `refreshToken=${refreshToken}; path=/; domain=.code-backend.shop; SameSite=None; Secure; httpOnly;`,
-
-    );
+    if (process.env.DEPLOY_ENV === 'LOCAL') {
+      res.setHeader('Set-Cookie', `refreshToken=`);
+    } else {
+      res.setHeader(
+        'Set-Cookie',
+        `refreshToken=; path=/; domain=.code-backend.shop; SameSite=None; Secure; httpOnly;`,
+      );
+    }
 
     return '로그아웃 성공';
   }

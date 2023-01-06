@@ -1,27 +1,52 @@
-import { CACHE_MANAGER, Inject } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { Cache } from 'cache-manager';
 import { GraphQLPhone } from 'src/commons/graphql/customTypes/phone.type';
 import { PhoneService } from './phone.service';
 @Resolver()
 export class PhoneResolver {
   constructor(
     private readonly phoneService: PhoneService, //
-    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
   @Mutation(() => String)
-  getToken(
+  getTokenForSignUp(
     @Args('phone', { type: () => GraphQLPhone }) phone: string, //
-  ) {
-    return this.phoneService.sendTokenToSMS({
-      phone,
-    });
+  ): Promise<string> {
+    return this.phoneService.sendTokenToSMS({ phone, reason: 'signUp' });
   }
   @Mutation(() => String)
-  checkValidToken(
+  getTokenForEmail(
+    @Args('phone', { type: () => GraphQLPhone }) phone: string, //
+  ) {
+    return this.phoneService.sendTokenToSMS({ phone, reason: 'email' });
+  }
+
+  @Mutation(() => String)
+  getTokenForPassword(
+    @Args('phone', { type: () => GraphQLPhone }) phone: string, //
+  ) {
+    return this.phoneService.sendTokenToSMS({ phone, reason: 'password' });
+  }
+
+  @Mutation(() => Boolean)
+  checkValidTokenForSignUp(
     @Args('phone', { type: () => GraphQLPhone }) phone: string,
     @Args('token') token: string,
-  ) {
-    return this.phoneService.checkToken({ phone, token });
+  ): Promise<boolean> {
+    return this.phoneService.checkToken({ phone, token, reason: 'signUp' });
+  }
+
+  @Mutation(() => Boolean)
+  checkValidTokenForEmail(
+    @Args('phone', { type: () => GraphQLPhone }) phone: string,
+    @Args('token') token: string,
+  ): Promise<boolean> {
+    return this.phoneService.checkToken({ phone, token, reason: 'email' });
+  }
+
+  @Mutation(() => Boolean)
+  checkValidTokenForPassword(
+    @Args('phone', { type: () => GraphQLPhone }) phone: string,
+    @Args('token') token: string,
+  ): Promise<boolean> {
+    return this.phoneService.checkToken({ phone, token, reason: 'password' });
   }
 }

@@ -11,11 +11,12 @@ import { Answer } from './entities/answer.entity';
 import {
   IAnswersServiceCreate,
   IAnswersServiceDelete,
-  IAnswersServiceFindAnswer,
+  IAnswersServiceFindOne,
+  IAnswersServiceFindOneByQuestion,
   IAnswersServiceUpdate,
 } from './interfaces/answers.service.interface';
 
-Injectable();
+@Injectable()
 export class AnswersService {
   constructor(
     @InjectRepository(Answer)
@@ -28,68 +29,80 @@ export class AnswersService {
     private readonly questionsRepository: Repository<Question>,
   ) {}
 
-  findAnswer({ id }: IAnswersServiceFindAnswer): Promise<Answer> {
-    return this.answersRepository.findOne({
+  async findOne({ id }: IAnswersServiceFindOne): Promise<Answer> {
+    return await this.answersRepository.findOne({
       where: { id },
       relations: ['user', 'question'],
     });
   }
 
-  async findAllByQuestion({ questionId }) {
-    const list = await this.answersRepository.findOne({
-      where: { question: { id: questionId } },
-      relations: ['question'],
+  async findOneByQuestion({
+    questionId,
+  }: IAnswersServiceFindOneByQuestion): Promise<Answer> {
+    const list = await this.questionsRepository.findOne({
+      where: { id: questionId },
+      relations: ['answer'],
     });
+
     if (!list) {
-      throw new NotFoundException('헤당 문의에 대한 답변이 없습니다.');
+      throw new NotFoundException('헤당 문의가 존재하지 않습니다.');
     }
-    return list;
+
+    return list.answer;
   }
+
   async create({
     questionId,
-    answers_contents,
+    contents,
     id,
   }: IAnswersServiceCreate): Promise<Answer> {
     const question = await this.questionsRepository.findOne({
-      where: {
-        id: questionId,
-      },
+      where: { id: questionId },
+      relations: ['product', 'product.user'],
     });
-    const user = await this.usersRepository.findOne({
-      where: {
-        id: id,
-      },
-    });
+
+    if (!question)
+      throw new UnprocessableEntityException('해당 문의가 존재하지 않습니다.');
+
+    if (question.product.user.id !== id)
+      throw new UnprocessableEntityException('답변을 작성할 권한이 없습니다.');
+
     const result = await this.answersRepository.save({
       question: { ...question },
-      user: { ...user },
-      answers_contents,
+      user: { id },
+      contents,
     });
-    await this.questionsRepository.save({
-      ...question,
-      answer: {
-        ...result,
-      },
-    });
+
+    await this.questionsRepository.update(
+      { id: questionId },
+      { answer: { id: result.id } },
+    );
+
     return result;
   }
 
   async update({
     answerId,
-    answers_contents,
+    contents,
     id,
   }: IAnswersServiceUpdate): Promise<Answer> {
     const target = await this.answersRepository.findOne({
       where: { id: answerId },
       relations: ['question', 'user'],
     });
+
+    if (!target)
+      throw new UnprocessableEntityException('해당 문의가 존재하지 않습니다.');
+
     if (target.user.id !== id) {
       throw new UnprocessableEntityException('해당 댓글을 쓸 권한이 없습니다.');
     }
+
     const result = await this.answersRepository.save({
       ...target,
-      answers_contents,
+      contents,
     });
+
     return result;
   }
 

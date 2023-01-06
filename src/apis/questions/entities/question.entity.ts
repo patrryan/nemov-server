@@ -1,4 +1,5 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { MaxLength, MinLength } from 'class-validator';
 import { Answer } from 'src/apis/answer/entities/answer.entity';
 import { Product } from 'src/apis/products/entities/product.entity';
 import { User } from 'src/apis/users/entities/user.entity';
@@ -20,18 +21,16 @@ export class Question {
   @Field(() => ID)
   id: string;
 
+  @MinLength(2, { message: '최소 2글자 이상' })
   @Column()
   @Field(() => String)
   title: string;
 
+  @MaxLength(200, { message: '최대 200글자 이하' })
+  @MinLength(10, { message: '최소 10글자 이상' })
   @Column()
   @Field(() => String)
   contents: string;
-
-  @JoinColumn()
-  @OneToOne(() => Answer)
-  @Field(() => Answer)
-  answer: Answer;
 
   @ManyToOne(() => Product)
   @Field(() => Product)
@@ -40,6 +39,11 @@ export class Question {
   @ManyToOne(() => User)
   @Field(() => User)
   user: User;
+
+  @JoinColumn()
+  @OneToOne(() => Answer, { nullable: true })
+  @Field(() => Answer, { nullable: true })
+  answer: Answer;
 
   @CreateDateColumn()
   createdAt: Date;
