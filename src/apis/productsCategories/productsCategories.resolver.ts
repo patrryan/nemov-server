@@ -26,7 +26,7 @@ export class ProductsCategoriesResolver {
   }
 
   @Mutation(() => ProductCategory)
-  async updateProduct(
+  async updateProductCategory(
     @Args('productCategoryId', { type: () => ID }) productCategoryId: string,
     @Args('updateProductCategoryInput')
     updateProductCategoryInput: UpdateProductCategoryInput,

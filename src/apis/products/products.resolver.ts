@@ -15,22 +15,26 @@ export class ProductsResolver {
 
   @Query(() => [Product])
   fetchProducts(
-    @Args('categoryId', { type: () => ID }) categoryId: string,
+    @Args('productCategoryId', { type: () => ID }) productCategoryId: string,
     @Args({ name: 'veganLevel', type: () => Int })
     veganLevel: number,
     @Args({ name: 'page', type: () => Int })
     page: number,
   ) {
-    return this.productsService.findAll({ categoryId, page, veganLevel });
+    return this.productsService.findAll({
+      productCategoryId,
+      page,
+      veganLevel,
+    });
   }
 
   @Query(() => Int)
   fetchProductsCount(
-    @Args('categoryId', { type: () => ID }) categoryId: string,
+    @Args('productCategoryId', { type: () => ID }) productCategoryId: string,
     @Args({ name: 'veganLevel', type: () => Int })
     veganLevel: number,
   ) {
-    return this.productsService.findCount({ categoryId, veganLevel });
+    return this.productsService.findCount({ productCategoryId, veganLevel });
   }
 
   @Query(() => Product)
@@ -43,7 +47,7 @@ export class ProductsResolver {
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => [Product])
   fetchProductsBySeller(
-    @Args({ name: 'page', type: () => Int }) page: number,
+    @Args('page', { type: () => Int }) page: number,
     @CurrentUser() id: string,
   ) {
     return this.productsService.findProductBySeller({ id, page });
