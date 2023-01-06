@@ -46,6 +46,23 @@ export class QuestionsResolver {
   }
 
   @UseGuards(GqlAuthAccessGuard)
+  @Query(() => [Question])
+  fetchQuestionsBySeller(
+    @Args('page', { type: () => Int }) page: number,
+    @CurrentUser() id: string,
+  ) {
+    return this.questionsService.findAllBySeller({ page, id });
+  }
+
+  @UseGuards(GqlAuthAccessGuard)
+  @Query(() => Int)
+  fetchQuestionsCountBySeller(
+    @CurrentUser() id: string, //
+  ) {
+    return this.questionsService.findAllCountBySeller({ id });
+  }
+
+  @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Question)
   createQuestion(
     @Args('createQuestionInput') createQuestionInput: CreateQuestionInput, //

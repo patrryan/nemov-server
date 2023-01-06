@@ -31,7 +31,7 @@ export class AnswersResolver {
   @Mutation(() => Answer)
   async createAnswer(
     @Args('questionId', { type: () => ID }) questionId: string,
-    @Args('contents') contents: string, //
+    @Args('contents') contents: string,
     @CurrentUser() id: string,
   ): Promise<Answer> {
     return await this.answersService.create({

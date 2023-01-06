@@ -1,39 +1,22 @@
-import {
-  CACHE_MANAGER,
-  ConflictException,
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 // import coolsms from 'coolsms-node-sdk';
 import { Cache } from 'cache-manager';
-import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../users/entities/user.entity';
-import { Repository } from 'typeorm';
 import {
   IPhoneServiceCheckToken,
-  IPhoneServiceSendTokenToSMS,
+  IPhoneServiceSendTokenForSMS,
 } from './interfaces/phone-service.interface';
 
 @Injectable()
 export class PhoneService {
   constructor(
-    @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,
-
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
   ) {}
 
   async sendTokenToSMS({
     phone,
-  }: IPhoneServiceSendTokenToSMS): Promise<string> {
-    const result = await this.usersRepository.findOne({
-      where: { phone },
-    });
-    if (result) {
-      throw new ConflictException('이미 등록된 번호입니다.');
-    }
-
+    reason,
+  }: IPhoneServiceSendTokenForSMS): Promise<string> {
     // const phoneConverted = phone.split('-').join('');
 
     const token = String(Math.floor(Math.random() * 1000000)).padStart(6, '0');
@@ -50,21 +33,32 @@ export class PhoneService {
     //   autoTypeDetect: false,
     // });
 
-    await this.cacheManager.set(phone, token, {
-      ttl: 300,
+    await this.cacheManager.set(`${phone}-${reason}`, token, {
+      ttl: 180,
     });
+
     return token;
   }
 
   async checkToken({
     phone,
     token,
+    reason,
   }: IPhoneServiceCheckToken): Promise<boolean> {
-    const myToken = await this.cacheManager.get(phone);
+    const myToken = await this.cacheManager.get(`${phone}-${reason}`);
     if (myToken === token) {
-      await this.cacheManager.set(phone, true, { ttl: 0 });
+      await this.cacheManager.set(`${phone}-${reason}`, true, { ttl: 0 });
       return true;
     }
     return false;
+  }
+
+  async checkIfVerified({ phone, reason }) {
+    const result = await this.cacheManager.get(`${phone}-${reason}`);
+    if (!result) {
+      return false;
+    } else {
+      return true;
+    }
   }
 }

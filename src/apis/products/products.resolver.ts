@@ -49,6 +49,14 @@ export class ProductsResolver {
     return this.productsService.findProductBySeller({ id, page });
   }
 
+  @UseGuards(GqlAuthAccessGuard)
+  @Query(() => Int)
+  fetchProductsCountBySeller(
+    @CurrentUser() id: string, //
+  ) {
+    return this.productsService.findAllCountBySeller({ id });
+  }
+
   @Query(() => [Product])
   fetchProductsOfRecommend() {
     return this.productsService.findByRecommend();
@@ -62,8 +70,8 @@ export class ProductsResolver {
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Product)
   createProduct(
-    @CurrentUser() id: string, //
     @Args('createProductInput') createProductInput: CreateProductInput,
+    @CurrentUser() id: string,
   ): Promise<Product> {
     return this.productsService.create({ createProductInput, id });
   }

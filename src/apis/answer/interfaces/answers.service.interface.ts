@@ -2,6 +2,10 @@ export interface IAnswersServiceFindOne {
   id: string;
 }
 
+export interface IAnswersServiceFindOneByQuestion {
+  questionId: string;
+}
+
 export interface IAnswersServiceCreate {
   questionId: string;
   contents: string;
