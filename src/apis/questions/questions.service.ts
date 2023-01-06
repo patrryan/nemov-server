@@ -61,6 +61,26 @@ export class QuestionsService {
       .getCount();
   }
 
+  async findAllBySeller({ page, id }) {
+    return await this.questionsRepository
+      .createQueryBuilder('question')
+      .leftJoinAndSelect('question.product', 'product')
+      .leftJoinAndSelect('question.answer', 'answer')
+      .where('product.user = :id', { id })
+      .orderBy('question.createdAt', 'DESC')
+      .skip((page - 1) * 10)
+      .take(10)
+      .getMany();
+  }
+
+  async findAllCountBySeller({ id }) {
+    return await this.questionsRepository
+      .createQueryBuilder('question')
+      .leftJoinAndSelect('question.product', 'product')
+      .where('product.user = :id', { id })
+      .getCount();
+  }
+
   async create({
     createQuestionInput,
     id,

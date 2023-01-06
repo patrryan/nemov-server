@@ -12,6 +12,7 @@ import {
   IAnswersServiceCreate,
   IAnswersServiceDelete,
   IAnswersServiceFindOne,
+  IAnswersServiceFindOneByQuestion,
   IAnswersServiceUpdate,
 } from './interfaces/answers.service.interface';
 
@@ -35,7 +36,9 @@ export class AnswersService {
     });
   }
 
-  async findOneByQuestion({ questionId }) {
+  async findOneByQuestion({
+    questionId,
+  }: IAnswersServiceFindOneByQuestion): Promise<Answer> {
     const list = await this.questionsRepository.findOne({
       where: { id: questionId },
       relations: ['answer'],

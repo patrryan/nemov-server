@@ -9,6 +9,7 @@ import { CurrentUser } from 'src/commons/decorators/current-user.decorator';
 import { GraphQLBusinessLicenseNumber } from 'src/commons/graphql/customTypes/businessLicenseNumber.type';
 import { GraphQLEmail } from 'src/commons/graphql/customTypes/email.type';
 import { GraphQLPassword } from 'src/commons/graphql/customTypes/password.type';
+import { GraphQLPhone } from 'src/commons/graphql/customTypes/phone.type';
 
 @Resolver()
 export class UsersResolver {
@@ -30,6 +31,22 @@ export class UsersResolver {
     return this.usersService.findPointByUser({ id });
   }
 
+  @Mutation(() => GraphQLEmail)
+  findEmail(
+    @Args('name') name: string,
+    @Args('phone', { type: () => GraphQLPhone }) phone: string, //
+  ) {
+    return this.usersService.findEmailByPhone({ name, phone });
+  }
+
+  @Mutation(() => Boolean)
+  findPassword(
+    @Args('email', { type: () => GraphQLEmail }) email: string,
+    @Args('password', { type: () => GraphQLPassword }) password: string,
+  ) {
+    return this.usersService.updatePasswordByEmail({ email, password });
+  }
+
   @Mutation(() => Boolean)
   checkBusinessLicenseNumber(
     @Args('bln', { type: () => GraphQLBusinessLicenseNumber }) bln: string,
@@ -39,8 +56,7 @@ export class UsersResolver {
 
   @Mutation(() => Boolean)
   checkEmailExist(
-    @Args('email', { type: () => GraphQLEmail })
-    email: string,
+    @Args('email', { type: () => GraphQLEmail }) email: string,
   ): Promise<boolean> {
     return this.usersService.checkEmail({ email });
   }
@@ -83,7 +99,9 @@ export class UsersResolver {
 
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
-  deleteLoginUser(@CurrentUser() id: string): Promise<boolean> {
+  deleteLoginUser(
+    @CurrentUser() id: string, //
+  ): Promise<boolean> {
     return this.usersService.loginDelete({ id });
   }
 

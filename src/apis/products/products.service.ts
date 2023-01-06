@@ -80,14 +80,22 @@ export class ProductsService {
   }
 
   async findProductBySeller({ id, page }) {
-    return this.productsRepository
+    return await this.productsRepository
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.user', 'user')
+      .leftJoinAndSelect('product.productCategory', 'productCategory')
       .where('product.user = :id', { id })
       .orderBy('product.createdAt', 'DESC')
       .skip((page - 1) * 9)
       .take(9)
       .getMany();
+  }
+
+  async findAllCountBySeller({ id }) {
+    return await this.productsRepository
+      .createQueryBuilder('product')
+      .where('product.user = :id', { id })
+      .getCount();
   }
 
   async findByRecommend() {

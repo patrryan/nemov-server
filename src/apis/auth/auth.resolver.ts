@@ -8,6 +8,8 @@ import {
   GqlAuthAccessGuard,
   GqlAuthRefreshGuard,
 } from 'src/commons/auth/gql-auth.guard';
+import { GraphQLEmail } from 'src/commons/graphql/customTypes/email.type';
+import { GraphQLPassword } from 'src/commons/graphql/customTypes/password.type';
 
 @Resolver()
 export class AuthResolver {
@@ -18,15 +20,17 @@ export class AuthResolver {
 
   @Mutation(() => String)
   async login(
-    @Args('email') email: string, //
-    @Args('password') password: string,
+    @Args('email', { type: () => GraphQLEmail }) email: string, //
+    @Args('password', { type: () => GraphQLPassword }) password: string,
     @Context() context: IContext,
   ): Promise<string> {
     const user = await this.usersService.findOneByEmail({ email });
+
     if (!user)
       throw new UnprocessableEntityException('등록된 이메일이 아닙니다.');
 
     const isAuth = await bcrypt.compare(password, user.password);
+
     if (!isAuth)
       throw new UnprocessableEntityException('비밀번호가 틀렸습니다.');
 
@@ -35,18 +39,23 @@ export class AuthResolver {
       res: context.res,
       req: context.req,
     });
+
     return this.authService.getAccessToken({ id: user.id });
   }
 
   @UseGuards(GqlAuthRefreshGuard)
   @Mutation(() => String)
-  restoreAccessToken(@Context() context: IContext): string {
+  restoreAccessToken(
+    @Context() context: IContext, //
+  ): string {
     return this.authService.getAccessToken({ id: context.req.user.id });
   }
 
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => String)
-  async logout(@Context() context: IContext) {
+  async logout(
+    @Context() context: IContext, //
+  ) {
     return this.authService.logout({
       req: context.req,
       res: context.res,

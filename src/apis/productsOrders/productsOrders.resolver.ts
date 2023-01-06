@@ -55,7 +55,9 @@ export class ProductsOrdersResolver {
 
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => Int)
-  fetchProductOrdersCountOfBought(@CurrentUser() id: string) {
+  fetchProductOrdersCountOfBought(
+    @CurrentUser() id: string, //
+  ) {
     return this.productsOrdersService.findAllCountOfBought({ id });
   }
 

@@ -24,10 +24,12 @@ import {
   IUsersServiceVerifyPassword,
 } from './interfaces/users-service.interface';
 import * as bcrypt from 'bcrypt';
+import { PhoneService } from '../phone/phone.service';
 
 @Injectable()
 export class UsersService {
   constructor(
+    private readonly phoneService: PhoneService,
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
     @Inject(CACHE_MANAGER)
@@ -41,6 +43,51 @@ export class UsersService {
   async findPointByUser({ id }) {
     const user = await this.findOneById({ id });
     return user.point;
+  }
+
+  async findEmailByPhone({ name, phone }) {
+    const result = await this.phoneService.checkIfVerified({
+      phone,
+      reason: 'email',
+    });
+    if (result) {
+      const target = await this.usersRepository.findOne({ where: { phone } });
+
+      if (!target || target.name !== name)
+        throw new UnprocessableEntityException('가입된 회원이 아닙니다.');
+
+      await this.cacheManager.del(`${phone}-email`);
+
+      return target.email;
+    }
+    throw new UnprocessableEntityException('휴대폰 인증 후 진행해주세요.');
+  }
+
+  async updatePasswordByEmail({ email, password }) {
+    const target = await this.usersRepository.findOne({ where: { email } });
+
+    if (!target) {
+      throw new UnprocessableEntityException('가입된 회원이 아닙니다.');
+    }
+
+    const isVerified = await this.phoneService.checkIfVerified({
+      phone: target.phone,
+      reason: 'password',
+    });
+    if (!isVerified) {
+      throw new UnprocessableEntityException('휴대폰 인증 후 진행해주세요');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const result = await this.usersRepository.update(
+      { id: target.id },
+      { password: hashedPassword },
+    );
+
+    await this.cacheManager.del(`${target.phone}-password`);
+
+    return result.affected ? true : false;
   }
 
   async checkBLN({ bln }: IUsersServiceCheckBLN): Promise<boolean> {
@@ -66,7 +113,7 @@ export class UsersService {
       ) {
         return false;
       }
-      await this.cacheManager.set(bln, true, { ttl: 0 });
+      await this.cacheManager.set(bln, true, { ttl: 3600 });
       return true;
     } catch (error) {
       throw new HttpException('에러 발생', 400);
@@ -86,7 +133,9 @@ export class UsersService {
 
     if (result2) throw new ConflictException('이미 가입된 회원입니다.');
 
-    const result3 = await this.cacheManager.get(phone);
+    const result3 = await this.cacheManager.get(`${phone}-signUp`);
+
+    console.log(result3);
 
     if (result3 !== true) {
       throw new UnprocessableEntityException(
@@ -109,7 +158,7 @@ export class UsersService {
       await this.cacheManager.del(bln);
     }
 
-    await this.cacheManager.del(phone);
+    await this.cacheManager.del(`${phone}-signUp`);
   }
 
   async checkEmail({ email }) {

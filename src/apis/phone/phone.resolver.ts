@@ -9,19 +9,47 @@ export class PhoneResolver {
   ) {}
 
   @Mutation(() => String)
-  getToken(
+  getTokenForSignUp(
     @Args('phone', { type: () => GraphQLPhone }) phone: string, //
   ): Promise<string> {
-    return this.phoneService.sendTokenToSMS({
-      phone,
-    });
+    return this.phoneService.sendTokenToSMS({ phone, reason: 'signUp' });
+  }
+
+  @Mutation(() => String)
+  getTokenForEmail(
+    @Args('phone', { type: () => GraphQLPhone }) phone: string, //
+  ) {
+    return this.phoneService.sendTokenToSMS({ phone, reason: 'email' });
+  }
+
+  @Mutation(() => String)
+  getTokenForPassword(
+    @Args('phone', { type: () => GraphQLPhone }) phone: string, //
+  ) {
+    return this.phoneService.sendTokenToSMS({ phone, reason: 'password' });
   }
 
   @Mutation(() => Boolean)
-  checkValidToken(
+  checkValidTokenForSignUp(
     @Args('phone', { type: () => GraphQLPhone }) phone: string,
     @Args('token') token: string,
   ): Promise<boolean> {
-    return this.phoneService.checkToken({ phone, token });
+    return this.phoneService.checkToken({ phone, token, reason: 'signUp' });
+  }
+
+  @Mutation(() => Boolean)
+  checkValidTokenForEmail(
+    @Args('phone', { type: () => GraphQLPhone }) phone: string,
+    @Args('token') token: string,
+  ): Promise<boolean> {
+    return this.phoneService.checkToken({ phone, token, reason: 'email' });
+  }
+
+  @Mutation(() => Boolean)
+  checkValidTokenForPassword(
+    @Args('phone', { type: () => GraphQLPhone }) phone: string,
+    @Args('token') token: string,
+  ): Promise<boolean> {
+    return this.phoneService.checkToken({ phone, token, reason: 'password' });
   }
 }

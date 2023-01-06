@@ -157,6 +157,7 @@ export class ProductsOrdersService {
       .createQueryBuilder('productOrder')
       .leftJoinAndSelect('productOrder.product', 'product')
       .leftJoinAndSelect('productOrder.review', 'review')
+      .leftJoinAndSelect('productOrder.seller', 'seller')
       .where('productOrder.buyer = :id', { id })
       .andWhere('productOrder.status = :status', { status: 'BOUGHT' })
       .andWhere('productOrder.review IS NULL')

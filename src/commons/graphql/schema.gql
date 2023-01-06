@@ -158,6 +158,7 @@ type Query {
   fetchProductsCount(categoryId: ID!, veganLevel: Int!): Int!
   fetchProduct(productId: ID!): Product!
   fetchProductsBySeller(page: Int!): [Product!]!
+  fetchProductsCountBySeller: Int!
   fetchProductsOfRecommend: [Product!]!
   fetchProductsOfBestSelling: [Product!]!
   fetchReviewsByProduct(productId: ID!, page: Int!): [Review!]!
@@ -169,6 +170,8 @@ type Query {
   fetchQuestionsCountByProduct(productId: ID!): Int!
   fetchQuestionsByBuyer(page: Int!): [Question!]!
   fetchQuestionsCountByBuyer: Int!
+  fetchQuestionsBySeller(page: Int!): [Question!]!
+  fetchQuestionsCountBySeller: Int!
   fetchQuestion(questionId: ID!): Question!
   fetchPointTransactions(startDate: DateTime, endDate: DateTime, page: Int!): [Point!]!
   fetchPointTransactionsCount(startDate: DateTime, endDate: DateTime): Int!
@@ -193,9 +196,11 @@ type Query {
 
 type Mutation {
   uploadFile(file: Upload!): String!
-  login(email: String!, password: String!): String!
+  login(email: Email!, password: Password!): String!
   restoreAccessToken: String!
   logout: String!
+  findEmail(name: String!, phone: Phone!): Email!
+  findPassword(email: Email!, password: Password!): Boolean!
   checkBusinessLicenseNumber(bln: BusinessLicenseNumber!): Boolean!
   checkEmailExist(email: Email!): Boolean!
   createUser(createUserInput: CreateUserInput!): User!
@@ -207,8 +212,12 @@ type Mutation {
   createProduct(createProductInput: CreateProductInput!): Product!
   updateProduct(productCategoryId: ID!, updateProductCategoryInput: UpdateProductCategoryInput!): ProductCategory!
   deleteProduct(productId: ID!): Boolean!
-  getToken(phone: Phone!): String!
-  checkValidToken(phone: Phone!, token: String!): Boolean!
+  getTokenForSignUp(phone: Phone!): String!
+  getTokenForEmail(phone: Phone!): String!
+  getTokenForPassword(phone: Phone!): String!
+  checkValidTokenForSignUp(phone: Phone!, token: String!): Boolean!
+  checkValidTokenForEmail(phone: Phone!, token: String!): Boolean!
+  checkValidTokenForPassword(phone: Phone!, token: String!): Boolean!
   createReview(productOrderId: ID!, createReviewInput: CreateReviewInput!): Review!
   updateReview(updateReviewInput: UpdateReviewInput!, reviewId: ID!): Review!
   deleteReview(reviewId: String!): Boolean!
@@ -237,6 +246,9 @@ type Mutation {
 """The `Upload` scalar type represents a file upload."""
 scalar Upload
 
+"""비밀번호 형식: 알파벳 대,소문자, 숫자, 특수기호(!@#$%^&*?) 각 1개씩 포함, (최소: 8글자, 최대 16글자)"""
+scalar Password
+
 input CreateUserInput {
   name: String!
   email: Email!
@@ -248,9 +260,6 @@ input CreateUserInput {
   addressDetail: String
   bln: BusinessLicenseNumber
 }
-
-"""비밀번호 형식: 알파벳 대,소문자, 숫자, 특수기호(!@#$%^&*?) 각 1개씩 포함, (최소: 8글자, 최대 16글자)"""
-scalar Password
 
 input UpdateUserInput {
   name: String
