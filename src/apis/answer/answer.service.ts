@@ -6,7 +6,6 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Question } from '../questions/entities/question.entity';
-import { User } from '../users/entities/user.entity';
 import { Answer } from './entities/answer.entity';
 import {
   IAnswersServiceCreate,
@@ -21,9 +20,6 @@ export class AnswersService {
   constructor(
     @InjectRepository(Answer)
     private readonly answersRepository: Repository<Answer>,
-
-    @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,
 
     @InjectRepository(Question)
     private readonly questionsRepository: Repository<Question>,

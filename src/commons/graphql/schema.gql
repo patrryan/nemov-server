@@ -174,7 +174,7 @@ type Query {
   fetchQuestionsCountBySeller: Int!
   fetchQuestion(questionId: ID!): Question!
   fetchPointTransactions(startDate: DateTime, endDate: DateTime, page: Int!): [Point!]!
-  fetchPointTransactionsCount(startDate: DateTime, endDate: DateTime): Int!
+  fetchPointTransactionsCount: Int!
   fetchCart: [Product!]!
   fetchCartCount: Int!
   fetchIsInCart(productId: ID!): Boolean!
