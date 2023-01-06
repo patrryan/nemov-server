@@ -1,9 +1,4 @@
-import {
-  UnprocessableEntityException,
-  UseGuards,
-  CACHE_MANAGER,
-  Inject,
-} from '@nestjs/common';
+import { UnprocessableEntityException, UseGuards } from '@nestjs/common';
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { IContext } from 'src/commons/types/context';
 import { UsersService } from '../users/users.service';
@@ -47,8 +42,6 @@ export class AuthResolver {
 
     return this.authService.getAccessToken({ id: user.id });
   }
-
-  //--------------------------------------
 
   @UseGuards(GqlAuthRefreshGuard)
   @Mutation(() => String)

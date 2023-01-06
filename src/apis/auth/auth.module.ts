@@ -5,6 +5,7 @@ import { AuthResolver } from './auth.resolver';
 import { JwtModule } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { PhoneService } from '../phone/phone.service';
+import { AuthService } from './auth.service';
 
 @Module({
   imports: [
