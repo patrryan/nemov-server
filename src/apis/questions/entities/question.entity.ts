@@ -1,4 +1,4 @@
-import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Field, GraphQLISODateTime, ID, ObjectType } from '@nestjs/graphql';
 import { MaxLength, MinLength } from 'class-validator';
 import { Answer } from 'src/apis/answer/entities/answer.entity';
 import { Product } from 'src/apis/products/entities/product.entity';
@@ -46,8 +46,10 @@ export class Question {
   answer: Answer;
 
   @CreateDateColumn()
+  @Field(() => GraphQLISODateTime)
   createdAt: Date;
 
   @UpdateDateColumn()
+  @Field(() => GraphQLISODateTime)
   updatedAt: Date;
 }

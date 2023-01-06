@@ -28,7 +28,7 @@ export class CreateProductInput {
   @Field(() => Int)
   price: number;
 
-  @Min(0)
+  @Min(1)
   @Field(() => Int)
   quantity: number;
 
