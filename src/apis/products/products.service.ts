@@ -109,7 +109,7 @@ export class ProductsService {
   }
 
   async findByRecommend() {
-    return await this.productsRepository
+    const result = await this.productsRepository
       .createQueryBuilder('product')
       .select('product.id')
       .addSelect('count(review.id)', 'countReview')
@@ -118,10 +118,26 @@ export class ProductsService {
       .orderBy('countReview', 'DESC')
       .take(3)
       .getMany();
+
+    return await Promise.all(
+      result.map((el) => {
+        return new Promise<Product>(async (resolve, reject) => {
+          try {
+            const product = await this.productsRepository.findOne({
+              where: { id: el.id },
+              relations: ['productCategory'],
+            });
+            resolve(product);
+          } catch (error) {
+            reject('');
+          }
+        });
+      }),
+    );
   }
 
   async findBySelling() {
-    return await this.productsRepository
+    const result = await this.productsRepository
       .createQueryBuilder('product')
       .leftJoin('product.productOrder', 'productOrder')
       .where('productOrder.status = :status', { status: 'BOUGHT' })
@@ -131,6 +147,22 @@ export class ProductsService {
       .orderBy('countOrder', 'DESC')
       .take(8)
       .getMany();
+
+    return await Promise.all(
+      result.map((el) => {
+        return new Promise<Product>(async (resolve, reject) => {
+          try {
+            const product = await this.productsRepository.findOne({
+              where: { id: el.id },
+              relations: ['productCategory'],
+            });
+            resolve(product);
+          } catch (error) {
+            reject('');
+          }
+        });
+      }),
+    );
   }
 
   async create({
