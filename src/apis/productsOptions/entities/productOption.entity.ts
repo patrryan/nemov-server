@@ -1,11 +1,10 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { Product } from 'src/apis/products/entities/product.entity';
 import {
   Column,
+  CreateDateColumn,
   Entity,
-  JoinColumn,
-  OneToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -15,49 +14,33 @@ export class ProductOption {
   @Field(() => ID)
   id: string;
 
-  @JoinColumn()
-  @OneToOne(() => Product, (product) => product.productOption, {
-    nullable: true,
-  })
-  product: Product;
-
-  @Column({ type: 'varchar', length: 200, nullable: false })
-  @Field(() => String, { nullable: false })
-  type: string;
-
-  @Column({ type: 'text', nullable: true, default: null })
-  @Field(() => String, { nullable: true, defaultValue: null })
+  @Column()
+  @Field(() => String)
   option6: string;
 
-  @Column({ type: 'text', nullable: true, default: null })
-  @Field(() => String, { nullable: true, defaultValue: null })
+  @Column()
+  @Field(() => String)
   option7: string;
 
-  @Column({ type: 'text', nullable: true, default: null })
-  @Field(() => String, { nullable: true, defaultValue: null })
+  @Column()
+  @Field(() => String)
   option8: string;
 
-  @Column({ type: 'text', nullable: true, default: null })
-  @Field(() => String, { nullable: true, defaultValue: null })
+  @Column()
+  @Field(() => String)
   option9: string;
 
-  @Column({ type: 'text', nullable: true, default: null })
-  @Field(() => String, { nullable: true, defaultValue: null })
+  @Column()
+  @Field(() => String)
   option10: string;
 
-  @Column({ type: 'text', nullable: true, default: null })
-  @Field(() => String, { nullable: true, defaultValue: null })
+  @Column()
+  @Field(() => String)
   option11: string;
 
-  @Column({ type: 'text', nullable: true, default: null })
-  @Field(() => String, { nullable: true, defaultValue: null })
-  option12: string;
+  @CreateDateColumn()
+  createdAt: Date;
 
-  @Column({ type: 'text', nullable: true, default: null })
-  @Field(() => String, { nullable: true, defaultValue: null })
-  option13: string;
-
-  @Column({ type: 'text', nullable: true, default: null })
-  @Field(() => String, { nullable: true, defaultValue: null })
-  option14: string;
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

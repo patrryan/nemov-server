@@ -43,6 +43,16 @@ type ProductCategory {
   image: String!
 }
 
+type ProductOption {
+  id: ID!
+  option6: String!
+  option7: String!
+  option8: String!
+  option9: String!
+  option10: String!
+  option11: String!
+}
+
 type ReviewImage {
   id: ID!
   url: String!
@@ -89,17 +99,39 @@ enum PRODUCT_ORDER_STATUS_ENUM {
 
 type Product {
   id: ID!
+
+  """상품명"""
   name: String!
   description: String!
   image: String!
   veganLevel: Int
-  deliveryFee: Int!
   price: Int!
-  discount: Int!
+  discountRate: Int!
+
+  """상품 할인가"""
+  discountedPrice: Int!
   quantity: Int!
   isOutOfStock: Boolean!
-  user: User!
+  option1: String!
+  option2: String!
+  option3: String!
+  option4: String!
+  option5: String!
+
+  """뷰티 상품에 해당하는 추가 필수 표기 정보"""
+  productOption: ProductOption
+
+  """상품 카테고리"""
   productCategory: ProductCategory!
+
+  """판매자"""
+  user: User!
+
+  """상품 생성날짜"""
+  createdAt: DateTime!
+
+  """상품 수정 날짜"""
+  updatedAt: DateTime!
 }
 
 type Question {
@@ -211,8 +243,8 @@ type Mutation {
   updateUserPassword(password: Password!): User!
   deleteLoginUser: Boolean!
   restoreUser(email: Email!): Boolean!
-  createProduct(createProductInput: CreateProductInput!): Product!
-  updateProduct(productId: ID!, updateProductInput: UpdateProductInput!): Product!
+  createProduct(createProductInput: CreateProductInput!, createProductOptionInput: CreateProductOptionInput): Product!
+  updateProduct(productId: ID!, updateProductInput: UpdateProductInput!, updateProductOptionInput: UpdateProductOptionInput): Product!
   deleteProduct(productId: ID!): Boolean!
   getTokenForSignUp(phone: Phone!): String!
   getTokenForEmail(phone: Phone!): String!
@@ -273,27 +305,100 @@ input UpdateUserInput {
 }
 
 input CreateProductInput {
+  """상품명"""
   name: String!
-  productCategoryId: String!
+
+  """상품 카테고리에 해당하는 ID"""
+  productCategoryId: ID!
+
+  """상품 상세설명"""
   description: String!
+
+  """상품 대표 이미지에 해당하는 url"""
   image: String!
+
+  """비건 레벨에 해당하는 숫자, 1: 플레시테리언 ~ 7: 비건"""
   veganLevel: Int!
-  deliveryFee: Int!
+
+  """상품 원가"""
   price: Int!
+
+  """상품 할인율, 0 ~ 100"""
+  discountRate: Int!
+
+  """상품 재고 수량"""
   quantity: Int!
-  discount: Int!
+
+  """품명 및 모델명"""
+  option1: String!
+
+  """제조국(원산지)"""
+  option2: String!
+
+  """인증/허가 사항"""
+  option3: String!
+
+  """제조사(수입자)"""
+  option4: String!
+
+  """소비자 상담 관련 전화번호"""
+  option5: String!
+}
+
+input CreateProductOptionInput {
+  option6: String!
+  option7: String!
+  option8: String!
+  option9: String!
+  option10: String!
+  option11: String!
 }
 
 input UpdateProductInput {
+  """상품명"""
   name: String
-  productCategoryId: String
+
+  """상품 상세설명"""
   description: String
+
+  """상품 대표 이미지에 해당하는 url"""
   image: String
+
+  """비건 레벨에 해당하는 숫자, 1: 플레시테리언 ~ 7: 비건"""
   veganLevel: Int
-  deliveryFee: Int
+
+  """상품 원가"""
   price: Int
+
+  """상품 할인율, 0 ~ 100"""
+  discountRate: Int
+
+  """상품 재고 수량"""
   quantity: Int
-  discount: Int
+
+  """품명 및 모델명"""
+  option1: String
+
+  """제조국(원산지)"""
+  option2: String
+
+  """인증/허가 사항"""
+  option3: String
+
+  """제조사(수입자)"""
+  option4: String
+
+  """소비자 상담 관련 전화번호"""
+  option5: String
+}
+
+input UpdateProductOptionInput {
+  option6: String
+  option7: String
+  option8: String
+  option9: String
+  option10: String
+  option11: String
 }
 
 input CreateReviewInput {
