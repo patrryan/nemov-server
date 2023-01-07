@@ -28,6 +28,7 @@ export class QuestionsService {
     return await this.questionsRepository
       .createQueryBuilder('question')
       .leftJoinAndSelect('question.user', 'user')
+      .leftJoinAndSelect('question.answer', 'answer')
       .where('question.product = :productId', { productId })
       .orderBy('question.createdAt', 'DESC')
       .skip((page - 1) * 10)
