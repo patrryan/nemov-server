@@ -210,17 +210,10 @@ export class ProductsOrdersService {
       user: { id: seller.id },
     });
 
-    if (product.quantity - quantity === 0) {
-      await this.productsRepository.update(
-        { id: productId },
-        { quantity: 0, isOutOfStock: true },
-      );
-    } else {
-      await this.productsRepository.update(
-        { id: productId },
-        { quantity: product.quantity - quantity },
-      );
-    }
+    await this.productsRepository.update(
+      { id: productId },
+      { quantity: product.quantity - quantity },
+    );
 
     await this.cartsService.deleteBoughtFromCart({ productId, id });
 
@@ -245,9 +238,6 @@ export class ProductsOrdersService {
 
     if (target.quantity < quantity)
       throw new UnprocessableEntityException('상품 재고가 부족합니다.');
-
-    if (target.isOutOfStock)
-      throw new UnprocessableEntityException('품절된 상품입니다.');
 
     const user = await this.usersRepository.findOne({ where: { id } });
 
