@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProductCategory } from '../productsCategories/entities/productCategory.entity';
 import { ProductOption } from '../productsOptions/entities/productOption.entity';
-import { ProductOptionService } from '../productsOptions/productsOptions.service';
 import { User } from '../users/entities/user.entity';
 import { Product } from './entities/product.entity';
 import {
@@ -18,7 +17,8 @@ export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private readonly productsRepository: Repository<Product>,
-    private readonly productOptionService: ProductOptionService,
+    @InjectRepository(ProductOption)
+    private readonly productsOptionsRepository: Repository<ProductOption>,
     @InjectRepository(ProductCategory)
     private readonly productsCategoriesRepository: Repository<ProductCategory>,
     @InjectRepository(User)
@@ -69,7 +69,6 @@ export class ProductsService {
     if (productCategory.name === '전체') {
       return await this.productsRepository
         .createQueryBuilder('product')
-        .leftJoinAndSelect('product.productOption', 'productOption')
         .where('product.veganLevel BETWEEN :veganLevel AND :end', {
           veganLevel,
           end: 8,
@@ -78,7 +77,6 @@ export class ProductsService {
     }
     return this.productsRepository
       .createQueryBuilder('product')
-      .leftJoinAndSelect('product.productOption', 'productOption')
       .where('product.category = :categoryId', {
         categoryId: productCategoryId,
       })
@@ -96,7 +94,7 @@ export class ProductsService {
     });
   }
 
-  async findProductBySeller({ id, page }) {
+  async findAllBySeller({ id, page }) {
     return await this.productsRepository
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.user', 'user')
@@ -118,6 +116,7 @@ export class ProductsService {
   async findByRecommend() {
     const result = await this.productsRepository
       .createQueryBuilder('product')
+      .where('product.isOutOfStock = :isOutOfStock', { isOutOfStock: false })
       .select('product.id')
       .addSelect('count(review.id)', 'countReview')
       .leftJoin('product.reviews', 'review')
@@ -147,7 +146,8 @@ export class ProductsService {
     const result = await this.productsRepository
       .createQueryBuilder('product')
       .leftJoin('product.productOrder', 'productOrder')
-      .where('productOrder.status = :status', { status: 'BOUGHT' })
+      .where('product.isOutOfStock = :isOutOfStock', { isOutOfStock: false })
+      .andWhere('productOrder.status = :status', { status: 'BOUGHT' })
       .select('product.id')
       .addSelect('count(productOrder.id)', 'countOrder')
       .groupBy('product.id')
@@ -177,10 +177,8 @@ export class ProductsService {
     createProductOptionInput,
     id,
   }: IProductsServiceCreate): Promise<Product> {
-    const { productCategoryId, ...rest } = createProductInput;
-    const user = await this.usersRepository.findOne({
-      where: { id },
-    });
+    const { productCategoryId, quantity, discountRate, price, ...rest } =
+      createProductInput;
 
     const productCategory = await this.productsCategoriesRepository.findOne({
       where: { id: productCategoryId },
@@ -190,16 +188,32 @@ export class ProductsService {
       throw new UnprocessableEntityException('존재하지 않는 카테고리입니다.');
     }
 
-    const savedOption: ProductOption =
-      await this.productOptionService.createOption({
-        productId: id,
+    let productOption = null;
+
+    if (productCategory.name === '뷰티') {
+      productOption = await this.productsOptionsRepository.save({
         ...createProductOptionInput,
       });
+    }
+
+    const discountedPrice = Math.ceil((price * (100 - discountRate)) / 100);
+
+    let isOutOfStock = false;
+
+    if (!quantity) {
+      isOutOfStock = true;
+    }
 
     return await this.productsRepository.save({
       ...rest,
-      user: { ...user },
+      quantity,
+      isOutOfStock,
+      price,
+      discountRate,
+      discountedPrice,
+      user: { id },
       productCategory: { ...productCategory },
+      productOption,
     });
   }
 
@@ -211,7 +225,7 @@ export class ProductsService {
   }: IProductsServiceUpdate): Promise<Product> {
     const target = await this.productsRepository.findOne({
       where: { id: productId },
-      relations: ['productCategory', 'user'],
+      relations: ['productCategory', 'user', 'productOption'],
     });
 
     if (!target)
@@ -220,28 +234,46 @@ export class ProductsService {
     if (target.user.id !== id)
       throw new UnprocessableEntityException('상품을 수정할 권한이 없습니다.');
 
-    const { productCategoryId, ...rest } = updateProductInput;
+    const { quantity, discountRate, price, ...rest } = updateProductInput;
 
-    let changedCategory = {};
+    let newQuantity = target.quantity;
 
-    if (productCategoryId) {
-      changedCategory = await this.productsCategoriesRepository.findOne({
-        where: { id: productCategoryId },
-      });
+    let newIsOutOfStock = target.isOutOfStock;
 
-      if (changedCategory)
-        throw new UnprocessableEntityException('존재하지 않는 카테고리입니다.');
+    if (quantity === 0) {
+      newQuantity = 0;
+      newIsOutOfStock = true;
+    } else if (quantity > 0) {
+      newQuantity = quantity;
+      newIsOutOfStock = false;
     }
 
-    const newProductOption = await this.productOptionService.updateOption({
-      productId,
-      ...updateProductOptionInput,
-    });
+    const newDiscount = discountRate ? discountRate : target.discountRate;
+
+    const newPrice = price ? price : target.price;
+
+    const newDiscountedPrice = Math.ceil(
+      (newPrice * (100 - newDiscount)) / 100,
+    );
+
+    let newProductOption = {};
+
+    if (target.productCategory.name === '뷰티' && updateProductOptionInput) {
+      newProductOption = await this.productsOptionsRepository.save({
+        ...target.productOption,
+        ...updateProductOptionInput,
+      });
+    }
 
     return await this.productsRepository.save({
       ...target,
       ...rest,
-      productCategory: { ...target.productCategory, ...changedCategory },
+      price: newPrice,
+      discountRate: newDiscount,
+      discountedPrice: newDiscountedPrice,
+      quantity: newQuantity,
+      isOutOfStock: newIsOutOfStock,
+      productOption: { ...target.productOption, ...newProductOption },
     });
   }
 
