@@ -36,4 +36,19 @@ export class CreateProductInput {
   @Max(100)
   @Field(() => Int)
   discount: number;
+
+  @Field(() => String, { nullable: true })
+  option1: string;
+
+  @Field(() => String, { nullable: true })
+  option2: string;
+
+  @Field(() => String, { nullable: true })
+  option3: string;
+
+  @Field(() => String, { nullable: true })
+  option4: string;
+
+  @Field(() => String, { nullable: true })
+  option5: string;
 }

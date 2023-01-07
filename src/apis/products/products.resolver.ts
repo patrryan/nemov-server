@@ -2,6 +2,8 @@ import { UseGuards } from '@nestjs/common';
 import { Args, ID, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
 import { CurrentUser } from 'src/commons/decorators/current-user.decorator';
+import { CreateProductOptionInput } from '../productsOptions/dto/createProductDetail.input';
+import { UpdateProductOptionInput } from '../productsOptions/dto/updateProductDetail.input';
 import { CreateProductInput } from './dto/create-product.input';
 import { UpdateProductInput } from './dto/update-product.input';
 import { Product } from './entities/product.entity';
@@ -75,9 +77,15 @@ export class ProductsResolver {
   @Mutation(() => Product)
   createProduct(
     @Args('createProductInput') createProductInput: CreateProductInput,
+    @Args('createProductOptionInput')
+    createProductOptionInput: CreateProductOptionInput,
     @CurrentUser() id: string,
   ): Promise<Product> {
-    return this.productsService.create({ createProductInput, id });
+    return this.productsService.create({
+      createProductInput,
+      createProductOptionInput,
+      id,
+    });
   }
 
   @UseGuards(GqlAuthAccessGuard)
@@ -85,9 +93,16 @@ export class ProductsResolver {
   updateProduct(
     @Args('productId', { type: () => ID }) productId: string,
     @Args('updateProductInput') updateProductInput: UpdateProductInput,
+    @Args('updateProductOptionInput')
+    updateProductOptionInput: UpdateProductOptionInput,
     @CurrentUser() id: string,
   ): Promise<Product> {
-    return this.productsService.update({ productId, updateProductInput, id });
+    return this.productsService.update({
+      productId,
+      updateProductInput,
+      updateProductOptionInput,
+      id,
+    });
   }
 
   @UseGuards(GqlAuthAccessGuard)

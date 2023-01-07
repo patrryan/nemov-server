@@ -5,12 +5,14 @@ import {
   CreateDateColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
 } from 'typeorm';
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 import { User } from 'src/apis/users/entities/user.entity';
 import { Review } from 'src/apis/reviews/entities/review.entity';
 import { ProductOrder } from 'src/apis/productsOrders/entities/productOrder.entity';
 import { ProductCategory } from 'src/apis/productsCategories/entities/productCategory.entity';
+import { ProductOption } from 'src/apis/productsOptions/entities/productOption.entity';
 
 @ObjectType()
 @Entity()
@@ -71,4 +73,30 @@ export class Product {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @Column({ type: 'varchar', length: 150, default: null })
+  @Field(() => String, { nullable: true })
+  option1: string;
+
+  @Column({ type: 'varchar', length: 150, default: null })
+  @Field(() => String, { nullable: true })
+  option2: string;
+
+  @Column({ type: 'varchar', length: 150, default: null })
+  @Field(() => String, { nullable: true })
+  option3: string;
+
+  @Column({ type: 'varchar', length: 150, default: null })
+  @Field(() => String, { nullable: true })
+  option4: string;
+
+  @Column({ type: 'varchar', length: 150, default: null })
+  @Field(() => String, { nullable: true })
+  option5: string;
+
+  @OneToOne(() => ProductOption, (productOption) => productOption.product, {
+    nullable: true,
+  })
+  @Field(() => ProductOption, { nullable: true })
+  productOption: ProductOption;
 }

@@ -2,6 +2,8 @@ import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProductCategory } from '../productsCategories/entities/productCategory.entity';
+import { ProductOption } from '../productsOptions/entities/productOption.entity';
+import { ProductOptionService } from '../productsOptions/productsOptions.service';
 import { User } from '../users/entities/user.entity';
 import { Product } from './entities/product.entity';
 import {
@@ -16,6 +18,7 @@ export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private readonly productsRepository: Repository<Product>,
+    private readonly productOptionService: ProductOptionService,
     @InjectRepository(ProductCategory)
     private readonly productsCategoriesRepository: Repository<ProductCategory>,
     @InjectRepository(User)
@@ -31,6 +34,7 @@ export class ProductsService {
         .createQueryBuilder('product')
         .leftJoinAndSelect('product.user', 'user')
         .leftJoinAndSelect('product.productCategory', 'productCategory')
+        .leftJoinAndSelect('product.productOption', 'productOption')
         .where('product.veganLevel BETWEEN :veganLevel AND :end', {
           veganLevel,
           end: 8,
@@ -44,6 +48,7 @@ export class ProductsService {
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.user', 'user')
       .leftJoinAndSelect('product.productCategory', 'productCategory')
+      .leftJoinAndSelect('product.productOption', 'productOption')
       .where('product.productCategory = :categoryId', {
         categoryId: productCategoryId,
       })
@@ -64,6 +69,7 @@ export class ProductsService {
     if (productCategory.name === '전체') {
       return await this.productsRepository
         .createQueryBuilder('product')
+        .leftJoinAndSelect('product.productOption', 'productOption')
         .where('product.veganLevel BETWEEN :veganLevel AND :end', {
           veganLevel,
           end: 8,
@@ -72,6 +78,7 @@ export class ProductsService {
     }
     return this.productsRepository
       .createQueryBuilder('product')
+      .leftJoinAndSelect('product.productOption', 'productOption')
       .where('product.category = :categoryId', {
         categoryId: productCategoryId,
       })
@@ -85,7 +92,7 @@ export class ProductsService {
   async findOne({ productId }: IProductsServiceFindOne): Promise<Product> {
     return await this.productsRepository.findOne({
       where: { id: productId },
-      relations: ['user', 'productCategory'],
+      relations: ['user', 'productCategory', 'productOption'],
     });
   }
 
@@ -167,6 +174,7 @@ export class ProductsService {
 
   async create({
     createProductInput,
+    createProductOptionInput,
     id,
   }: IProductsServiceCreate): Promise<Product> {
     const { productCategoryId, ...rest } = createProductInput;
@@ -182,6 +190,12 @@ export class ProductsService {
       throw new UnprocessableEntityException('존재하지 않는 카테고리입니다.');
     }
 
+    const savedOption: ProductOption =
+      await this.productOptionService.createOption({
+        productId: id,
+        ...createProductOptionInput,
+      });
+
     return await this.productsRepository.save({
       ...rest,
       user: { ...user },
@@ -192,6 +206,7 @@ export class ProductsService {
   async update({
     productId,
     updateProductInput,
+    updateProductOptionInput,
     id,
   }: IProductsServiceUpdate): Promise<Product> {
     const target = await this.productsRepository.findOne({
@@ -217,6 +232,11 @@ export class ProductsService {
       if (changedCategory)
         throw new UnprocessableEntityException('존재하지 않는 카테고리입니다.');
     }
+
+    const newProductOption = await this.productOptionService.updateOption({
+      productId,
+      ...updateProductOptionInput,
+    });
 
     return await this.productsRepository.save({
       ...target,
