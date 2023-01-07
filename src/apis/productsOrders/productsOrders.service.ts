@@ -106,6 +106,7 @@ export class ProductsOrdersService {
         .leftJoinAndSelect('productOrder.seller', 'seller')
         .leftJoinAndSelect('productOrder.product', 'product')
         .leftJoinAndSelect('productOrder.buyer', 'buyer')
+        .leftJoinAndSelect('productOrder.review', 'review')
         .where('productOrder.seller = :id', { id })
         .andWhere('productOrder.updatedAt BETWEEN :startDate AND :endLocal', {
           startDate,
@@ -121,6 +122,7 @@ export class ProductsOrdersService {
         .leftJoinAndSelect('productOrder.seller', 'seller')
         .leftJoinAndSelect('productOrder.product', 'product')
         .leftJoinAndSelect('productOrder.buyer', 'buyer')
+        .leftJoinAndSelect('productOrder.review', 'review')
         .where('productOrder.seller = :id', { id })
         .orderBy('productOrder.updatedAt', 'DESC')
         .skip((page - 1) * 10)

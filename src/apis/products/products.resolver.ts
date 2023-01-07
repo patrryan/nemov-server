@@ -2,6 +2,8 @@ import { UseGuards } from '@nestjs/common';
 import { Args, ID, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
 import { CurrentUser } from 'src/commons/decorators/current-user.decorator';
+import { CreateProductOptionInput } from '../productsOptions/dto/createProductOption.input';
+import { UpdateProductOptionInput } from '../productsOptions/dto/updateProductOption.input';
 import { CreateProductInput } from './dto/create-product.input';
 import { UpdateProductInput } from './dto/update-product.input';
 import { Product } from './entities/product.entity';
@@ -46,7 +48,7 @@ export class ProductsResolver {
     @Args({ name: 'page', type: () => Int }) page: number,
     @CurrentUser() id: string,
   ) {
-    return this.productsService.findProductBySeller({ id, page });
+    return this.productsService.findAllBySeller({ id, page });
   }
 
   @UseGuards(GqlAuthAccessGuard)
@@ -71,19 +73,33 @@ export class ProductsResolver {
   @Mutation(() => Product)
   createProduct(
     @Args('createProductInput') createProductInput: CreateProductInput,
+    @Args('createProductOptionInput', { nullable: true })
+    createProductOptionInput: CreateProductOptionInput,
     @CurrentUser() id: string,
   ): Promise<Product> {
-    return this.productsService.create({ createProductInput, id });
+    return this.productsService.create({
+      createProductInput,
+      createProductOptionInput,
+      id,
+    });
   }
 
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Product)
   updateProduct(
     @Args('productId', { type: () => ID }) productId: string,
-    @Args('updateProductInput') updateProductInput: UpdateProductInput,
+    @Args('updateProductInput')
+    updateProductInput: UpdateProductInput,
+    @Args('updateProductOptionInput', { nullable: true })
+    updateProductOptionInput: UpdateProductOptionInput,
     @CurrentUser() id: string,
   ): Promise<Product> {
-    return this.productsService.update({ productId, updateProductInput, id });
+    return this.productsService.update({
+      productId,
+      updateProductInput,
+      updateProductOptionInput,
+      id,
+    });
   }
 
   @UseGuards(GqlAuthAccessGuard)

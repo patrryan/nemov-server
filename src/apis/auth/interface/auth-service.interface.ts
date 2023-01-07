@@ -1,23 +1,18 @@
-import { User } from 'src/apis/users/entities/user.entity';
-import { IAuthUserItem } from 'src/commons/types/context';
-import { Response } from 'express';
+import { IAuthUser, IContext } from 'src/commons/types/context';
+import { Request, Response } from 'express';
 
-export interface IAuthServiceGetAccessToken {
-  user: User | IAuthUserItem;
+export interface IAuthServiceLogin {
+  email: string;
+  password: string;
+  context: IContext;
 }
 
 export interface IAuthServiceSetRefreshToken {
-  user: User;
+  id: string;
+  req: Request & IAuthUser;
   res: Response;
 }
 
-export interface IOAuthUser {
-  user: {
-    name: string;
-    email: string;
-    hashedPassword: string;
-    address: string;
-    phoneNumber: string;
-    veganLevel: string;
-  };
+export interface IAuthServiceGetAccessToken {
+  id: string;
 }
