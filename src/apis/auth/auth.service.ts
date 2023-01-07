@@ -7,18 +7,45 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { IContext } from 'src/commons/types/context';
 import { Cache } from 'cache-manager';
+import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
+import { UsersService } from '../users/users.service';
+import {
+  IAuthServiceGetAccessToken,
+  IAuthServiceLogin,
+  IAuthServiceSetRefreshToken,
+} from './interface/auth-service.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly jwtService: JwtService, //
-
+    private readonly jwtService: JwtService,
+    private readonly usersService: UsersService,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
   ) {}
 
-  setRefreshToken({ id, res, req }): void {
+  async login({
+    email,
+    password,
+    context,
+  }: IAuthServiceLogin): Promise<string> {
+    const user = await this.usersService.findOneByEmail({ email });
+
+    if (!user)
+      throw new UnprocessableEntityException('가입된 회원이 아닙니다.');
+
+    const isCorrect = await bcrypt.compare(password, user.password);
+
+    if (!isCorrect)
+      throw new UnprocessableEntityException('가입된 회원이 아닙니다.');
+
+    this.setRefreshToken({ id: user.id, req: context.req, res: context.res });
+
+    return this.getAccessToken({ id: user.id });
+  }
+
+  setRefreshToken({ id, req, res }: IAuthServiceSetRefreshToken): void {
     const refreshToken = this.jwtService.sign(
       { id },
       { secret: process.env.JWT_REFRESH_KEY, expiresIn: '2w' },
@@ -53,7 +80,7 @@ export class AuthService {
     }
   }
 
-  getAccessToken({ id }): string {
+  getAccessToken({ id }: IAuthServiceGetAccessToken): string {
     return this.jwtService.sign(
       { id },
       { secret: process.env.JWT_ACCESS_KEY, expiresIn: '1h' },

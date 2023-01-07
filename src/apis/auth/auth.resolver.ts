@@ -1,9 +1,7 @@
-import { UnprocessableEntityException, UseGuards } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { IContext } from 'src/commons/types/context';
-import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
-import * as bcrypt from 'bcrypt';
 import {
   GqlAuthAccessGuard,
   GqlAuthRefreshGuard,
@@ -14,33 +12,16 @@ import { GraphQLPassword } from 'src/commons/graphql/customTypes/password.type';
 @Resolver()
 export class AuthResolver {
   constructor(
-    private readonly usersService: UsersService, //
-    private readonly authService: AuthService,
+    private readonly authService: AuthService, //
   ) {}
 
   @Mutation(() => String)
-  async login(
+  login(
     @Args('email', { type: () => GraphQLEmail }) email: string, //
     @Args('password', { type: () => GraphQLPassword }) password: string,
     @Context() context: IContext,
   ): Promise<string> {
-    const user = await this.usersService.findOneByEmail({ email });
-
-    if (!user)
-      throw new UnprocessableEntityException('등록된 이메일이 아닙니다.');
-
-    const isAuth = await bcrypt.compare(password, user.password);
-
-    if (!isAuth)
-      throw new UnprocessableEntityException('비밀번호가 틀렸습니다.');
-
-    this.authService.setRefreshToken({
-      id: user.id,
-      res: context.res,
-      req: context.req,
-    });
-
-    return this.authService.getAccessToken({ id: user.id });
+    return this.authService.login({ email, password, context });
   }
 
   @UseGuards(GqlAuthRefreshGuard)
@@ -53,7 +34,7 @@ export class AuthResolver {
 
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => String)
-  async logout(
+  logout(
     @Context() context: IContext, //
   ) {
     return this.authService.logout({

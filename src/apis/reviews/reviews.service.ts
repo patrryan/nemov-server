@@ -45,6 +45,7 @@ export class ReviewsService {
       .createQueryBuilder('review')
       .leftJoinAndSelect('review.images', 'images')
       .leftJoinAndSelect('review.product', 'product')
+      .leftJoinAndSelect('product.user', 'user')
       .where('review.user = :id', { id })
       .orderBy('review.createdAt', 'DESC')
       .skip((page - 1) * 10)

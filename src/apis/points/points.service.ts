@@ -198,7 +198,7 @@ export class PointsService {
     if (!result) {
       throw new UnprocessableEntityException('존재하지 않는 결제건입니다.');
     }
-    if (result.status === 'CANCEL') {
+    if (result.status === 'CANCELLED') {
       throw new UnprocessableEntityException('이미 취소된 결제 건입니다.');
     }
 
