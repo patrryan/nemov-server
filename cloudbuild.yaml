@@ -16,7 +16,7 @@ steps:
       - set
       - image
       - deployments/nemov-nestjs
-      - mybackend10-nestjs-sha256-1=asia.gcr.io/nemo-v-backend/mybackend10-nestjs:0.6
+      - mybackend10-nestjs-sha256-1=asia.gcr.io/nemo-v-backend/mybackend10-nestjs:0.7
     env:
       - CLOUDSDK_COMPUTE_ZONE=asia-northeast3
       - CLOUDSDK_CONTAINER_CLUSTER=autopilot-cluster-1
