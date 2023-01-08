@@ -266,7 +266,12 @@ type Mutation {
   cancelPointCharge(impUid: ID!): Point!
   toggleProductToCart(productId: ID!): Boolean!
   toggleProductPick(productId: ID!): Boolean!
-  createProductOrder(productId: ID!, amount: Int!, quantity: Int!): ProductOrder!
+  createProductOrders(
+    productOrders: [CreateProductOrderInput!]!
+
+    """총 구매 금액"""
+    amount: Int!
+  ): String!
   cancelProductOrder(productOrderId: ID!): Boolean!
   createAnswer(questionId: ID!, contents: String!): Answer!
   updateAnswer(answerId: ID!, contents: String!): Answer!
@@ -402,14 +407,14 @@ input CreateReviewInput {
   title: String!
   contents: String!
   rating: Int!
-  images: [String!]
+  images: [String]
 }
 
 input UpdateReviewInput {
   title: String
   contents: String
   rating: Int
-  images: [String!]
+  images: [String]
 }
 
 input CreateQuestionInput {
@@ -420,6 +425,11 @@ input CreateQuestionInput {
 input UpdateQuestionInput {
   title: String
   contents: String
+}
+
+input CreateProductOrderInput {
+  productId: ID!
+  quantity: Int!
 }
 
 input CreateProductCategoryInput {

@@ -1,7 +1,7 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import setEndToLocal from 'src/commons/utils/setEndToLocal';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { CartService } from '../cart/cart.service';
 import {
   Point,
@@ -180,75 +180,129 @@ export class ProductsOrdersService {
       .getCount();
   }
 
-  async create({ productId, amount, quantity, id }) {
-    const { product, buyer, seller } = await this.validateForPurchase({
-      productId,
+  async verifyForPurchase({ productOrders, amount, id }) {
+    const result = await this.productsRepository
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.user', 'user')
+      .where(
+        new Brackets((qb) => {
+          for (let i = 0; i < productOrders.length; i++) {
+            qb.orWhere(
+              `product.id = :id${i} AND product.quantity >= :quantity${i}`,
+              {
+                [`id${i}`]: productOrders[i].productId,
+                [`quantity${i}`]: productOrders[i].quantity,
+              },
+            );
+          }
+        }),
+      )
+      .andWhere('product.isOutOfStock = :isOutOfStock', { isOutOfStock: false })
+      .select([
+        'product.id',
+        'product.discountedPrice',
+        'product.quantity',
+        'user.id',
+        'user.point',
+      ])
+      .getMany();
+
+    if (productOrders.length !== result.length) {
+      throw new UnprocessableEntityException('다시 결제를 진행해주세요.');
+    }
+
+    const productToBuy = result.map((el, i) => {
+      return { ...el, count: productOrders[i].quantity };
+    });
+
+    const verifiedAmount = productToBuy.reduce((acc, cur) => {
+      const each = cur.discountedPrice * cur.count;
+      return acc + each;
+    }, 0);
+
+    if (
+      (verifiedAmount < 50000 && verifiedAmount + 3000 !== amount) ||
+      (verifiedAmount >= 50000 && verifiedAmount !== amount)
+    ) {
+      throw new UnprocessableEntityException('다시 결제를 진행해주세요.');
+    }
+
+    const buyer = await this.usersRepository.findOne({ where: { id } });
+
+    if (buyer.point < amount) {
+      throw new UnprocessableEntityException(
+        '포인트 충전 후 결제를 진행해주세요.',
+      );
+    }
+
+    return { productToBuy, buyer };
+  }
+
+  async create({ productOrders, amount, id }) {
+    const { productToBuy, buyer } = await this.verifyForPurchase({
+      productOrders,
       amount,
-      quantity,
       id,
     });
 
-    const balanceOfBuyer = buyer.point - amount;
-    const balanceOfSeller = seller.point + amount;
-
-    await this.usersRepository.update({ id }, { point: balanceOfBuyer });
-
-    await this.usersRepository.update(
-      { id: seller.id },
-      { point: balanceOfSeller },
-    );
+    for (let i = 0; i < productToBuy.length; i++) {
+      await this.createProductOrder({ productToBuy: productToBuy[i], buyer });
+    }
 
     await this.pointsRepository.save({
       amount: -amount,
       status: POINT_TRANSACTION_STATUS_ENUM.BOUGHT,
-      balance: balanceOfBuyer,
-      user: { id },
+      balance: buyer.point - amount,
+      user: { id: buyer.id },
     });
+
+    await this.usersRepository.update(
+      { id: buyer.id },
+      { point: buyer.point - amount },
+    );
+
+    return '결제 완료';
+  }
+
+  async createProductOrder({ productToBuy, buyer }) {
+    const { id, discountedPrice, quantity, user, count } = productToBuy;
+    const amount = discountedPrice * count;
+    const balanceOfSeller = user.point + amount;
+
+    await this.usersRepository.update(
+      { id: user.id },
+      { point: balanceOfSeller },
+    );
 
     await this.pointsRepository.save({
       amount,
       status: POINT_TRANSACTION_STATUS_ENUM.SOLD,
       balance: balanceOfSeller,
-      user: { id: seller.id },
+      user: { id: user.id },
     });
 
-    await this.productsRepository.update(
-      { id: productId },
-      { quantity: product.quantity - quantity },
-    );
+    if (quantity - count === 0) {
+      await this.productsRepository.update(
+        { id },
+        { quantity: 0, isOutOfStock: true },
+      );
+    } else {
+      await this.productsRepository.update(
+        { id },
+        { quantity: quantity - count },
+      );
+    }
 
-    await this.cartsService.deleteBoughtFromCart({ productId, id });
+    await this.cartsService.deleteBoughtFromCart({ productId: id, id });
 
     return await this.productsOrdersRepository.save({
       amount,
-      quantity,
+      quantity: count,
       status: PRODUCT_ORDER_STATUS_ENUM.BOUGHT,
-      buyer: { id },
-      seller: { id: seller.id },
-      product: { id: productId },
+      buyer,
+      seller: { id: user.id },
+      product: { id },
     });
-  }
-
-  async validateForPurchase({ productId, amount, quantity, id }) {
-    const target = await this.productsRepository.findOne({
-      where: { id: productId },
-      relations: ['user'],
-    });
-
-    if (!target)
-      throw new UnprocessableEntityException('존재하지 않는 상품입니다.');
-
-    if (target.quantity < quantity)
-      throw new UnprocessableEntityException('상품 재고가 부족합니다.');
-
-    const user = await this.usersRepository.findOne({ where: { id } });
-
-    if (user.point < amount)
-      throw new UnprocessableEntityException(
-        '포인트 충전 구매를 진행해주세요.',
-      );
-
-    return { product: target, buyer: user, seller: target.user };
   }
 
   async cancelOrder({ productOrderId, id }) {
