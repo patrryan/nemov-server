@@ -14,6 +14,6 @@ export class CreateReviewInput {
   @Field(() => Int)
   rating: number;
 
-  @Field(() => [String], { nullable: true })
+  @Field(() => [String], { nullable: 'itemsAndList' })
   images: string[];
 }

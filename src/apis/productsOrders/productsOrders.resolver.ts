@@ -12,6 +12,7 @@ import { ProductOrder } from './entities/productOrder.entity';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
 import { CurrentUser } from 'src/commons/decorators/current-user.decorator';
+import { CreateProductOrderInput } from './dto/create-product-order.input';
 
 @Resolver()
 export class ProductsOrdersResolver {
@@ -116,19 +117,15 @@ export class ProductsOrdersResolver {
   }
 
   @UseGuards(GqlAuthAccessGuard)
-  @Mutation(() => ProductOrder)
-  createProductOrder(
-    @Args('productId', { type: () => ID }) productId: string,
-    @Args('amount', { type: () => Int }) amount: number,
-    @Args('quantity', { type: () => Int }) quantity: number,
+  @Mutation(() => String)
+  createProductOrders(
+    @Args('productOrders', { type: () => [CreateProductOrderInput] })
+    productOrders: CreateProductOrderInput[],
+    @Args('amount', { type: () => Int, description: '총 구매 금액' })
+    amount: number,
     @CurrentUser() id: string,
   ) {
-    return this.productsOrdersService.create({
-      productId,
-      amount,
-      quantity,
-      id,
-    });
+    return this.productsOrdersService.create({ productOrders, amount, id });
   }
 
   @UseGuards(GqlAuthAccessGuard)
