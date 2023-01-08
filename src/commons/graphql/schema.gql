@@ -134,6 +134,15 @@ type Product {
   updatedAt: DateTime!
 }
 
+type Answer {
+  id: ID!
+  contents: String!
+  question: Question!
+  user: User!
+  createdAt: DateTime!
+  deletedAt: DateTime!
+}
+
 type Question {
   id: ID!
   title: String!
@@ -141,17 +150,6 @@ type Question {
   product: Product!
   user: User!
   answer: Answer
-  createdAt: DateTime!
-  updatedAt: DateTime!
-}
-
-type Answer {
-  id: ID!
-  contents: String!
-  question: Question!
-  user: User!
-  createdAt: DateTime!
-  updatedAt: DateTime!
 }
 
 type Point {
@@ -188,8 +186,8 @@ enum POINT_TRANSACTION_STATUS_ENUM {
 type Query {
   fetchLoginUser: User!
   fetchUserPoint: Int!
-  fetchProducts(productCategoryId: ID!, veganLevel: Int!, page: Int!): [Product!]!
-  fetchProductsCount(productCategoryId: ID!, veganLevel: Int!): Int!
+  fetchProducts(categoryId: ID!, veganLevel: Int!, page: Int!): [Product!]!
+  fetchProductsCount(categoryId: ID!, veganLevel: Int!): Int!
   fetchProduct(productId: ID!): Product!
   fetchProductsBySeller(page: Int!): [Product!]!
   fetchProductsCountBySeller: Int!
@@ -274,7 +272,6 @@ type Mutation {
   updateAnswer(answerId: ID!, contents: String!): Answer!
   deleteAnswer(answerId: ID!): Boolean!
   createProductCategory(createProductCategoryInput: CreateProductCategoryInput!): ProductCategory!
-  updateProductCategory(productCategoryId: ID!, updateProductCategoryInput: UpdateProductCategoryInput!): ProductCategory!
   deleteProductCategory(productId: ID!): Boolean!
 }
 
@@ -428,9 +425,4 @@ input UpdateQuestionInput {
 input CreateProductCategoryInput {
   name: String!
   image: String!
-}
-
-input UpdateProductCategoryInput {
-  name: String
-  image: String
 }
