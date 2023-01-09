@@ -1,6 +1,7 @@
 import { GraphQLError, GraphQLScalarType, Kind } from 'graphql';
 
-const PASSWORD_REGEX = /^[A-Za-z0-9!@#$%^&*?]{8,16}$/;
+const PASSWORD_REGEX =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*?])[A-Za-z\d!@#$%^&*?]{8,16}$/;
 
 const validate = (value) => {
   if (typeof value !== 'string') {

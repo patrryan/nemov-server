@@ -26,6 +26,7 @@ export class ReviewsService {
     return await this.reviewsRepository
       .createQueryBuilder('review')
       .leftJoinAndSelect('review.images', 'images')
+      .leftJoinAndSelect('review.user', 'user')
       .where('review.product = :productId', { productId })
       .orderBy('review.createdAt', 'DESC')
       .skip((page - 1) * 10)
