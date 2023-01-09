@@ -4,6 +4,7 @@ import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
 import { CurrentUser } from 'src/commons/decorators/current-user.decorator';
 import { Product } from '../products/entities/product.entity';
 import { CartService } from './cart.service';
+import { CartOutput } from './dto/cart.ouput';
 
 @Resolver()
 export class CartResolver {
@@ -12,7 +13,7 @@ export class CartResolver {
   ) {}
 
   @UseGuards(GqlAuthAccessGuard)
-  @Query(() => [Product])
+  @Query(() => [CartOutput])
   fetchCart(
     @CurrentUser() id: string, //
   ): Promise<Product[]> {
@@ -40,8 +41,9 @@ export class CartResolver {
   @Mutation(() => Boolean)
   toggleProductToCart(
     @Args('productId', { type: () => ID }) productId: string,
+    @Args('count', { type: () => Int, nullable: true }) count: number,
     @CurrentUser() id: string,
   ): Promise<boolean> {
-    return this.cartService.create({ productId, id });
+    return this.cartService.create({ productId, count, id });
   }
 }

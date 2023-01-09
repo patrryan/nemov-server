@@ -9,5 +9,6 @@ export interface ICartServiceFindOne {
 
 export interface ICartServiceCreate {
   productId: string;
+  count: number;
   id: string;
 }
