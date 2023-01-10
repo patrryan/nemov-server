@@ -25,11 +25,8 @@ export class ProductsService {
     private readonly usersRepository: Repository<User>,
   ) {}
 
-  async findAll({ productCategoryId, page, veganLevel }) {
-    const productCategory = await this.productsCategoriesRepository.findOne({
-      where: { id: productCategoryId },
-    });
-    if (productCategory.name === '전체') {
+  async findAll({ categoryId, page, veganLevel }) {
+    if (!categoryId) {
       return await this.productsRepository
         .createQueryBuilder('product')
         .leftJoinAndSelect('product.user', 'user')
@@ -62,11 +59,8 @@ export class ProductsService {
       .getMany();
   }
 
-  async findCount({ productCategoryId, veganLevel }) {
-    const productCategory = await this.productsCategoriesRepository.findOne({
-      where: { id: productCategoryId },
-    });
-    if (productCategory.name === '전체') {
+  async findCount({ categoryId, veganLevel }) {
+    if (!categoryId) {
       return await this.productsRepository
         .createQueryBuilder('product')
         .where('product.veganLevel BETWEEN :veganLevel AND :end', {
@@ -77,9 +71,7 @@ export class ProductsService {
     }
     return this.productsRepository
       .createQueryBuilder('product')
-      .where('product.category = :categoryId', {
-        categoryId: productCategoryId,
-      })
+      .where('product.category = :categoryId', { categoryId })
       .andWhere('product.veganLevel BETWEEN :veganLevel AND :end', {
         veganLevel,
         end: 8,

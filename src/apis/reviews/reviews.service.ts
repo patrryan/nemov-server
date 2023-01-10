@@ -186,13 +186,8 @@ export class ReviewsService {
       throw new UnprocessableEntityException('존재하지 않는 글입니다.');
 
     if (target.user.id !== id) {
-      throw new UnprocessableEntityException('이 글을 삭제할 권한이 없습니다.');
+      throw new UnprocessableEntityException('이 글을 수정할 권한이 없습니다.');
     }
-
-    await this.productsOrdersRepository.update(
-      { review: { id: reviewId } },
-      { review: null },
-    );
 
     const result = await this.reviewsRepository.delete({
       id: reviewId,

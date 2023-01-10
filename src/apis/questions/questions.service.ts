@@ -1,8 +1,8 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Answer } from '../answer/entities/answer.entity';
 import { Product } from '../products/entities/product.entity';
+import { User } from '../users/entities/user.entity';
 import { Question } from './entities/question.entity';
 import {
   IQuestionsServiceCreate,
@@ -17,8 +17,8 @@ export class QuestionsService {
     @InjectRepository(Question)
     private readonly questionsRepository: Repository<Question>,
 
-    @InjectRepository(Answer)
-    private readonly answersRepository: Repository<Answer>,
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
 
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
@@ -109,7 +109,7 @@ export class QuestionsService {
   }: IQuestionsServiceUpdate): Promise<Question> {
     const target = await this.questionsRepository.findOne({
       where: { id: questionId },
-      relations: ['user', 'product', 'answer'],
+      relations: ['user', 'product'],
     });
     if (!target) {
       throw new UnprocessableEntityException('존재하지 않는 글 입니다.');
@@ -117,10 +117,6 @@ export class QuestionsService {
 
     if (target.user.id !== id) {
       throw new UnprocessableEntityException('이 글을 수정할 권한이 없습니다.');
-    }
-
-    if (target.answer) {
-      throw new UnprocessableEntityException('답변이 있어 수정할 수 없습니다.');
     }
 
     const result = await this.questionsRepository.save({
@@ -141,7 +137,7 @@ export class QuestionsService {
   async delete({ questionId, id }: IQuestionsServiceDelete): Promise<boolean> {
     const target = await this.questionsRepository.findOne({
       where: { id: questionId },
-      relations: ['user', 'product', 'answer'],
+      relations: ['user', 'product'],
     });
 
     if (!target) {
@@ -150,7 +146,7 @@ export class QuestionsService {
 
     if (target.user.id !== id) {
       throw new UnprocessableEntityException(
-        '문의글을 삭제할 권한이 없습니다.',
+        '문의글을 수정할 권한이 없습니다.',
       );
     }
 
