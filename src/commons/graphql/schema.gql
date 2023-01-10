@@ -237,6 +237,7 @@ type Query {
 
 type Mutation {
   uploadFile(file: Upload!): String!
+  uploadFile1(file: Upload!): String!
   login(email: Email!, password: Password!): String!
   restoreAccessToken: String!
   logout: String!
