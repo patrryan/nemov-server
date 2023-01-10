@@ -13,6 +13,7 @@ import {
   ProductOrder,
   PRODUCT_ORDER_STATUS_ENUM,
 } from './entities/productOrder.entity';
+import { ReviewsService } from '../reviews/reviews.service';
 
 @Injectable()
 export class ProductsOrdersService {
@@ -26,6 +27,7 @@ export class ProductsOrdersService {
     @InjectRepository(Point)
     private readonly pointsRepository: Repository<Point>,
     private readonly cartsService: CartService,
+    private readonly reviewsService: ReviewsService,
   ) {}
 
   async findAllByBuyer({ startDate, endDate, page, id }) {
@@ -293,7 +295,10 @@ export class ProductsOrdersService {
       );
     }
 
-    await this.cartsService.deleteBoughtFromCart({ productId: id, id });
+    await this.cartsService.deleteBoughtFromCart({
+      productId: id,
+      id: buyer.id,
+    });
 
     return await this.productsOrdersRepository.save({
       amount,
@@ -337,7 +342,10 @@ export class ProductsOrdersService {
 
     await this.productsRepository.update(
       { id: productOrder.product.id },
-      { quantity: productOrder.product.quantity + productOrder.quantity },
+      {
+        quantity: productOrder.product.quantity + productOrder.quantity,
+        isOutOfStock: false,
+      },
     );
 
     const result = await this.productsOrdersRepository.update(
@@ -345,13 +353,15 @@ export class ProductsOrdersService {
       { status: PRODUCT_ORDER_STATUS_ENUM.REFUNDED },
     );
 
+    await this.reviewsService.delete({ reviewId: productOrder.review.id, id });
+
     return result.affected ? true : false;
   }
 
   async validateForCancel({ productOrderId, id }) {
     const target = await this.productsOrdersRepository.findOne({
       where: { id: productOrderId },
-      relations: ['buyer', 'product', 'seller'],
+      relations: ['buyer', 'product', 'seller', 'review'],
     });
 
     if (!target)

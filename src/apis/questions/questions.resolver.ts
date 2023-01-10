@@ -1,6 +1,9 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Resolver, Query, ID, Int } from '@nestjs/graphql';
-import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
+import {
+  GqlBuyerAccessGuard,
+  GqlSellerAccessGuard,
+} from 'src/commons/auth/gql-auth.guard';
 import { CurrentUser } from 'src/commons/decorators/current-user.decorator';
 import { CreateQuestionInput } from './dto/create-question.input';
 import { UpdateQuestionInput } from './dto/update-question.update';
@@ -28,7 +31,7 @@ export class QuestionsResolver {
     return this.questionsService.findAllCountByProduct({ productId });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlBuyerAccessGuard)
   @Query(() => [Question])
   fetchQuestionsByBuyer(
     @Args('page', { type: () => Int }) page: number,
@@ -37,7 +40,7 @@ export class QuestionsResolver {
     return this.questionsService.findAllByBuyer({ page, id });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlBuyerAccessGuard)
   @Query(() => Int)
   fetchQuestionsCountByBuyer(
     @CurrentUser() id: string, //
@@ -45,7 +48,7 @@ export class QuestionsResolver {
     return this.questionsService.findAllCountByBuyer({ id });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlSellerAccessGuard)
   @Query(() => [Question])
   fetchQuestionsBySeller(
     @Args('page', { type: () => Int }) page: number,
@@ -54,7 +57,7 @@ export class QuestionsResolver {
     return this.questionsService.findAllBySeller({ page, id });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlSellerAccessGuard)
   @Query(() => Int)
   fetchQuestionsCountBySeller(
     @CurrentUser() id: string, //
@@ -62,7 +65,7 @@ export class QuestionsResolver {
     return this.questionsService.findAllCountBySeller({ id });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlBuyerAccessGuard)
   @Mutation(() => Question)
   createQuestion(
     @Args('createQuestionInput') createQuestionInput: CreateQuestionInput, //
@@ -72,7 +75,7 @@ export class QuestionsResolver {
     return this.questionsService.create({ id, createQuestionInput, productId });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlBuyerAccessGuard)
   @Mutation(() => Question)
   updateQuestion(
     @Args('updateQuestionInput') updateQuestionInput: UpdateQuestionInput, //
@@ -93,7 +96,7 @@ export class QuestionsResolver {
     return this.questionsService.findQuestion({ id: questionId });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlBuyerAccessGuard)
   @Mutation(() => Boolean)
   deleteQuestion(
     @Args('questionId') questionId: string,

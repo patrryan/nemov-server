@@ -23,6 +23,8 @@ import { ProductsPicksModule } from './apis/productsPicks/productsPicks.module';
 import { ProductsOrdersModule } from './apis/productsOrders/productsOrders.module';
 import { AnswersModule } from './apis/answer/answer.module';
 import { ProductsCategoriesModule } from './apis/productsCategories/productsCategories.module';
+import { JwtSellerStrategy } from './commons/auth/jwt-seller.strategy';
+import { JwtBuyerStrategy } from './commons/auth/jwt-buyer.strategy';
 
 @Module({
   imports: [
@@ -83,6 +85,8 @@ import { ProductsCategoriesModule } from './apis/productsCategories/productsCate
   providers: [
     AppService, //
     JwtAccessStrategy,
+    JwtBuyerStrategy,
+    JwtSellerStrategy,
     JwtRefreshStrategy,
   ],
   controllers: [

@@ -29,7 +29,10 @@ export class AuthResolver {
   restoreAccessToken(
     @Context() context: IContext, //
   ): string {
-    return this.authService.getAccessToken({ id: context.req.user.id });
+    return this.authService.getAccessToken({
+      id: context.req.user.id,
+      role: context.req.user.role,
+    });
   }
 
   @UseGuards(GqlAuthAccessGuard)

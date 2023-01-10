@@ -17,6 +17,7 @@ export class PointsResolver {
   constructor(
     private readonly pointsService: PointsService, //
   ) {}
+
   @UseGuards(GqlAuthAccessGuard)
   @Query(() => [Point])
   fetchPointTransactions(
@@ -56,6 +57,7 @@ export class PointsResolver {
       id,
     });
   }
+
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Point)
   cancelPointCharge(

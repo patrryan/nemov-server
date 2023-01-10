@@ -183,6 +183,13 @@ enum POINT_TRANSACTION_STATUS_ENUM {
   COLLECTED
 }
 
+type CartOutput {
+  product: Product!
+
+  """장바구니에 담긴 상품 수량"""
+  count: Int!
+}
+
 type Query {
   fetchLoginUser: User!
   fetchUserPoint: Int!
@@ -207,7 +214,7 @@ type Query {
   fetchQuestion(questionId: ID!): Question!
   fetchPointTransactions(startDate: DateTime, endDate: DateTime, page: Int!): [Point!]!
   fetchPointTransactionsCount: Int!
-  fetchCart: [Product!]!
+  fetchCart: [CartOutput!]!
   fetchCartCount: Int!
   fetchIsInCart(productId: ID!): Boolean!
   fetchProductsIPicked(page: Int!): [Product!]!
@@ -264,7 +271,7 @@ type Mutation {
     amount: Int!
   ): Point!
   cancelPointCharge(impUid: ID!): Point!
-  toggleProductToCart(productId: ID!): Boolean!
+  toggleProductToCart(productId: ID!, count: Int): Boolean!
   toggleProductPick(productId: ID!): Boolean!
   createProductOrders(
     productOrders: [CreateProductOrderInput!]!

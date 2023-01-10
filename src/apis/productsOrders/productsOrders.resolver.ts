@@ -10,7 +10,10 @@ import {
 import { ProductsOrdersService } from './productsOrders.service';
 import { ProductOrder } from './entities/productOrder.entity';
 import { UseGuards } from '@nestjs/common';
-import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
+import {
+  GqlBuyerAccessGuard,
+  GqlSellerAccessGuard,
+} from 'src/commons/auth/gql-auth.guard';
 import { CurrentUser } from 'src/commons/decorators/current-user.decorator';
 import { CreateProductOrderInput } from './dto/create-product-order.input';
 
@@ -20,7 +23,7 @@ export class ProductsOrdersResolver {
     private readonly productsOrdersService: ProductsOrdersService, //
   ) {}
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlBuyerAccessGuard)
   @Query(() => [ProductOrder])
   fetchProductOrdersByBuyer(
     @Args('startDate', { type: () => GraphQLISODateTime, nullable: true })
@@ -38,7 +41,7 @@ export class ProductsOrdersResolver {
     });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlBuyerAccessGuard)
   @Query(() => Int)
   fetchProductOrdersCountByBuyer(
     @Args('startDate', { type: () => GraphQLISODateTime, nullable: true })
@@ -54,7 +57,7 @@ export class ProductsOrdersResolver {
     });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlBuyerAccessGuard)
   @Query(() => Int)
   fetchProductOrdersCountOfBought(
     @CurrentUser() id: string, //
@@ -62,7 +65,7 @@ export class ProductsOrdersResolver {
     return this.productsOrdersService.findAllCountOfBought({ id });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlSellerAccessGuard)
   @Query(() => [ProductOrder])
   fetchProductOrdersBySeller(
     @Args('startDate', { type: () => GraphQLISODateTime, nullable: true })
@@ -80,7 +83,7 @@ export class ProductsOrdersResolver {
     });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlSellerAccessGuard)
   @Query(() => Int)
   fetchProductOrdersCountBySeller(
     @Args('startDate', { type: () => GraphQLISODateTime, nullable: true })
@@ -96,7 +99,7 @@ export class ProductsOrdersResolver {
     });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlBuyerAccessGuard)
   @Query(() => [ProductOrder])
   fetchProductOrdersWithoutReview(
     @Args('page', { type: () => Int }) page: number,
@@ -108,7 +111,7 @@ export class ProductsOrdersResolver {
     });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlBuyerAccessGuard)
   @Query(() => Int)
   fetchProductOrdersCountWithoutReview(
     @CurrentUser() id: string, //
@@ -116,7 +119,7 @@ export class ProductsOrdersResolver {
     return this.productsOrdersService.findAllCountWithoutReview({ id });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlBuyerAccessGuard)
   @Mutation(() => String)
   createProductOrders(
     @Args('productOrders', { type: () => [CreateProductOrderInput] })
@@ -128,7 +131,7 @@ export class ProductsOrdersResolver {
     return this.productsOrdersService.create({ productOrders, amount, id });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlBuyerAccessGuard)
   @Mutation(() => Boolean)
   cancelProductOrder(
     @Args('productOrderId', { type: () => ID }) productOrderId: string,
