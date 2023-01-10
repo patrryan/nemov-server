@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   my-backend:
-    image: asia.gcr.io/nemo-v-backend/mybackend10-nestjs:0.5
+    image: asia.gcr.io/nemo-v-backend/mybackend10-nestjs:0.9.5
     platform: linux/x86_64
     build:
       context: .
