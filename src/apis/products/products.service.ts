@@ -77,8 +77,8 @@ export class ProductsService {
     }
     return this.productsRepository
       .createQueryBuilder('product')
-      .leftJoinAndSelect('product.category', 'category')
-      .where('product.category = :categoryId', {
+      .leftJoinAndSelect('product.productCategory', 'productCategory')
+      .where('product.productCategory = :categoryId', {
         categoryId: productCategoryId,
       })
       .andWhere('product.veganLevel BETWEEN :veganLevel AND :end', {
