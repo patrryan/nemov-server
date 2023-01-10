@@ -6,6 +6,7 @@ export class PhoneResolver {
   constructor(
     private readonly phoneService: PhoneService, //
   ) {}
+
   @Mutation(() => String)
   getTokenForSignUp(
     @Args('phone', { type: () => GraphQLPhone }) phone: string, //

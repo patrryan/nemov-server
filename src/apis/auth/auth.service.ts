@@ -40,14 +40,19 @@ export class AuthService {
     if (!isCorrect)
       throw new UnprocessableEntityException('가입된 회원이 아닙니다.');
 
-    this.setRefreshToken({ id: user.id, req: context.req, res: context.res });
+    this.setRefreshToken({
+      id: user.id,
+      role: user.role,
+      req: context.req,
+      res: context.res,
+    });
 
-    return this.getAccessToken({ id: user.id });
+    return this.getAccessToken({ id: user.id, role: user.role });
   }
 
-  setRefreshToken({ id, req, res }: IAuthServiceSetRefreshToken): void {
+  setRefreshToken({ id, role, req, res }: IAuthServiceSetRefreshToken): void {
     const refreshToken = this.jwtService.sign(
-      { id },
+      { id, role },
       { secret: process.env.JWT_REFRESH_KEY, expiresIn: '2w' },
     );
 
@@ -80,9 +85,9 @@ export class AuthService {
     }
   }
 
-  getAccessToken({ id }: IAuthServiceGetAccessToken): string {
+  getAccessToken({ id, role }: IAuthServiceGetAccessToken): string {
     return this.jwtService.sign(
-      { id },
+      { id, role },
       { secret: process.env.JWT_ACCESS_KEY, expiresIn: '1h' },
     );
   }

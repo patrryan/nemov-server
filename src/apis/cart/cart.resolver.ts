@@ -1,6 +1,6 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, ID, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
+import { GqlBuyerAccessGuard } from 'src/commons/auth/gql-auth.guard';
 import { CurrentUser } from 'src/commons/decorators/current-user.decorator';
 import { Product } from '../products/entities/product.entity';
 import { CartService } from './cart.service';
@@ -12,7 +12,7 @@ export class CartResolver {
     private readonly cartService: CartService, //
   ) {}
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlBuyerAccessGuard)
   @Query(() => [CartOutput])
   fetchCart(
     @CurrentUser() id: string, //
@@ -20,7 +20,7 @@ export class CartResolver {
     return this.cartService.findAll({ id });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlBuyerAccessGuard)
   @Query(() => Int)
   fetchCartCount(
     @CurrentUser() id: string, //
@@ -28,7 +28,7 @@ export class CartResolver {
     return this.cartService.findAllCount({ id });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlBuyerAccessGuard)
   @Query(() => Boolean)
   fetchIsInCart(
     @Args('productId', { type: () => ID }) productId: string,
@@ -37,7 +37,7 @@ export class CartResolver {
     return this.cartService.findOne({ productId, id });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlBuyerAccessGuard)
   @Mutation(() => Boolean)
   toggleProductToCart(
     @Args('productId', { type: () => ID }) productId: string,

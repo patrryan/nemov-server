@@ -154,9 +154,14 @@ export class QuestionsService {
       );
     }
 
-    await this.questionsRepository.update({ id: questionId }, { answer: null });
+    if (target.answer) {
+      await this.questionsRepository.update(
+        { id: questionId },
+        { answer: null },
+      );
 
-    await this.answersRepository.delete({ id: target.answer.id });
+      await this.answersRepository.delete({ id: target.answer.id });
+    }
 
     const result = await this.questionsRepository.delete({
       id: questionId,
