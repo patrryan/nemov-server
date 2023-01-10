@@ -1,6 +1,6 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, ID, Mutation, Resolver, Query } from '@nestjs/graphql';
-import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
+import { GqlSellerAccessGuard } from 'src/commons/auth/gql-auth.guard';
 import { CurrentUser } from 'src/commons/decorators/current-user.decorator';
 import { AnswersService } from './answer.service';
 import { Answer } from './entities/answer.entity';
@@ -27,7 +27,7 @@ export class AnswersResolver {
     });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlSellerAccessGuard)
   @Mutation(() => Answer)
   async createAnswer(
     @Args('questionId', { type: () => ID }) questionId: string,
@@ -41,7 +41,7 @@ export class AnswersResolver {
     });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlSellerAccessGuard)
   @Mutation(() => Answer)
   async updateAnswer(
     @Args('answerId', { type: () => ID }) answerId: string, //
@@ -55,7 +55,7 @@ export class AnswersResolver {
     });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlSellerAccessGuard)
   @Mutation(() => Boolean)
   async deleteAnswer(
     @Args('answerId', { type: () => ID }) answerId: string,

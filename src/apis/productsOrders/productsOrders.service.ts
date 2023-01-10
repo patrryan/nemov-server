@@ -344,7 +344,7 @@ export class ProductsOrdersService {
       { id: productOrder.product.id },
       {
         quantity: productOrder.product.quantity + productOrder.quantity,
-        isOutOfStock: true,
+        isOutOfStock: false,
       },
     );
 

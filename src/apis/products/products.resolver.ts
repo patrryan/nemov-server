@@ -1,6 +1,6 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, ID, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
+import { GqlSellerAccessGuard } from 'src/commons/auth/gql-auth.guard';
 import { CurrentUser } from 'src/commons/decorators/current-user.decorator';
 import { CreateProductOptionInput } from '../productsOptions/dto/createProductOption.input';
 import { UpdateProductOptionInput } from '../productsOptions/dto/updateProductOption.input';
@@ -46,7 +46,7 @@ export class ProductsResolver {
     return this.productsService.findOne({ productId });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlSellerAccessGuard)
   @Query(() => [Product])
   fetchProductsBySeller(
     @Args('page', { type: () => Int }) page: number,
@@ -55,7 +55,7 @@ export class ProductsResolver {
     return this.productsService.findAllBySeller({ id, page });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlSellerAccessGuard)
   @Query(() => Int)
   fetchProductsCountBySeller(
     @CurrentUser() id: string, //
@@ -73,7 +73,7 @@ export class ProductsResolver {
     return this.productsService.findBySelling();
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlSellerAccessGuard)
   @Mutation(() => Product)
   createProduct(
     @Args('createProductInput') createProductInput: CreateProductInput,
@@ -88,7 +88,7 @@ export class ProductsResolver {
     });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlSellerAccessGuard)
   @Mutation(() => Product)
   updateProduct(
     @Args('productId', { type: () => ID }) productId: string,
@@ -106,7 +106,7 @@ export class ProductsResolver {
     });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlSellerAccessGuard)
   @Mutation(() => Boolean)
   deleteProduct(
     @Args('productId', { type: () => ID }) productId: string, //

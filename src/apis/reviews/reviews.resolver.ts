@@ -1,6 +1,6 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, ID, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
+import { GqlBuyerAccessGuard } from 'src/commons/auth/gql-auth.guard';
 import { CurrentUser } from 'src/commons/decorators/current-user.decorator';
 import { CreateReviewInput } from './dto/create-review.input';
 import { UpdateReviewInput } from './dto/update-review.inputs';
@@ -28,7 +28,7 @@ export class ReviewResolver {
     return this.reviewsService.findAllCountByProduct({ productId });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlBuyerAccessGuard)
   @Query(() => [Review])
   fetchReviewsByBuyer(
     @Args('page', { type: () => Int }) page: number,
@@ -37,7 +37,7 @@ export class ReviewResolver {
     return this.reviewsService.findAllByBuyer({ page, id });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlBuyerAccessGuard)
   @Query(() => Int)
   fetchReviewsCountByBuyer(
     @CurrentUser() id: string, //
@@ -52,7 +52,7 @@ export class ReviewResolver {
     return this.reviewsService.findOne({ id: reviewId });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlBuyerAccessGuard)
   @Mutation(() => Review)
   createReview(
     @Args('productOrderId', { type: () => ID }) productOrderId: string,
@@ -66,7 +66,7 @@ export class ReviewResolver {
     });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlBuyerAccessGuard)
   @Mutation(() => Review)
   updateReview(
     @Args('updateReviewInput') updateReviewInput: UpdateReviewInput, //
@@ -80,7 +80,7 @@ export class ReviewResolver {
     });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlBuyerAccessGuard)
   @Mutation(() => Boolean)
   deleteReview(
     @Args('reviewId') reviewId: string,

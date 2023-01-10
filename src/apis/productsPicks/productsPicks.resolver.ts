@@ -1,6 +1,6 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, ID, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { GqlAuthAccessGuard } from 'src/commons/auth/gql-auth.guard';
+import { GqlBuyerAccessGuard } from 'src/commons/auth/gql-auth.guard';
 import { CurrentUser } from 'src/commons/decorators/current-user.decorator';
 import { Product } from '../products/entities/product.entity';
 import { ProductsPicksService } from './productsPicks.service';
@@ -11,7 +11,7 @@ export class ProductsPicksResolver {
     private readonly productsPicksService: ProductsPicksService, //
   ) {}
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlBuyerAccessGuard)
   @Query(() => [Product])
   fetchProductsIPicked(
     @Args('page', { type: () => Int }) page: number,
@@ -20,7 +20,7 @@ export class ProductsPicksResolver {
     return this.productsPicksService.findAllByUser({ page, id });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlBuyerAccessGuard)
   @Query(() => Int)
   fetchProductsIPickedCount(
     @CurrentUser() id: string, //
@@ -28,7 +28,7 @@ export class ProductsPicksResolver {
     return this.productsPicksService.findAllCountByUser({ id });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlBuyerAccessGuard)
   @Query(() => Boolean)
   fetchIsPicked(
     @Args('productId', { type: () => ID }) productId: string,
@@ -44,7 +44,7 @@ export class ProductsPicksResolver {
     return this.productsPicksService.findAllCountByProduct({ productId });
   }
 
-  @UseGuards(GqlAuthAccessGuard)
+  @UseGuards(GqlBuyerAccessGuard)
   @Mutation(() => Boolean)
   toggleProductPick(
     @Args('productId', { type: () => ID }) productId: string,
