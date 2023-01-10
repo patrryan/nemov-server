@@ -77,7 +77,7 @@ export class ProductsService {
     }
     return this.productsRepository
       .createQueryBuilder('product')
-      .leftJoinAndSelect('product.category', 'category')
+      .leftJoinAndSelect('product.productCategory', 'productCategory')
       .where('product.category = :categoryId', {
         categoryId: productCategoryId,
       })
