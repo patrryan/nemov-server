@@ -8,7 +8,6 @@ import {
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -34,7 +33,7 @@ export class Answer {
   @Field(() => GraphQLISODateTime)
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @CreateDateColumn()
   @Field(() => GraphQLISODateTime)
-  updatedAt: Date;
+  deletedAt: Date;
 }
