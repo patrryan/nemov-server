@@ -3,7 +3,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CartService } from '../cart/cart.service';
 import { Point } from '../points/entities/point.entity';
 import { Product } from '../products/entities/product.entity';
-import { ReviewImage } from '../reviewImages/entities/reviewImage.entity';
 import { Review } from '../reviews/entities/review.entity';
 import { ReviewsService } from '../reviews/reviews.service';
 import { User } from '../users/entities/user.entity';
@@ -19,7 +18,6 @@ import { ProductsOrdersService } from './productsOrders.service';
       User,
       Point,
       Review,
-      ReviewImage,
     ]),
   ],
   providers: [

@@ -53,11 +53,6 @@ type ProductOption {
   option11: String!
 }
 
-type ReviewImage {
-  id: ID!
-  url: String!
-}
-
 type Review {
   id: ID!
   title: String!
@@ -65,7 +60,7 @@ type Review {
   rating: Int!
   product: Product!
   user: User!
-  images: [ReviewImage!]
+  images: [String!]
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -148,7 +143,7 @@ type Question {
 type Answer {
   id: ID!
   contents: String!
-  question: Question!
+  question: Question
   user: User!
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -215,7 +210,7 @@ type Query {
   fetchQuestionsCountBySeller: Int!
   fetchQuestion(questionId: ID!): Question!
   fetchPointTransactions(startDate: DateTime, endDate: DateTime, page: Int!): [Point!]!
-  fetchPointTransactionsCount: Int!
+  fetchPointTransactionsCount(startDate: DateTime, endDate: DateTime): Int!
   fetchCart: [CartOutput!]!
   fetchCartCount: Int!
   fetchIsInCart(productId: ID!): Boolean!

@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProductCategory } from '../productsCategories/entities/productCategory.entity';
 import { ProductOption } from '../productsOptions/entities/productOption.entity';
-import { User } from '../users/entities/user.entity';
 import { Product } from './entities/product.entity';
 import {
   IProductsServiceCreate,
@@ -21,15 +20,10 @@ export class ProductsService {
     private readonly productsOptionsRepository: Repository<ProductOption>,
     @InjectRepository(ProductCategory)
     private readonly productsCategoriesRepository: Repository<ProductCategory>,
-    @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,
   ) {}
 
   async findAll({ productCategoryId, page, veganLevel }) {
-    const productCategory = await this.productsCategoriesRepository.findOne({
-      where: { id: productCategoryId },
-    });
-    if (productCategory.name === '전체') {
+    if (!productCategoryId) {
       return await this.productsRepository
         .createQueryBuilder('product')
         .leftJoinAndSelect('product.user', 'user')
@@ -43,30 +37,28 @@ export class ProductsService {
         .skip((page - 1) * 9)
         .take(9)
         .getMany();
+    } else {
+      return await this.productsRepository
+        .createQueryBuilder('product')
+        .leftJoinAndSelect('product.user', 'user')
+        .leftJoinAndSelect('product.productCategory', 'productCategory')
+        .leftJoinAndSelect('product.productOption', 'productOption')
+        .where('product.productCategory = :categoryId', {
+          categoryId: productCategoryId,
+        })
+        .andWhere('product.veganLevel BETWEEN :veganLevel AND :end', {
+          veganLevel,
+          end: 8,
+        })
+        .orderBy('product.createdAt', 'DESC')
+        .skip((page - 1) * 9)
+        .take(9)
+        .getMany();
     }
-    return await this.productsRepository
-      .createQueryBuilder('product')
-      .leftJoinAndSelect('product.user', 'user')
-      .leftJoinAndSelect('product.productCategory', 'productCategory')
-      .leftJoinAndSelect('product.productOption', 'productOption')
-      .where('product.productCategory = :categoryId', {
-        categoryId: productCategoryId,
-      })
-      .andWhere('product.veganLevel BETWEEN :veganLevel AND :end', {
-        veganLevel,
-        end: 8,
-      })
-      .orderBy('product.createdAt', 'DESC')
-      .skip((page - 1) * 9)
-      .take(9)
-      .getMany();
   }
 
   async findCount({ productCategoryId, veganLevel }) {
-    const productCategory = await this.productsCategoriesRepository.findOne({
-      where: { id: productCategoryId },
-    });
-    if (productCategory.name === '전체') {
+    if (!productCategoryId) {
       return await this.productsRepository
         .createQueryBuilder('product')
         .where('product.veganLevel BETWEEN :veganLevel AND :end', {
@@ -74,18 +66,19 @@ export class ProductsService {
           end: 8,
         })
         .getCount();
+    } else {
+      return this.productsRepository
+        .createQueryBuilder('product')
+        .leftJoinAndSelect('product.productCategory', 'productCategory')
+        .where('product.productCategory = :categoryId', {
+          categoryId: productCategoryId,
+        })
+        .andWhere('product.veganLevel BETWEEN :veganLevel AND :end', {
+          veganLevel,
+          end: 8,
+        })
+        .getCount();
     }
-    return this.productsRepository
-      .createQueryBuilder('product')
-      .leftJoinAndSelect('product.productCategory', 'productCategory')
-      .where('product.productCategory = :categoryId', {
-        categoryId: productCategoryId,
-      })
-      .andWhere('product.veganLevel BETWEEN :veganLevel AND :end', {
-        veganLevel,
-        end: 8,
-      })
-      .getCount();
   }
 
   async findOne({ productId }: IProductsServiceFindOne): Promise<Product> {
