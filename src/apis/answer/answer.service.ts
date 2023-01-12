@@ -107,15 +107,18 @@ export class AnswersService {
       where: { id: answerId },
       relations: ['user'],
     });
+
     if (!target) {
       throw new UnprocessableEntityException('해당 답글이 존재하지 않습니다.');
     }
     if (target.user.id !== id) {
       throw new UnprocessableEntityException('글을 수정할 권한이 없습니다.');
     }
+
     const result = await this.answersRepository.delete({
       id: answerId,
     });
+
     return result.affected ? true : false;
   }
 }

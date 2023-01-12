@@ -67,6 +67,7 @@ export class QuestionsService {
       .createQueryBuilder('question')
       .leftJoinAndSelect('question.product', 'product')
       .leftJoinAndSelect('question.answer', 'answer')
+      .leftJoinAndSelect('question.user', 'user')
       .leftJoinAndSelect('product.productCategory', 'productCategory')
       .where('product.user = :id', { id })
       .orderBy('question.createdAt', 'DESC')
