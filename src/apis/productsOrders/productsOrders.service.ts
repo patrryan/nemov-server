@@ -367,6 +367,8 @@ export class ProductsOrdersService {
       user: { id: seller.id },
     });
 
+    console.log('11111111111111');
+
     await this.productsRepository.update(
       { id: productOrder.product.id },
       {
@@ -375,12 +377,17 @@ export class ProductsOrdersService {
       },
     );
 
+    if (productOrder.review) {
+      await this.reviewsService.delete({
+        reviewId: productOrder.review.id,
+        id,
+      });
+    }
+
     const result = await this.productsOrdersRepository.update(
       { id: productOrderId },
       { status: PRODUCT_ORDER_STATUS_ENUM.REFUNDED },
     );
-
-    await this.reviewsService.delete({ reviewId: productOrder.review.id, id });
 
     return result.affected ? true : false;
   }
