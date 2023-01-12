@@ -22,8 +22,8 @@ export class Answer {
   @Field(() => String)
   contents: string;
 
-  @OneToOne(() => Question)
-  @Field(() => Question)
+  @OneToOne(() => Question, { nullable: true })
+  @Field(() => Question, { nullable: true })
   question: Question;
 
   @ManyToOne(() => User)
