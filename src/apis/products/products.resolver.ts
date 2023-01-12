@@ -36,7 +36,10 @@ export class ProductsResolver {
     @Args({ name: 'veganLevel', type: () => Int })
     veganLevel: number,
   ) {
-    return this.productsService.findCount({ productCategoryId, veganLevel });
+    return this.productsService.findCount({
+      productCategoryId,
+      veganLevel,
+    });
   }
 
   @Query(() => Product)

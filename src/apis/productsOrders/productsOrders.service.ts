@@ -14,6 +14,7 @@ import {
   PRODUCT_ORDER_STATUS_ENUM,
 } from './entities/productOrder.entity';
 import { ReviewsService } from '../reviews/reviews.service';
+import * as I from './interfaces/products-orders-service.interface';
 
 @Injectable()
 export class ProductsOrdersService {
@@ -30,7 +31,12 @@ export class ProductsOrdersService {
     private readonly reviewsService: ReviewsService,
   ) {}
 
-  async findAllByBuyer({ startDate, endDate, page, id }) {
+  async findAllByBuyer({
+    startDate,
+    endDate,
+    page,
+    id,
+  }: I.FindAllByBuyer): Promise<ProductOrder[]> {
     if ((startDate && !endDate) || (!startDate && endDate))
       throw new UnprocessableEntityException(
         '날짜 설정시 시작과 끝을 모두 지정해주세요.',
@@ -63,7 +69,11 @@ export class ProductsOrdersService {
     }
   }
 
-  async findAllCountByBuyer({ startDate, endDate, id }) {
+  async findAllCountByBuyer({
+    startDate,
+    endDate,
+    id,
+  }: I.FindAllCountByBuyer): Promise<number> {
     if ((startDate && !endDate) || (!startDate && endDate))
       throw new UnprocessableEntityException(
         '날짜 설정시 시작과 끝을 모두 지정해주세요.',
@@ -88,7 +98,7 @@ export class ProductsOrdersService {
     }
   }
 
-  async findAllCountOfBought({ id }) {
+  async findAllCountOfBought({ id }: I.FindAllCountOfBought): Promise<number> {
     return await this.productsOrdersRepository
       .createQueryBuilder('productOrder')
       .where('productOrder.buyer = :id', { id })
@@ -96,7 +106,12 @@ export class ProductsOrdersService {
       .getCount();
   }
 
-  async findAllBySeller({ startDate, endDate, page, id }) {
+  async findAllBySeller({
+    startDate,
+    endDate,
+    page,
+    id,
+  }: I.FindAllBySeller): Promise<ProductOrder[]> {
     if ((startDate && !endDate) || (!startDate && endDate))
       throw new UnprocessableEntityException(
         '날짜 설정시 시작과 끝을 모두 지정해주세요.',
@@ -133,7 +148,11 @@ export class ProductsOrdersService {
     }
   }
 
-  async findAllCountBySeller({ startDate, endDate, id }) {
+  async findAllCountBySeller({
+    startDate,
+    endDate,
+    id,
+  }: I.FindAllCountBySeller): Promise<number> {
     if ((startDate && !endDate) || (!startDate && endDate))
       throw new UnprocessableEntityException(
         '날짜 설정시 시작과 끝을 모두 지정해주세요.',
@@ -158,7 +177,10 @@ export class ProductsOrdersService {
     }
   }
 
-  async findAllWithoutReview({ page, id }) {
+  async findAllWithoutReview({
+    page,
+    id,
+  }: I.FindAllWithoutReview): Promise<ProductOrder[]> {
     return await this.productsOrdersRepository
       .createQueryBuilder('productOrder')
       .leftJoinAndSelect('productOrder.product', 'product')
@@ -173,7 +195,9 @@ export class ProductsOrdersService {
       .getMany();
   }
 
-  async findAllCountWithoutReview({ id }) {
+  async findAllCountWithoutReview({
+    id,
+  }: I.FindAllCountWithoutReview): Promise<number> {
     return await this.productsOrdersRepository
       .createQueryBuilder('productOrder')
       .where('productOrder.buyer = :id', { id })
@@ -182,7 +206,7 @@ export class ProductsOrdersService {
       .getCount();
   }
 
-  async verifyForPurchase({ productOrders, amount, id }) {
+  async verifyForPurchase({ productOrders, amount, id }: I.VerifyForPurchase) {
     const result = await this.productsRepository
       .createQueryBuilder('product')
       .leftJoinAndSelect('product.user', 'user')
@@ -240,7 +264,7 @@ export class ProductsOrdersService {
     return { productToBuy, buyer };
   }
 
-  async create({ productOrders, amount, id }) {
+  async create({ productOrders, amount, id }: I.Create): Promise<string> {
     const { productToBuy, buyer } = await this.verifyForPurchase({
       productOrders,
       amount,
@@ -266,7 +290,10 @@ export class ProductsOrdersService {
     return '결제 완료';
   }
 
-  async createProductOrder({ productToBuy, buyer }) {
+  async createProductOrder({
+    productToBuy,
+    buyer,
+  }: I.CreateProductOrder): Promise<ProductOrder> {
     const { id, discountedPrice, quantity, user, count } = productToBuy;
     const amount = discountedPrice * count;
     const balanceOfSeller = user.point + amount;
@@ -310,7 +337,7 @@ export class ProductsOrdersService {
     });
   }
 
-  async cancelOrder({ productOrderId, id }) {
+  async cancelOrder({ productOrderId, id }: I.CancelOrder) {
     const { productOrder, seller, buyer } = await this.validateForCancel({
       productOrderId,
       id,
@@ -358,7 +385,7 @@ export class ProductsOrdersService {
     return result.affected ? true : false;
   }
 
-  async validateForCancel({ productOrderId, id }) {
+  async validateForCancel({ productOrderId, id }: I.ValidateForCancel) {
     const target = await this.productsOrdersRepository.findOne({
       where: { id: productOrderId },
       relations: ['buyer', 'product', 'seller', 'review'],
