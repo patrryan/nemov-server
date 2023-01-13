@@ -17,22 +17,33 @@ export class ProductsResolver {
 
   @Query(() => [Product])
   fetchProducts(
-    @Args('categoryId', { type: () => ID }) categoryId: string,
-    @Args({ name: 'veganLevel', type: () => Int })
+    @Args('productCategoryId', { type: () => ID }) productCategoryId: string,
+    @Args('veganLevel', { type: () => Int })
     veganLevel: number,
-    @Args({ name: 'page', type: () => Int })
+    @Args('search') search: string,
+    @Args('page', { type: () => Int })
     page: number,
   ) {
-    return this.productsService.findAll({ categoryId, page, veganLevel });
+    return this.productsService.findAll({
+      productCategoryId,
+      veganLevel,
+      search,
+      page,
+    });
   }
 
   @Query(() => Int)
   fetchProductsCount(
-    @Args('categoryId', { type: () => ID }) categoryId: string,
-    @Args({ name: 'veganLevel', type: () => Int })
+    @Args('productCategoryId', { type: () => ID }) productCategoryId: string,
+    @Args('veganLevel', { type: () => Int })
     veganLevel: number,
+    @Args('search') search: string,
   ) {
-    return this.productsService.findCount({ categoryId, veganLevel });
+    return this.productsService.findCount({
+      productCategoryId,
+      veganLevel,
+      search,
+    });
   }
 
   @Query(() => Product)

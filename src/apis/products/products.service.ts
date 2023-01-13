@@ -22,34 +22,45 @@ export class ProductsService {
     private readonly productsCategoriesRepository: Repository<ProductCategory>,
   ) {}
 
-  async findAll({ productCategoryId, page, veganLevel }) {
-    if (!productCategoryId) {
-      return await this.productsRepository
-        .createQueryBuilder('product')
-        .leftJoinAndSelect('product.user', 'user')
-        .leftJoinAndSelect('product.productCategory', 'productCategory')
-        .leftJoinAndSelect('product.productOption', 'productOption')
-        .where('product.veganLevel BETWEEN :veganLevel AND :end', {
-          veganLevel,
-          end: 8,
+  async findAll({ productCategoryId, veganLevel, search, page }) {
+    const qb = this.productsRepository
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.user', 'user')
+      .leftJoinAndSelect('product.productCategory', 'productCategory')
+      .leftJoinAndSelect('product.productOption', 'productOption')
+      .where('product.veganLevel BETWEEN :veganLevel AND :end', {
+        veganLevel,
+        end: 8,
+      });
+
+    if (!productCategoryId && !search) {
+      return await qb
+        .orderBy('product.createdAt', 'DESC')
+        .skip((page - 1) * 9)
+        .take(9)
+        .getMany();
+    } else if (productCategoryId && search) {
+      return await qb
+        .andWhere('product.productCategory = :categoryId', {
+          categoryId: productCategoryId,
+        })
+        .andWhere('product.name like :name', { name: `%${search}%` })
+        .orderBy('product.createdAt', 'DESC')
+        .skip((page - 1) * 9)
+        .take(9)
+        .getMany();
+    } else if (productCategoryId) {
+      return await qb
+        .andWhere('product.productCategory = :categoryId', {
+          categoryId: productCategoryId,
         })
         .orderBy('product.createdAt', 'DESC')
         .skip((page - 1) * 9)
         .take(9)
         .getMany();
     } else {
-      return await this.productsRepository
-        .createQueryBuilder('product')
-        .leftJoinAndSelect('product.user', 'user')
-        .leftJoinAndSelect('product.productCategory', 'productCategory')
-        .leftJoinAndSelect('product.productOption', 'productOption')
-        .where('product.productCategory = :categoryId', {
-          categoryId: productCategoryId,
-        })
-        .andWhere('product.veganLevel BETWEEN :veganLevel AND :end', {
-          veganLevel,
-          end: 8,
-        })
+      return await qb
+        .andWhere('product.name like :name', { name: `%${search}%` })
         .orderBy('product.createdAt', 'DESC')
         .skip((page - 1) * 9)
         .take(9)
@@ -57,26 +68,32 @@ export class ProductsService {
     }
   }
 
-  async findCount({ productCategoryId, veganLevel }) {
-    if (!productCategoryId) {
-      return await this.productsRepository
-        .createQueryBuilder('product')
-        .where('product.veganLevel BETWEEN :veganLevel AND :end', {
-          veganLevel,
-          end: 8,
+  async findCount({ productCategoryId, veganLevel, search }) {
+    const qb = this.productsRepository
+      .createQueryBuilder('product')
+      .where('product.veganLevel BETWEEN :veganLevel AND :end', {
+        veganLevel,
+        end: 8,
+      });
+
+    if (!productCategoryId && !search) {
+      return await qb.getCount();
+    } else if (productCategoryId && search) {
+      return await qb
+        .andWhere('product.productCategory = :categoryId', {
+          categoryId: productCategoryId,
+        })
+        .andWhere('product.name like :name', { name: `%${search}%` })
+        .getCount();
+    } else if (productCategoryId) {
+      return await qb
+        .andWhere('product.productCategory = :categoryId', {
+          categoryId: productCategoryId,
         })
         .getCount();
     } else {
-      return this.productsRepository
-        .createQueryBuilder('product')
-        .leftJoinAndSelect('product.productCategory', 'productCategory')
-        .where('product.productCategory = :categoryId', {
-          categoryId: productCategoryId,
-        })
-        .andWhere('product.veganLevel BETWEEN :veganLevel AND :end', {
-          veganLevel,
-          end: 8,
-        })
+      return await qb
+        .andWhere('product.name like :name', { name: `%${search}%` })
         .getCount();
     }
   }

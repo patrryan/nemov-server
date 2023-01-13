@@ -188,8 +188,8 @@ type CartOutput {
 type Query {
   fetchLoginUser: User!
   fetchUserPoint: Int!
-  fetchProducts(categoryId: ID!, veganLevel: Int!, page: Int!): [Product!]!
-  fetchProductsCount(categoryId: ID!, veganLevel: Int!): Int!
+  fetchProducts(productCategoryId: ID!, veganLevel: Int!, search: String!, page: Int!): [Product!]!
+  fetchProductsCount(productCategoryId: ID!, veganLevel: Int!, search: String!): Int!
   fetchProduct(productId: ID!): Product!
   fetchProductsBySeller(page: Int!): [Product!]!
   fetchProductsCountBySeller: Int!
@@ -316,7 +316,7 @@ input CreateProductInput {
   """상품 카테고리에 해당하는 ID"""
   productCategoryId: ID!
 
-  """상품 상세설명"""
+  """상품 상세설명 (최대 2000자)"""
   description: String!
 
   """상품 대표 이미지에 해당하는 url"""
@@ -363,7 +363,7 @@ input UpdateProductInput {
   """상품명"""
   name: String
 
-  """상품 상세설명"""
+  """상품 상세설명 (최대 2000자)"""
   description: String
 
   """상품 대표 이미지에 해당하는 url"""
