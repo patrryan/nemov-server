@@ -73,8 +73,8 @@ export class UsersResolver {
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
   async checkUserPassword(
-    @CurrentUser() id: string,
     @Args('password', { type: () => GraphQLPassword }) password: string,
+    @CurrentUser() id: string,
   ): Promise<boolean> {
     return this.usersService.verifyPassword({ id, password });
   }
@@ -82,8 +82,8 @@ export class UsersResolver {
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => User)
   updateUser(
-    @CurrentUser() id: string,
     @Args('updateUserInput') updateUserInput: UpdateUserInput,
+    @CurrentUser() id: string,
   ): Promise<User> {
     return this.usersService.update({ id, updateUserInput });
   }
@@ -91,8 +91,8 @@ export class UsersResolver {
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => User)
   async updateUserPassword(
-    @CurrentUser() id: string,
     @Args('password', { type: () => GraphQLPassword }) password: string,
+    @CurrentUser() id: string,
   ): Promise<User> {
     return this.usersService.updatePassword({ id, password });
   }
