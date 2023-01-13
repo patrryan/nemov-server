@@ -115,6 +115,11 @@ export class AnswersService {
       throw new UnprocessableEntityException('글을 수정할 권한이 없습니다.');
     }
 
+    await this.questionsRepository.update(
+      { answer: { id: answerId } },
+      { answer: null },
+    );
+
     const result = await this.answersRepository.delete({
       id: answerId,
     });
