@@ -56,7 +56,7 @@ export class ProductsResolver {
   @UseGuards(GqlSellerAccessGuard)
   @Query(() => [Product])
   fetchProductsBySeller(
-    @Args('page', { type: () => Int }) page: number,
+    @Args({ name: 'page', type: () => Int }) page: number,
     @CurrentUser() id: string,
   ) {
     return this.productsService.findAllBySeller({ id, page });
