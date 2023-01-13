@@ -190,8 +190,8 @@ type CartOutput {
 type Query {
   fetchLoginUser: User!
   fetchUserPoint: Int!
-  fetchProducts(productCategoryId: ID!, veganLevel: Int!, page: Int!): [Product!]!
-  fetchProductsCount(productCategoryId: ID!, veganLevel: Int!): Int!
+  fetchProducts(productCategoryId: ID!, veganLevel: Int!, search: String!, page: Int!): [Product!]!
+  fetchProductsCount(productCategoryId: ID!, veganLevel: Int!, search: String!): Int!
   fetchProduct(productId: ID!): Product!
   fetchProductsBySeller(page: Int!): [Product!]!
   fetchProductsCountBySeller: Int!
