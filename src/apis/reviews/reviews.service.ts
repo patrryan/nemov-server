@@ -24,6 +24,7 @@ export class ReviewsService {
       .createQueryBuilder('review')
       .leftJoinAndSelect('review.user', 'user')
       .where('review.product = :productId', { productId })
+      .andWhere('user.name != name', { name: '탈퇴한 회원' })
       .orderBy('review.createdAt', 'DESC')
       .skip((page - 1) * 10)
       .take(10)
@@ -33,7 +34,9 @@ export class ReviewsService {
   async findAllCountByProduct({ productId }) {
     return await this.reviewsRepository
       .createQueryBuilder('review')
+      .leftJoinAndSelect('review.user', 'user')
       .where('review.product = :productId', { productId })
+      .andWhere('user.name != name', { name: '탈퇴한 회원' })
       .getCount();
   }
 

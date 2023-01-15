@@ -1,4 +1,9 @@
-import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
+import {
+  CACHE_MANAGER,
+  ConflictException,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 // import coolsms from 'coolsms-node-sdk';
 import { Cache } from 'cache-manager';
 import {
@@ -17,9 +22,15 @@ export class PhoneService {
     phone,
     reason,
   }: IPhoneServiceSendTokenForSMS): Promise<string> {
-    // const phoneConverted = phone.split('-').join('');
+    const isGenerated = await this.cacheManager.get(`${phone}-${reason}`);
+
+    if (isGenerated) {
+      throw new ConflictException('나중에 다시 요청을 해주세요.');
+    }
 
     const token = String(Math.floor(Math.random() * 1000000)).padStart(6, '0');
+
+    // const phoneConverted = phone.split('-').join('');
 
     // const messageService = new coolsms(
     //   process.env.SMS_KEY,
@@ -47,7 +58,7 @@ export class PhoneService {
   }: IPhoneServiceCheckToken): Promise<boolean> {
     const myToken = await this.cacheManager.get(`${phone}-${reason}`);
     if (myToken === token) {
-      await this.cacheManager.set(`${phone}-${reason}`, true, { ttl: 0 });
+      await this.cacheManager.set(`${phone}-${reason}`, true, { ttl: 600 });
       return true;
     }
     return false;

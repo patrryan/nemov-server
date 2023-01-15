@@ -6,7 +6,6 @@ import { GraphQLZipCode } from 'src/commons/graphql/customTypes/zipCode.type';
 import {
   Column,
   CreateDateColumn,
-  DeleteDateColumn,
   Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -41,11 +40,11 @@ export class User {
   @Field(() => GraphQLEmail)
   email: string;
 
-  @Column()
+  @Column({ nullable: true })
   password: string;
 
-  @Column()
-  @Field(() => GraphQLPhone)
+  @Column({ nullable: true })
+  @Field(() => GraphQLPhone, { nullable: true })
   phone: string;
 
   @Column({ nullable: true })
@@ -81,7 +80,4 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt: Date;
-
-  @DeleteDateColumn()
-  deletedAt: Date;
 }

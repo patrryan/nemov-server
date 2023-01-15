@@ -30,6 +30,7 @@ export class QuestionsService {
       .leftJoinAndSelect('question.user', 'user')
       .leftJoinAndSelect('question.answer', 'answer')
       .where('question.product = :productId', { productId })
+      .andWhere('question.user.name != name', { name: '탈퇴한 회원' })
       .orderBy('question.createdAt', 'DESC')
       .skip((page - 1) * 10)
       .take(10)
@@ -39,7 +40,9 @@ export class QuestionsService {
   async findAllCountByProduct({ productId }) {
     return await this.questionsRepository
       .createQueryBuilder('question')
+      .leftJoinAndSelect('question.user', 'user')
       .where('question.product = :productId', { productId })
+      .andWhere('question.user.name != name', { name: '탈퇴한 회원' })
       .getCount();
   }
 
@@ -70,6 +73,7 @@ export class QuestionsService {
       .leftJoinAndSelect('question.user', 'user')
       .leftJoinAndSelect('product.productCategory', 'productCategory')
       .where('product.user = :id', { id })
+      .andWhere('question.user.name != name', { name: '탈퇴한 회원' })
       .orderBy('question.createdAt', 'DESC')
       .skip((page - 1) * 10)
       .take(10)
@@ -80,7 +84,9 @@ export class QuestionsService {
     return await this.questionsRepository
       .createQueryBuilder('question')
       .leftJoinAndSelect('question.product', 'product')
+      .leftJoinAndSelect('question.user', 'user')
       .where('product.user = :id', { id })
+      .andWhere('question.user.name != name', { name: '탈퇴한 회원' })
       .getCount();
   }
 

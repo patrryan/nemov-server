@@ -22,6 +22,7 @@ export interface IProductsServiceUpdate {
 
 export interface IProductsServiceDelete {
   productId: string;
+  id: string;
 }
 
 export interface IProductsServicewithDeleted {

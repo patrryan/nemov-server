@@ -6,7 +6,7 @@ type User {
   id: ID!
   name: String!
   email: Email!
-  phone: Phone!
+  phone: Phone
   veganLevel: Int
   zipCode: ZipCode
   address: String
@@ -97,7 +97,7 @@ type Product {
 
   """상품명"""
   name: String!
-  description: String!
+  description: String
   image: String!
   veganLevel: Int
   price: Int!
@@ -107,20 +107,20 @@ type Product {
   discountedPrice: Int!
   quantity: Int!
   isOutOfStock: Boolean!
-  option1: String!
-  option2: String!
-  option3: String!
-  option4: String!
-  option5: String!
+  option1: String
+  option2: String
+  option3: String
+  option4: String
+  option5: String
 
   """뷰티 상품에 해당하는 추가 필수 표기 정보"""
   productOption: ProductOption
 
   """상품 카테고리"""
-  productCategory: ProductCategory!
+  productCategory: ProductCategory
 
   """판매자"""
-  user: User!
+  user: User
 
   """상품 생성날짜"""
   createdAt: DateTime!
@@ -245,7 +245,6 @@ type Mutation {
   updateUser(updateUserInput: UpdateUserInput!): User!
   updateUserPassword(password: Password!): User!
   deleteLoginUser: Boolean!
-  restoreUser(email: Email!): Boolean!
   createProduct(createProductInput: CreateProductInput!, createProductOptionInput: CreateProductOptionInput): Product!
   updateProduct(productId: ID!, updateProductInput: UpdateProductInput!, updateProductOptionInput: UpdateProductOptionInput): Product!
   deleteProduct(productId: ID!): Boolean!
