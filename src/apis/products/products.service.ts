@@ -132,6 +132,7 @@ export class ProductsService {
     const result = await this.productsRepository
       .createQueryBuilder('product')
       .where('product.isOutOfStock = :isOutOfStock', { isOutOfStock: false })
+      .andWhere('product.description != description', { description: '삭제' })
       .select('product.id')
       .addSelect('count(review.id)', 'countReview')
       .leftJoin('product.reviews', 'review')
@@ -162,6 +163,7 @@ export class ProductsService {
       .createQueryBuilder('product')
       .leftJoin('product.productOrder', 'productOrder')
       .where('product.isOutOfStock = :isOutOfStock', { isOutOfStock: false })
+      .andWhere('product.description != description', { description: '삭제' })
       .andWhere('productOrder.status = :status', { status: 'BOUGHT' })
       .select('product.id')
       .addSelect('count(productOrder.id)', 'countOrder')
