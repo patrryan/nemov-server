@@ -1,3 +1,5 @@
+import { Request, Response } from 'express';
+import { IAuthUser } from 'src/commons/types/context';
 import { CreateUserInput } from '../dto/create-user.input';
 import { UpdateUserInput } from '../dto/update-user.input';
 
@@ -39,9 +41,6 @@ export interface IUsersServiceUpdatePassword {
 }
 
 export interface IUsersServiceLoginDelete {
-  id: string;
-}
-
-export interface IUsersServiceRestore {
-  email: string;
+  req: Request & IAuthUser;
+  res: Response;
 }

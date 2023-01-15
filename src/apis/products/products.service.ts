@@ -31,7 +31,8 @@ export class ProductsService {
       .where('product.veganLevel BETWEEN :veganLevel AND :end', {
         veganLevel,
         end: 8,
-      });
+      })
+      .andWhere('product.description != description', { description: '삭제' });
 
     if (!productCategoryId && !search) {
       return await qb
@@ -74,7 +75,8 @@ export class ProductsService {
       .where('product.veganLevel BETWEEN :veganLevel AND :end', {
         veganLevel,
         end: 8,
-      });
+      })
+      .andWhere('product.description != description', { description: '삭제' });
 
     if (!productCategoryId && !search) {
       return await qb.getCount();
@@ -288,8 +290,38 @@ export class ProductsService {
     });
   }
 
-  async delete({ productId }: IProductsServiceDelete): Promise<boolean> {
-    const result = await this.productsRepository.delete({ id: productId });
+  async delete({ productId, id }: IProductsServiceDelete): Promise<boolean> {
+    const target = await this.productsRepository.findOne({
+      where: { id: productId },
+      relations: ['user'],
+    });
+
+    if (!target) {
+      throw new UnprocessableEntityException('존재하지 않는 상품입니다.');
+    }
+
+    if (target.user.id !== id) {
+      throw new UnprocessableEntityException('삭제할 권한이 없습니다.');
+    }
+
+    const result = await this.productsRepository.update(
+      { id: productId },
+      {
+        name: `[삭제된 상품] ${target.name}`,
+        description: `삭제`,
+        veganLevel: null,
+        quantity: 0,
+        isOutOfStock: true,
+        option1: null,
+        option2: null,
+        option3: null,
+        option4: null,
+        option5: null,
+        productOption: null,
+        productCategory: null,
+      },
+    );
+
     return result.affected ? true : false;
   }
 }

@@ -1,4 +1,4 @@
-import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 import { UseGuards } from '@nestjs/common';
@@ -10,6 +10,7 @@ import { GraphQLBusinessLicenseNumber } from 'src/commons/graphql/customTypes/bu
 import { GraphQLEmail } from 'src/commons/graphql/customTypes/email.type';
 import { GraphQLPassword } from 'src/commons/graphql/customTypes/password.type';
 import { GraphQLPhone } from 'src/commons/graphql/customTypes/phone.type';
+import { IContext } from 'src/commons/types/context';
 
 @Resolver()
 export class UsersResolver {
@@ -100,16 +101,8 @@ export class UsersResolver {
   @UseGuards(GqlAuthAccessGuard)
   @Mutation(() => Boolean)
   deleteLoginUser(
-    @CurrentUser() id: string, //
+    @Context() context: IContext, //
   ): Promise<boolean> {
-    return this.usersService.loginDelete({ id });
-  }
-
-  @UseGuards(GqlAuthAccessGuard)
-  @Mutation(() => Boolean)
-  restoreUser(
-    @Args('email', { type: () => GraphQLEmail }) email: string,
-  ): Promise<boolean> {
-    return this.usersService.restore({ email });
+    return this.usersService.delete({ req: context.req, res: context.res });
   }
 }

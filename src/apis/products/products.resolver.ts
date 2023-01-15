@@ -116,8 +116,9 @@ export class ProductsResolver {
   @UseGuards(GqlSellerAccessGuard)
   @Mutation(() => Boolean)
   deleteProduct(
-    @Args('productId', { type: () => ID }) productId: string, //
+    @Args('productId', { type: () => ID }) productId: string,
+    @CurrentUser() id: string,
   ): Promise<boolean> {
-    return this.productsService.delete({ productId });
+    return this.productsService.delete({ productId, id });
   }
 }

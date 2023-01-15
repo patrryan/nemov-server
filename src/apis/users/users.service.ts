@@ -17,13 +17,13 @@ import {
   IUsersServiceFindOneByEmail,
   IUsersServiceFindOneById,
   IUsersServiceLoginDelete,
-  IUsersServiceRestore,
   IUsersServiceUpdate,
   IUsersServiceUpdatePassword,
   IUsersServiceValidateUser,
   IUsersServiceVerifyPassword,
 } from './interfaces/users-service.interface';
 import * as bcrypt from 'bcrypt';
+import * as jwt from 'jsonwebtoken';
 import { PhoneService } from '../phone/phone.service';
 
 @Injectable()
@@ -178,7 +178,9 @@ export class UsersService {
     const { name, email, password, phone, bln, ...rest } = createUserInput;
     await this.validateUser({ email, phone, bln });
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const salt = await bcrypt.genSalt();
+
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     if (bln) {
       return await this.usersRepository.save({
@@ -230,15 +232,73 @@ export class UsersService {
     });
   }
 
-  async loginDelete({ id }: IUsersServiceLoginDelete): Promise<boolean> {
-    const result = await this.usersRepository.softDelete({ id });
-    return result.affected ? true : false;
-  }
-
-  async restore({ email }: IUsersServiceRestore): Promise<boolean> {
-    const result = await this.usersRepository.restore({
-      email,
+  async delete({ req, res }: IUsersServiceLoginDelete): Promise<boolean> {
+    const target = await this.usersRepository.findOne({
+      where: { id: req.user.id },
     });
+
+    const accessToken = req.headers.authorization.replace('Bearer ', '');
+
+    const refreshToken = req.headers.cookie.replace('refreshToken=', '');
+
+    const verifiedAccess = jwt.verify(accessToken, process.env.JWT_ACCESS_KEY);
+
+    const verifiedRefresh = jwt.verify(
+      refreshToken,
+      process.env.JWT_REFRESH_KEY,
+    );
+
+    const current = new Date().getTime();
+
+    const ttlOfAccess = Math.trunc(
+      (verifiedAccess['exp'] * 1000 - current) / 1000,
+    );
+
+    const ttlOfRefresh = Math.trunc(
+      (verifiedRefresh['exp'] * 1000 - current) / 1000,
+    );
+
+    try {
+      verifiedAccess;
+      await this.cacheManager.set(
+        `accessToken = ${accessToken}`,
+        'accessToken',
+        { ttl: ttlOfAccess },
+      );
+
+      verifiedRefresh;
+      await this.cacheManager.set(
+        `refreshToken = ${refreshToken}`,
+        'refreshToken',
+        { ttl: ttlOfRefresh },
+      );
+    } catch (error) {
+      throw new UnprocessableEntityException(error);
+    }
+
+    if (process.env.DEPLOY_ENV === 'LOCAL') {
+      res.setHeader('Set-Cookie', `refreshToken=`);
+    } else {
+      res.setHeader(
+        'Set-Cookie',
+        `refreshToken=; path=/; domain=.code-backend.shop; SameSite=None; Secure; httpOnly;`,
+      );
+    }
+
+    const result = await this.usersRepository.update(
+      { id: target.id },
+      {
+        name: '탈퇴한 회원',
+        email: `[탈퇴]${target.email}`,
+        password: null,
+        phone: null,
+        zipCode: null,
+        address: null,
+        addressDetail: null,
+        bln: null,
+      },
+    );
+
     return result.affected ? true : false;
   }
 }

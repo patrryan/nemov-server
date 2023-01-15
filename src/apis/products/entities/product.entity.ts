@@ -33,8 +33,8 @@ export class Product {
   @Field(() => String, { description: '상품명' })
   name: string;
 
-  @Column({ type: 'varchar', length: 2000 })
-  @Field(() => String)
+  @Column({ type: 'varchar', length: 2000, nullable: true })
+  @Field(() => String, { nullable: true })
   description: string;
 
   @Column()
@@ -65,24 +65,24 @@ export class Product {
   @Field(() => Boolean)
   isOutOfStock: boolean;
 
-  @Column()
-  @Field(() => String)
+  @Column({ nullable: true })
+  @Field(() => String, { nullable: true })
   option1: string;
 
-  @Column()
-  @Field(() => String)
+  @Column({ nullable: true })
+  @Field(() => String, { nullable: true })
   option2: string;
 
-  @Column()
-  @Field(() => String)
+  @Column({ nullable: true })
+  @Field(() => String, { nullable: true })
   option3: string;
 
-  @Column()
-  @Field(() => String)
+  @Column({ nullable: true })
+  @Field(() => String, { nullable: true })
   option4: string;
 
-  @Column()
-  @Field(() => String)
+  @Column({ nullable: true })
+  @Field(() => String, { nullable: true })
   option5: string;
 
   @JoinColumn()
@@ -93,12 +93,15 @@ export class Product {
   })
   productOption: ProductOption;
 
-  @ManyToOne(() => ProductCategory)
-  @Field(() => ProductCategory, { description: '상품 카테고리' })
+  @ManyToOne(() => ProductCategory, { nullable: true })
+  @Field(() => ProductCategory, {
+    description: '상품 카테고리',
+    nullable: true,
+  })
   productCategory: ProductCategory;
 
-  @ManyToOne(() => User)
-  @Field(() => User, { description: '판매자' })
+  @ManyToOne(() => User, { nullable: true })
+  @Field(() => User, { description: '판매자', nullable: true })
   user: User;
 
   @OneToMany(() => Review, (reviews) => reviews.product)

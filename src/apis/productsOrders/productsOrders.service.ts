@@ -367,8 +367,6 @@ export class ProductsOrdersService {
       user: { id: seller.id },
     });
 
-    console.log('11111111111111');
-
     await this.productsRepository.update(
       { id: productOrder.product.id },
       {
