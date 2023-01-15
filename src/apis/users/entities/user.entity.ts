@@ -36,8 +36,8 @@ export class User {
   @Field(() => String)
   name: string;
 
-  @Column()
-  @Field(() => GraphQLEmail)
+  @Column({ nullable: true })
+  @Field(() => GraphQLEmail, { nullable: true })
   email: string;
 
   @Column({ nullable: true })

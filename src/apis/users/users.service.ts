@@ -289,7 +289,7 @@ export class UsersService {
       { id: target.id },
       {
         name: '탈퇴한 회원',
-        email: `[탈퇴]${target.email}`,
+        email: null,
         password: null,
         phone: null,
         zipCode: null,

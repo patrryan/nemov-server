@@ -5,7 +5,7 @@
 type User {
   id: ID!
   name: String!
-  email: Email!
+  email: Email
   phone: Phone
   veganLevel: Int
   zipCode: ZipCode
