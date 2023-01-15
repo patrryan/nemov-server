@@ -113,6 +113,7 @@ export class ProductsService {
       .leftJoinAndSelect('product.user', 'user')
       .leftJoinAndSelect('product.productCategory', 'productCategory')
       .where('product.user = :id', { id })
+      .andWhere('product.description != description', { description: '삭제' })
       .orderBy('product.createdAt', 'DESC')
       .skip((page - 1) * 9)
       .take(9)
@@ -123,6 +124,7 @@ export class ProductsService {
     return await this.productsRepository
       .createQueryBuilder('product')
       .where('product.user = :id', { id })
+      .andWhere('product.description != description', { description: '삭제' })
       .getCount();
   }
 
@@ -130,6 +132,7 @@ export class ProductsService {
     const result = await this.productsRepository
       .createQueryBuilder('product')
       .where('product.isOutOfStock = :isOutOfStock', { isOutOfStock: false })
+      .andWhere('product.description != description', { description: '삭제' })
       .select('product.id')
       .addSelect('count(review.id)', 'countReview')
       .leftJoin('product.reviews', 'review')
@@ -160,6 +163,7 @@ export class ProductsService {
       .createQueryBuilder('product')
       .leftJoin('product.productOrder', 'productOrder')
       .where('product.isOutOfStock = :isOutOfStock', { isOutOfStock: false })
+      .andWhere('product.description != description', { description: '삭제' })
       .andWhere('productOrder.status = :status', { status: 'BOUGHT' })
       .select('product.id')
       .addSelect('count(productOrder.id)', 'countOrder')
