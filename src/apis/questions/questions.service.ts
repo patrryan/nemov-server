@@ -30,7 +30,7 @@ export class QuestionsService {
       .leftJoinAndSelect('question.user', 'user')
       .leftJoinAndSelect('question.answer', 'answer')
       .where('question.product = :productId', { productId })
-      .andWhere('question.user.name != name', { name: '탈퇴한 회원' })
+      .andWhere('review.user.email IS NOT NULL')
       .orderBy('question.createdAt', 'DESC')
       .skip((page - 1) * 10)
       .take(10)
@@ -42,7 +42,7 @@ export class QuestionsService {
       .createQueryBuilder('question')
       .leftJoinAndSelect('question.user', 'user')
       .where('question.product = :productId', { productId })
-      .andWhere('question.user.name != name', { name: '탈퇴한 회원' })
+      .andWhere('review.user.email IS NOT NULL')
       .getCount();
   }
 
@@ -73,7 +73,7 @@ export class QuestionsService {
       .leftJoinAndSelect('question.user', 'user')
       .leftJoinAndSelect('product.productCategory', 'productCategory')
       .where('product.user = :id', { id })
-      .andWhere('question.user.name != name', { name: '탈퇴한 회원' })
+      .andWhere('review.user.email IS NOT NULL')
       .orderBy('question.createdAt', 'DESC')
       .skip((page - 1) * 10)
       .take(10)
@@ -86,7 +86,7 @@ export class QuestionsService {
       .leftJoinAndSelect('question.product', 'product')
       .leftJoinAndSelect('question.user', 'user')
       .where('product.user = :id', { id })
-      .andWhere('question.user.name != name', { name: '탈퇴한 회원' })
+      .andWhere('review.user.email IS NOT NULL')
       .getCount();
   }
 
