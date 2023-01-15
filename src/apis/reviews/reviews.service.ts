@@ -24,7 +24,7 @@ export class ReviewsService {
       .createQueryBuilder('review')
       .leftJoinAndSelect('review.user', 'user')
       .where('review.product = :productId', { productId })
-      .andWhere('review.user.email IS NOT NULL')
+      .andWhere('user.email IS NOT NULL')
       .orderBy('review.createdAt', 'DESC')
       .skip((page - 1) * 10)
       .take(10)
