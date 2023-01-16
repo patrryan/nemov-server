@@ -6,9 +6,6 @@ export class CartOutput {
   @Field(() => Product)
   product: Product;
 
-  @Field(() => Int, {
-    description: '장바구니에 담긴 상품 수량',
-    nullable: true,
-  })
+  @Field(() => Int, { description: '장바구니에 담긴 상품 수량' })
   count: number;
 }
