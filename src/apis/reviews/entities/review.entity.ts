@@ -6,14 +6,12 @@ import {
   ObjectType,
 } from '@nestjs/graphql';
 import { Product } from 'src/apis/products/entities/product.entity';
-import { ReviewImage } from 'src/apis/reviewImages/entities/reviewImage.entity';
 import { User } from 'src/apis/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -45,12 +43,9 @@ export class Review {
   @Field(() => User)
   user: User;
 
-  @OneToMany(() => ReviewImage, (images) => images.review, {
-    nullable: true,
-    cascade: true,
-  })
-  @Field(() => [ReviewImage], { nullable: true })
-  images: ReviewImage[];
+  @Column('simple-array', { nullable: true })
+  @Field(() => [String], { nullable: true })
+  images: string[];
 
   @CreateDateColumn()
   @Field(() => GraphQLISODateTime)

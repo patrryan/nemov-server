@@ -53,11 +53,6 @@ type ProductOption {
   option11: String!
 }
 
-type ReviewImage {
-  id: ID!
-  url: String!
-}
-
 type Review {
   id: ID!
   title: String!
@@ -65,7 +60,7 @@ type Review {
   rating: Int!
   product: Product!
   user: User!
-  images: [ReviewImage!]
+  images: [String!]
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -134,24 +129,22 @@ type Product {
   updatedAt: DateTime!
 }
 
-type Question {
-  id: ID!
-  title: String!
-  contents: String!
-  product: Product!
-  user: User!
-  answer: Answer
-  createdAt: DateTime!
-  updatedAt: DateTime!
-}
-
 type Answer {
   id: ID!
   contents: String!
   question: Question!
   user: User!
   createdAt: DateTime!
-  updatedAt: DateTime!
+  deletedAt: DateTime!
+}
+
+type Question {
+  id: ID!
+  title: String!
+  contents: String!
+  question: Question
+  user: User!
+  answer: Answer
 }
 
 type Point {
@@ -195,8 +188,8 @@ type CartOutput {
 type Query {
   fetchLoginUser: User!
   fetchUserPoint: Int!
-  fetchProducts(productCategoryId: ID!, veganLevel: Int!, page: Int!): [Product!]!
-  fetchProductsCount(productCategoryId: ID!, veganLevel: Int!): Int!
+  fetchProducts(productCategoryId: ID!, veganLevel: Int!, search: String!, page: Int!): [Product!]!
+  fetchProductsCount(productCategoryId: ID!, veganLevel: Int!, search: String!): Int!
   fetchProduct(productId: ID!): Product!
   fetchProductsBySeller(page: Int!): [Product!]!
   fetchProductsCountBySeller: Int!
@@ -215,7 +208,7 @@ type Query {
   fetchQuestionsCountBySeller: Int!
   fetchQuestion(questionId: ID!): Question!
   fetchPointTransactions(startDate: DateTime, endDate: DateTime, page: Int!): [Point!]!
-  fetchPointTransactionsCount: Int!
+  fetchPointTransactionsCount(startDate: DateTime, endDate: DateTime): Int!
   fetchCart: [CartOutput!]!
   fetchCartCount: Int!
   fetchIsInCart(productId: ID!): Boolean!
@@ -287,7 +280,6 @@ type Mutation {
   updateAnswer(answerId: ID!, contents: String!): Answer!
   deleteAnswer(answerId: ID!): Boolean!
   createProductCategory(createProductCategoryInput: CreateProductCategoryInput!): ProductCategory!
-  updateProductCategory(productCategoryId: ID!, updateProductCategoryInput: UpdateProductCategoryInput!): ProductCategory!
   deleteProductCategory(productId: ID!): Boolean!
 }
 
@@ -324,7 +316,7 @@ input CreateProductInput {
   """상품 카테고리에 해당하는 ID"""
   productCategoryId: ID!
 
-  """상품 상세설명"""
+  """상품 상세설명 (최대 2000자)"""
   description: String!
 
   """상품 대표 이미지에 해당하는 url"""
@@ -371,7 +363,7 @@ input UpdateProductInput {
   """상품명"""
   name: String
 
-  """상품 상세설명"""
+  """상품 상세설명 (최대 2000자)"""
   description: String
 
   """상품 대표 이미지에 해당하는 url"""
@@ -446,9 +438,4 @@ input CreateProductOrderInput {
 input CreateProductCategoryInput {
   name: String!
   image: String!
-}
-
-input UpdateProductCategoryInput {
-  name: String
-  image: String
 }

@@ -33,7 +33,7 @@ export class Product {
   @Field(() => String, { description: '상품명' })
   name: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 2000 })
   @Field(() => String)
   description: string;
 

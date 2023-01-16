@@ -1,15 +1,17 @@
 import { Field, ID, InputType, Int } from '@nestjs/graphql';
-import { Max, Min, MinLength } from 'class-validator';
+import { Max, MaxLength, Min, MinLength } from 'class-validator';
 
 @InputType()
 export class CreateProductInput {
+  @MaxLength(30)
   @Field(() => String, { description: '상품명' })
   name: string;
 
   @Field(() => ID, { description: '상품 카테고리에 해당하는 ID' })
   productCategoryId: string;
 
-  @Field(() => String, { description: '상품 상세설명' })
+  @MaxLength(2000)
+  @Field(() => String, { description: '상품 상세설명 (최대 2000자)' })
   description: string;
 
   @Field(() => String, { description: '상품 대표 이미지에 해당하는 url' })
