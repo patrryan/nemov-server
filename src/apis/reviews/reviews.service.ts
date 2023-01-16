@@ -36,7 +36,7 @@ export class ReviewsService {
       .createQueryBuilder('review')
       .leftJoinAndSelect('review.user', 'user')
       .where('review.product = :productId', { productId })
-      .andWhere('review.user.email IS NOT NULL')
+      .andWhere('user.email IS NOT NULL')
       .getCount();
   }
 
