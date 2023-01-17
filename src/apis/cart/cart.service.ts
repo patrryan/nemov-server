@@ -9,11 +9,7 @@ import { Cache } from 'cache-manager';
 import { Repository } from 'typeorm';
 import { Product } from '../products/entities/product.entity';
 import { CartOutput } from './dto/cart.ouput';
-import {
-  ICartServiceCreate,
-  ICartServiceFindAll,
-  ICartServiceFindOne,
-} from './interfaces/cart-service.interface';
+import * as I from './interfaces/cart-service.interface';
 
 @Injectable()
 export class CartService {
@@ -24,7 +20,7 @@ export class CartService {
     private readonly productsRepository: Repository<Product>,
   ) {}
 
-  async findAll({ id }: ICartServiceFindAll): Promise<Product[]> {
+  async findAll({ id }: I.CartServiceFindAll): Promise<Product[]> {
     const target = await this.cacheManager.get(`${id}-basket`);
     if (!target) return [];
 
@@ -51,13 +47,13 @@ export class CartService {
     }
   }
 
-  async findAllCount({ id }) {
+  async findAllCount({ id }: I.CartServiceFindAllCount) {
     const result = await this.findAll({ id });
 
     return result.length;
   }
 
-  async findOne({ productId, id }: ICartServiceFindOne): Promise<boolean> {
+  async findOne({ productId, id }: I.CartServiceFindOne): Promise<boolean> {
     const result = await this.cacheManager.get(`${id}-basket`);
     if (!result) return false;
     if (typeof result === 'string') {
@@ -66,7 +62,11 @@ export class CartService {
     }
   }
 
-  async create({ productId, count, id }: ICartServiceCreate): Promise<boolean> {
+  async create({
+    productId,
+    count,
+    id,
+  }: I.CartServiceCreate): Promise<boolean> {
     const target = await this.productsRepository.findOne({
       where: { id: productId },
     });
@@ -90,6 +90,10 @@ export class CartService {
       return true;
     }
     if (typeof result === 'string') {
+      if (!count)
+        throw new UnprocessableEntityException(
+          '상품 수량을 선택한 후에 진행해주세요.',
+        );
       const cart = JSON.parse(result);
       if (cart.find((el) => el.productId === productId)) {
         cart.splice(
@@ -112,7 +116,7 @@ export class CartService {
     }
   }
 
-  async deleteBoughtFromCart({ productId, id }) {
+  async deleteBoughtFromCart({ productId, id }: I.CartServiceDelete) {
     const result = await this.cacheManager.get(`${id}-basket`);
     if (typeof result === 'string') {
       const cart = JSON.parse(result);

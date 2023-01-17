@@ -1,5 +1,5 @@
 import { FileUpload } from 'graphql-upload';
 
-export interface IFilesServiceUpload {
+export interface FilesServiceUpload {
   file: FileUpload;
 }

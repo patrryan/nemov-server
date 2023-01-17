@@ -1,24 +1,24 @@
-export interface IAnswersServiceFindOne {
+export interface AnswersServiceFindOne {
   id: string;
 }
 
-export interface IAnswersServiceFindOneByQuestion {
+export interface AnswersServiceFindOneByQuestion {
   questionId: string;
 }
 
-export interface IAnswersServiceCreate {
+export interface AnswersServiceCreate {
   questionId: string;
   contents: string;
   id: string;
 }
 
-export interface IAnswersServiceUpdate {
+export interface AnswersServiceUpdate {
   answerId: string;
   contents: string;
   id: string;
 }
 
-export interface IAnswersServiceDelete {
+export interface AnswersServiceDelete {
   answerId: string;
   id: string;
 }

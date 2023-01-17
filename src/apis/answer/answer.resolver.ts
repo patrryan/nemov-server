@@ -13,7 +13,7 @@ export class AnswersResolver {
 
   @Query(() => Answer)
   async fetchAnswer(
-    @Args('answerId', { type: () => ID }) answerId: string, //
+    @Args('answerId', { type: () => ID }) answerId: string,
   ): Promise<Answer> {
     return this.answersService.findOne({ id: answerId });
   }
