@@ -240,18 +240,17 @@ export class ProductsOrdersService {
       throw new UnprocessableEntityException('다시 결제를 진행해주세요.');
     }
 
-    console.log('111111111111111');
-
-    const productToBuy = result.map((el, i) => {
-      return { ...el, count: productOrders[i].quantity };
+    const productToBuy = result.map((el) => {
+      return {
+        ...el,
+        count: productOrders.find((el2) => el2.productId === el.id).quantity,
+      };
     });
 
     const verifiedAmount = productToBuy.reduce((acc, cur) => {
       const each = cur.discountedPrice * cur.count;
       return acc + each;
     }, 0);
-
-    console.log('2222222222222222');
 
     if (
       (verifiedAmount < 50000 && verifiedAmount + 3000 !== amount) ||
@@ -260,8 +259,6 @@ export class ProductsOrdersService {
       throw new UnprocessableEntityException('다시 결제를 진행해주세요.');
     }
 
-    console.log('33333333333333333');
-
     const buyer = await this.usersRepository.findOne({ where: { id } });
 
     if (buyer.point < amount) {
@@ -269,8 +266,6 @@ export class ProductsOrdersService {
         '포인트 충전 후 결제를 진행해주세요.',
       );
     }
-
-    console.log('4444444444444444444');
 
     return { productToBuy, buyer };
   }
