@@ -288,8 +288,8 @@ export class UsersService {
     const result = await this.usersRepository.update(
       { id: target.id },
       {
-        name: '탈퇴한 회원',
-        email: null,
+        name: `[탈퇴]${target.name}`,
+        email: `탈퇴${target.email}`,
         password: null,
         phone: null,
         zipCode: null,

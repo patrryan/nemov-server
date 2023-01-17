@@ -1,7 +1,7 @@
 import { GraphQLError, GraphQLScalarType, Kind } from 'graphql';
 
 const BUSINESS_LICENSE_NUMBER_REGEX =
-  /^(10[1-9]|1[1-9][0-9]|[2-9][0-9]{2})\-(0[1-9]|[1-9][0-9])\-(000[1-9]|0[0-9][1-9][0-9]|[1-9][0-9]{3})[0-9]$/;
+  /^(10[1-9]|1[1-9][0-9]|[2-9][0-9]{2})\-(0[1-9]|[1-9][0-9])\-(000[1-9]|00[1-9][0-9]|01[0-9]{2}|[1-9][0-9]{3})[0-9]$/;
 
 const validate = (value) => {
   if (typeof value !== 'string') {

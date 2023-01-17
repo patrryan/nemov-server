@@ -32,7 +32,7 @@ export class AuthService {
   }: IAuthServiceLogin): Promise<string> {
     const user = await this.usersService.findOneByEmail({ email });
 
-    if (!user || user.name === '탈퇴한 회원' || user.email.includes('[탈퇴]'))
+    if (!user || user.name.includes('[탈퇴]'))
       throw new UnprocessableEntityException('가입된 회원이 아닙니다.');
 
     const isCorrect = await bcrypt.compare(password, user.password);
