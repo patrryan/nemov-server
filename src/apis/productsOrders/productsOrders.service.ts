@@ -240,6 +240,8 @@ export class ProductsOrdersService {
       throw new UnprocessableEntityException('다시 결제를 진행해주세요.');
     }
 
+    console.log('111111111111111');
+
     const productToBuy = result.map((el, i) => {
       return { ...el, count: productOrders[i].quantity };
     });
@@ -249,12 +251,16 @@ export class ProductsOrdersService {
       return acc + each;
     }, 0);
 
+    console.log('2222222222222222');
+
     if (
       (verifiedAmount < 50000 && verifiedAmount + 3000 !== amount) ||
       (verifiedAmount >= 50000 && verifiedAmount !== amount)
     ) {
       throw new UnprocessableEntityException('다시 결제를 진행해주세요.');
     }
+
+    console.log('33333333333333333');
 
     const buyer = await this.usersRepository.findOne({ where: { id } });
 
@@ -263,6 +269,8 @@ export class ProductsOrdersService {
         '포인트 충전 후 결제를 진행해주세요.',
       );
     }
+
+    console.log('4444444444444444444');
 
     return { productToBuy, buyer };
   }
