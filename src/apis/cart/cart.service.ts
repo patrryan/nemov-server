@@ -90,10 +90,6 @@ export class CartService {
       return true;
     }
     if (typeof result === 'string') {
-      if (!count)
-        throw new UnprocessableEntityException(
-          '상품 수량을 선택한 후에 진행해주세요.',
-        );
       const cart = JSON.parse(result);
       if (cart.find((el) => el.productId === productId)) {
         cart.splice(
@@ -107,6 +103,10 @@ export class CartService {
       } else {
         if (cart.length >= 15)
           throw new UnprocessableEntityException('장바구니가 가득 찼습니다.');
+        if (!count)
+          throw new UnprocessableEntityException(
+            '상품 수량을 선택한 후에 진행해주세요.',
+          );
         cart.push({ productId, count });
         await this.cacheManager.set(`${id}-basket`, JSON.stringify(cart), {
           ttl: 1209600,
