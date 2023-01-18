@@ -189,6 +189,7 @@ export class UsersService {
         password: hashedPassword,
         phone,
         bln,
+        point: 0,
         role: ROLE_TYPE.SELLER,
       });
     } else {
