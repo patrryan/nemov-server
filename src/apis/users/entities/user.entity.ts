@@ -71,7 +71,7 @@ export class User {
   @Field(() => ROLE_TYPE)
   role: ROLE_TYPE;
 
-  @Column({ default: 5000000 })
+  @Column({ default: 3000 })
   @Field(() => Int)
   point: number;
 
