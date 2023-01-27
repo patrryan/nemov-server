@@ -15,7 +15,7 @@ export class AnswersResolver {
   async fetchAnswer(
     @Args('answerId', { type: () => ID }) answerId: string,
   ): Promise<Answer> {
-    return this.answersService.findOne({ id: answerId });
+    return this.answersService.findOne({ answerId });
   }
 
   @Query(() => Answer)

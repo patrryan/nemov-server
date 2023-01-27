@@ -7,4 +7,8 @@ export class CreateProductOrderInput {
 
   @Field(() => Int)
   quantity: number;
+
+  // check price for each product
+  // @Field(() => Int)
+  // price: number
 }

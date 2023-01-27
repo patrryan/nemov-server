@@ -135,8 +135,6 @@ export class UsersService {
 
     const result3 = await this.cacheManager.get(`${phone}-signUp`);
 
-    console.log(result3);
-
     if (result3 !== true) {
       throw new UnprocessableEntityException(
         '휴대폰 본인 인증 완료 후 회원가입을 진행해주세요.',

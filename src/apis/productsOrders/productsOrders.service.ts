@@ -233,9 +233,6 @@ export class ProductsOrdersService {
       ])
       .getMany();
 
-    console.log(productOrders);
-    console.log(result);
-
     if (productOrders.length !== result.length) {
       throw new UnprocessableEntityException('다시 결제를 진행해주세요.');
     }

@@ -34,23 +34,26 @@ export class Product {
   name: string;
 
   @Column({ type: 'varchar', length: 2000, nullable: true })
-  @Field(() => String, { nullable: true })
+  @Field(() => String, {
+    nullable: true,
+    description: '상품 상세 정보 (최대 2000자까지 가능)',
+  })
   description: string;
 
   @Column()
-  @Field(() => String)
+  @Field(() => String, { description: '상품 대표 이미지 url' })
   image: string;
 
   @Column({ nullable: true })
-  @Field(() => Int, { nullable: true })
+  @Field(() => Int, { nullable: true, description: '비건 레벨' })
   veganLevel: number;
 
   @Column()
-  @Field(() => Int)
+  @Field(() => Int, { description: '상품 원가' })
   price: number;
 
   @Column()
-  @Field(() => Int)
+  @Field(() => Int, { description: '상품 할인율' })
   discountRate: number;
 
   @Column()
@@ -58,31 +61,31 @@ export class Product {
   discountedPrice: number;
 
   @Column()
-  @Field(() => Int)
+  @Field(() => Int, { description: '상품 재고 수량' })
   quantity: number;
 
   @Column({ default: false })
-  @Field(() => Boolean)
+  @Field(() => Boolean, { description: '상품 품절 여부' })
   isOutOfStock: boolean;
 
   @Column({ nullable: true })
-  @Field(() => String, { nullable: true })
+  @Field(() => String, { nullable: true, description: '상품 필수 표기정보' })
   option1: string;
 
   @Column({ nullable: true })
-  @Field(() => String, { nullable: true })
+  @Field(() => String, { nullable: true, description: '상품 필수 표기정보' })
   option2: string;
 
   @Column({ nullable: true })
-  @Field(() => String, { nullable: true })
+  @Field(() => String, { nullable: true, description: '상품 필수 표기정보' })
   option3: string;
 
   @Column({ nullable: true })
-  @Field(() => String, { nullable: true })
+  @Field(() => String, { nullable: true, description: '상품 필수 표기정보' })
   option4: string;
 
   @Column({ nullable: true })
-  @Field(() => String, { nullable: true })
+  @Field(() => String, { nullable: true, description: '상품 필수 표기정보' })
   option5: string;
 
   @JoinColumn()
