@@ -34,39 +34,18 @@ export class ProductsService {
       })
       .andWhere('product.productCategory IS NOT NULL');
 
-    if (!productCategoryId && !search) {
-      return await qb
-        .orderBy('product.createdAt', 'DESC')
-        .skip((page - 1) * 9)
-        .take(9)
-        .getMany();
-    } else if (productCategoryId && search) {
-      return await qb
-        .andWhere('product.productCategory = :categoryId', {
-          categoryId: productCategoryId,
-        })
-        .andWhere('product.name like :name', { name: `%${search}%` })
-        .orderBy('product.createdAt', 'DESC')
-        .skip((page - 1) * 9)
-        .take(9)
-        .getMany();
-    } else if (productCategoryId) {
-      return await qb
-        .andWhere('product.productCategory = :categoryId', {
-          categoryId: productCategoryId,
-        })
-        .orderBy('product.createdAt', 'DESC')
-        .skip((page - 1) * 9)
-        .take(9)
-        .getMany();
-    } else {
-      return await qb
-        .andWhere('product.name like :name', { name: `%${search}%` })
-        .orderBy('product.createdAt', 'DESC')
-        .skip((page - 1) * 9)
-        .take(9)
-        .getMany();
-    }
+    if (productCategoryId)
+      qb.andWhere('product.productCategory = :categoryId', {
+        categoryId: productCategoryId,
+      });
+
+    if (search) qb.andWhere('product.name like :name', { name: `%${search}%` });
+
+    return await qb
+      .orderBy('product.createdAt', 'DESC')
+      .skip((page - 1) * 9)
+      .take(9)
+      .getMany();
   }
 
   async findCount({ productCategoryId, veganLevel, search }) {
@@ -79,26 +58,14 @@ export class ProductsService {
       })
       .andWhere('product.productCategory IS NOT NULL');
 
-    if (!productCategoryId && !search) {
-      return await qb.getCount();
-    } else if (productCategoryId && search) {
-      return await qb
-        .andWhere('product.productCategory = :categoryId', {
-          categoryId: productCategoryId,
-        })
-        .andWhere('product.name like :name', { name: `%${search}%` })
-        .getCount();
-    } else if (productCategoryId) {
-      return await qb
-        .andWhere('product.productCategory = :categoryId', {
-          categoryId: productCategoryId,
-        })
-        .getCount();
-    } else {
-      return await qb
-        .andWhere('product.name like :name', { name: `%${search}%` })
-        .getCount();
-    }
+    if (productCategoryId)
+      qb.andWhere('product.productCategory = :categoryId', {
+        categoryId: productCategoryId,
+      });
+
+    if (search) qb.andWhere('product.name like :name', { name: `%${search}%` });
+
+    return await qb.getCount();
   }
 
   async findOne({ productId }: IProductsServiceFindOne): Promise<Product> {
@@ -316,7 +283,7 @@ export class ProductsService {
       { id: productId },
       {
         name: `[삭제된 상품] ${target.name}`,
-        description: `삭제`,
+        description: '삭제',
         veganLevel: null,
         quantity: 0,
         isOutOfStock: true,

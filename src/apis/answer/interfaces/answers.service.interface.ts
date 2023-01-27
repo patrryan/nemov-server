@@ -1,5 +1,5 @@
 export interface AnswersServiceFindOne {
-  id: string;
+  answerId: string;
 }
 
 export interface AnswersServiceFindOneByQuestion {

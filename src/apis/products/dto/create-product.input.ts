@@ -3,7 +3,8 @@ import { Max, MaxLength, Min, MinLength } from 'class-validator';
 
 @InputType()
 export class CreateProductInput {
-  @MaxLength(30)
+  @MaxLength(30, { message: '상품명을 간결하게 적어주세요. (최대: 30자)' })
+  @MinLength(1, { message: '상품명을 입력해주세요.' })
   @Field(() => String, { description: '상품명' })
   name: string;
 

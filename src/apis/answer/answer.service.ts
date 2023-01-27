@@ -20,10 +20,10 @@ export class AnswersService {
     private readonly questionsRepository: Repository<Question>,
   ) {}
 
-  async findOne({ id }: I.AnswersServiceFindOne): Promise<Answer> {
+  async findOne({ answerId }: I.AnswersServiceFindOne): Promise<Answer> {
     return await this.answersRepository.findOne({
-      where: { id },
-      relations: ['user', 'question'],
+      where: { id: answerId },
+      relations: ['user'],
     });
   }
 

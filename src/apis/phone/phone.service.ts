@@ -48,7 +48,7 @@ export class PhoneService {
       ttl: 180,
     });
 
-    return '인증번호가 발송했습니다.';
+    return '인증번호를 발송했습니다.';
   }
 
   async checkToken({
